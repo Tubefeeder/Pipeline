@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# This file is originally from https://github.com/rust-embedded/cross but modified to work with Ubuntu 20.10, gtk and libhandy.
+
+set -x
+set -euo pipefail
+
+# shellcheck disable=SC1091
+. lib.sh
+
+main() {
+    local version=3.17.2
+
+    install_packages curl
+
+    local td
+    td="$(mktemp -d)"
+
+    pushd "${td}"
+
+    curl --retry 3 -sSfL "https://github.com/Kitware/CMake/releases/download/v${version}/cmake-${version}-Linux-x86_64.sh" -o cmake.sh
+    sh cmake.sh --skip-license --prefix=/usr/local
+
+    popd
+
+    purge_packages
+
+    rm -rf "${td}"
+    rm -rf /var/lib/apt/lists/*
+    rm "${0}"
+}
+
+main "${@}"
