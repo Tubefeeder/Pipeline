@@ -2,4 +2,4 @@
 Type=Application
 Name=Tubefeeder
 StartupWMClass=Tubefeeder
-Exec=/usr/local/bin/tubefeeder
+Exec=~/.local/bin/tubefeeder
