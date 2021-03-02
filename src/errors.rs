@@ -1,11 +1,11 @@
 use std::{error, fmt};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Error {
     error_type: ErrorType,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 enum ErrorType {
     NetworkError,
     ParseError(String),

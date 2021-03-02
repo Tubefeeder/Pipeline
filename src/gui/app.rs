@@ -11,11 +11,10 @@ use file_minidb::table::Table;
 use file_minidb::types::ColumnType;
 use file_minidb::{column::Column, values::Value};
 
-use gtk::{Application, Builder, Button, Label, ListBox};
-
 use libhandy::ApplicationWindow;
 
 use gtk::prelude::*;
+use gtk::{Application, Builder, Button, Label, ListBox};
 
 #[derive(Clone)]
 pub struct App {
@@ -105,13 +104,12 @@ impl App {
     fn setup_reload(&self) {
         let clone = self.clone();
 
-        self.btn_reload.connect_clicked(move |_| {
-            clone.clone().reload();
-        });
+        self.btn_reload
+            .connect_clicked(move |_| clone.clone().reload());
     }
 
     fn reload(&mut self) {
-        let feed = self.subscriptions.get_feed();
+        let feed = futures::executor::block_on(self.subscriptions.get_feed());
 
         if let Err(_e) = feed {
             self.network_error_label.set_visible(true);

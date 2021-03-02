@@ -1,6 +1,10 @@
 use crate::errors::Error;
 use crate::youtube_feed::feed::{Author, Feed};
 
+use rayon::prelude::*;
+
+use futures;
+
 const URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";
 
 #[derive(PartialEq, Eq, Clone)]
@@ -13,10 +17,11 @@ impl Channel {
         Channel { id: id.to_string() }
     }
 
-    pub fn get_feed(&self) -> Result<Feed, Error> {
+    #[tokio::main]
+    pub async fn get_feed(&self) -> Result<Feed, Error> {
         let url = URL.to_string() + &self.id;
 
-        let content: Result<String, Error> = async_std::task::block_on(async {
+        let content: Result<String, Error> = async {
             let res1 = reqwest::get(&url).await;
 
             if res1.is_err() {
@@ -30,7 +35,8 @@ impl Channel {
             }
 
             Ok(res2.unwrap())
-        });
+        }
+        .await;
 
         if let Err(e) = content {
             return Err(e);
@@ -72,17 +78,31 @@ impl ChannelGroup {
         }
     }
 
-    pub fn get_feed(&self) -> Result<Feed, Error> {
-        let mut feeds: Vec<Feed> = Vec::new();
+    pub async fn get_feed(&self) -> Result<Feed, Error> {
+        // for channel in &self.channels {
+        //     let channel_feed = channel.get_feed();
+        //     if let Err(e) = channel_feed {
+        //         return Err(e);
+        //     } else {
+        //         feeds.push(channel_feed.unwrap());
+        //         // let rnd_delta: i64 = rng.gen_range(-250..250);
+        //         //     thread::sleep(time::Duration::from_millis(
+        //         //         (500 + rnd_delta).try_into().unwrap(),
+        //         //     ));
+        //     }
+        // }
 
-        for channel in &self.channels {
-            let feed_res = channel.get_feed();
-            if let Err(e) = feed_res {
-                return Err(e);
-            }
-            feeds.push(feed_res.unwrap());
+        let feeds: Vec<Result<Feed, _>> = self.channels.par_iter().map(|c| c.get_feed()).collect();
+
+        if let Some(Err(e)) = feeds.clone().par_iter().find_any(|x| x.clone().is_err()) {
+            return Err(e.clone());
         }
 
-        Ok(Feed::combine(feeds))
+        Ok(Feed::combine(
+            feeds
+                .par_iter()
+                .map(|f| f.as_ref().unwrap().clone())
+                .collect(),
+        ))
     }
 }

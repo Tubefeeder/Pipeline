@@ -17,5 +17,8 @@ serde = {version = "1.0", features = ["derive"]}
 chrono = {version = "*", features = ["serde"]}
 libhandy = "*"
 async-std = "*"
+rand = "*"
+rayon = "*"
+futures = "*"
 
 file-minidb = {git = "https://github.com/Schmiddiii/file-minidb.git"}
