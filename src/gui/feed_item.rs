@@ -1,57 +1,49 @@
+use crate::youtube_feed::feed::Entry;
+
+use relm::Relm;
+use relm::Widget;
+use relm_derive::widget;
+
 use gtk::prelude::*;
-use gtk::{Builder, Label, ListBoxRow};
+use gtk::Justification;
+use gtk::Orientation::Vertical;
 
-pub struct FeedItemBuilder {
-    title: String,
-    creator: String,
-    date: String,
-}
+use pango::{EllipsizeMode, WrapMode};
 
-impl FeedItemBuilder {
-    pub fn new() -> Self {
-        FeedItemBuilder {
-            title: "".into(),
-            creator: "".into(),
-            date: "".into(),
+#[widget]
+impl Widget for FeedListItem {
+    fn model(_: &Relm<Self>, entry: Entry) -> Entry {
+        entry
+    }
+
+    fn update(&mut self, _: ()) {}
+
+    view! {
+        gtk::ListBoxRow {
+            gtk::Box {
+                orientation: Vertical,
+                gtk::Label {
+                    text: &self.model.title,
+                    ellipsize: EllipsizeMode::End,
+                    property_wrap: true,
+                    property_wrap_mode: WrapMode::Word,
+                    lines: 2,
+                    justify: Justification::Center
+
+                },
+                gtk::Label {
+                    text: &self.model.author.name,
+                    ellipsize: EllipsizeMode::End,
+                    property_wrap: true,
+                    property_wrap_mode: WrapMode::Word
+                },
+                gtk::Label {
+                    text: &self.model.updated.to_string(),
+                    ellipsize: EllipsizeMode::End,
+                    property_wrap: true,
+                    property_wrap_mode: WrapMode::Word
+                }
+            }
         }
-    }
-
-    pub fn title(&mut self, title: String) -> &mut Self {
-        self.title = title;
-        self
-    }
-
-    pub fn creator(&mut self, creator: String) -> &mut Self {
-        self.creator = creator;
-        self
-    }
-
-    pub fn date(&mut self, date: String) -> &mut Self {
-        self.date = date;
-        self
-    }
-
-    pub fn build(&mut self) -> ListBoxRow {
-        let feed_item_src = include_str!("../../glade/feed_item.glade");
-        let builder = Builder::from_string(feed_item_src);
-
-        let feed_item: ListBoxRow = builder
-            .get_object("feed_item")
-            .expect("could not get feed item");
-        let feed_label_title: Label = builder
-            .get_object("feed_label_title")
-            .expect("could not get feed label title");
-        let feed_label_creator: Label = builder
-            .get_object("feed_label_creator")
-            .expect("could not get feed label creator");
-        let feed_label_date: Label = builder
-            .get_object("feed_label_date")
-            .expect("could not get feed label date");
-
-        feed_label_title.set_text(&self.title);
-        feed_label_creator.set_text(&self.creator);
-        feed_label_date.set_text(&self.date);
-
-        feed_item
     }
 }

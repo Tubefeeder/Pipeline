@@ -3,15 +3,11 @@ mod gui;
 mod subscriptions;
 mod youtube_feed;
 
-use crate::gui::app::App;
+use crate::gui::app::Win;
 
-use gio::prelude::*;
+use relm::Widget;
 
 #[tokio::main]
 async fn main() {
-    let app = gtk::Application::new(Some("com.github.schmiddiii.tubefeeder"), Default::default())
-        .expect("Initialization failed...");
-    app.connect_activate(move |app| App::init(app));
-
-    app.run(&std::env::args().collect::<Vec<_>>());
+    Win::run(()).unwrap();
 }

@@ -1,6 +1,8 @@
 extern crate serde;
 
 use chrono::NaiveDateTime;
+use std::process::Command;
+use std::process::Stdio;
 
 use serde::Deserialize;
 
@@ -62,5 +64,15 @@ impl Feed {
         entries.reverse();
 
         Feed { entries }
+    }
+}
+
+impl Entry {
+    pub fn play(&self) {
+        let _res = Command::new("mpv")
+            .arg(&self.link.href)
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn();
     }
 }
