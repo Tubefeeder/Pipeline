@@ -16,8 +16,6 @@ quick-xml = {version = "0.21", features = ["serialize"]}
 serde = {version = "1.0", features = ["derive"]}
 chrono = {version = "*", features = ["serde"]}
 libhandy = "*"
-async-std = "*"
-rand = "*"
 rayon = "*"
 futures = "*"
 

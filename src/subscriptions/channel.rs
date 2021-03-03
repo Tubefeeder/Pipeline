@@ -3,8 +3,6 @@ use crate::youtube_feed::feed::{Author, Feed};
 
 use rayon::prelude::*;
 
-use futures;
-
 const URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";
 
 #[derive(PartialEq, Eq, Clone)]

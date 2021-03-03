@@ -11,6 +11,8 @@ use file_minidb::table::Table;
 use file_minidb::types::ColumnType;
 use file_minidb::{column::Column, values::Value};
 
+use futures::future::FutureExt;
+
 use libhandy::ApplicationWindow;
 
 use gtk::prelude::*;
@@ -109,14 +111,15 @@ impl App {
     }
 
     fn reload(&mut self) {
-        let feed = futures::executor::block_on(self.subscriptions.get_feed());
-
-        if let Err(_e) = feed {
-            self.network_error_label.set_visible(true);
-            self.feed_list.set_feed(Feed::empty());
-        } else {
-            self.network_error_label.set_visible(false);
-            self.feed_list.set_feed(feed.unwrap());
-        }
+        let mut clone = self.clone();
+        futures::executor::block_on(self.subscriptions.get_feed().then(|feed| async {
+            if let Err(_e) = feed {
+                clone.network_error_label.set_visible(true);
+                clone.feed_list.set_feed(Feed::empty());
+            } else {
+                clone.network_error_label.set_visible(false);
+                clone.feed_list.set_feed(feed.unwrap());
+            }
+        }));
     }
 }

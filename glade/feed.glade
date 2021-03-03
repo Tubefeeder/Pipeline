@@ -33,10 +33,22 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label_error_network">
-            <property name="name">error_label_network</property>
+          <object class="GtkBox">
+            <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Network error. Make sure you are connected to the internet.</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label_error_network">
+                <property name="name">error_label_network</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Network error. Make sure you are connected to the internet.</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -119,7 +131,7 @@
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="position">2</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <child>
@@ -133,7 +145,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">3</property>
+            <property name="position">4</property>
           </packing>
         </child>
       </object>
