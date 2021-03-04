@@ -7,6 +7,7 @@ use crate::youtube_feed::feed::Feed;
 use std::convert::TryInto;
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
+use std::thread;
 
 use file_minidb::column::Column;
 use file_minidb::serializer::Serializable;
@@ -14,12 +15,11 @@ use file_minidb::table::Table;
 use file_minidb::types::ColumnType;
 use file_minidb::values::Value;
 
-use relm::Component;
-
 use gtk::prelude::*;
 use gtk::ListBoxRow;
 use gtk::SelectionMode;
 
+use relm::Component;
 use relm::ContainerWidget;
 use relm::Relm;
 use relm::Widget;
@@ -30,12 +30,14 @@ use relm_derive::{widget, Msg};
 pub enum FeedListMsg {
     Reload,
     RowActivated(ListBoxRow),
+    SetFeed(Feed),
 }
 
 pub struct FeedListModel {
     feed: Feed,
     subscriptions: ChannelGroup,
     elements: Vec<Component<FeedListItem>>,
+    relm: Relm<FeedList>,
 }
 
 impl FeedList {
@@ -88,32 +90,30 @@ impl FeedList {
 
 #[widget]
 impl Widget for FeedList {
-    fn model(_: &Relm<Self>, _: ()) -> FeedListModel {
+    fn model(relm: &Relm<Self>, _: ()) -> FeedListModel {
         FeedListModel {
             feed: Feed::empty(),
             subscriptions: FeedList::get_subscriptions().unwrap(),
             elements: vec![],
+            relm: relm.clone(),
         }
     }
 
     fn update(&mut self, event: FeedListMsg) {
         match event {
             FeedListMsg::Reload => {
-                let feed = futures::executor::block_on(self.model.subscriptions.get_feed());
+                let stream = self.model.relm.stream().clone();
+                let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
+                    stream.emit(FeedListMsg::SetFeed(feed_option.unwrap_or(Feed::empty())));
+                });
 
-                if let Err(_e) = feed {
-                    return;
-                }
+                let subscriptions = self.model.subscriptions.clone();
 
-                self.model.feed = feed.unwrap();
-
-                for entry in &self.model.feed.entries {
-                    let widget = self
-                        .widgets
-                        .feed_list
-                        .add_widget::<FeedListItem>(entry.clone());
-                    self.model.elements.push(widget);
-                }
+                thread::spawn(move || {
+                    sender
+                        .send(futures::executor::block_on(subscriptions.get_feed()))
+                        .expect("could not send feed");
+                });
             }
             FeedListMsg::RowActivated(row) => {
                 let index = self
@@ -127,6 +127,22 @@ impl Widget for FeedList {
                 let entry = &self.model.feed.entries[index];
 
                 entry.play();
+            }
+            FeedListMsg::SetFeed(feed) => {
+                self.model.elements.clear();
+                let feed_list_clone = self.widgets.feed_list.clone();
+                self.widgets
+                    .feed_list
+                    .foreach(|child| feed_list_clone.remove(child));
+
+                self.model.feed = feed;
+                for entry in &self.model.feed.entries {
+                    let widget = self
+                        .widgets
+                        .feed_list
+                        .add_widget::<FeedListItem>(entry.clone());
+                    self.model.elements.push(widget);
+                }
             }
         }
     }

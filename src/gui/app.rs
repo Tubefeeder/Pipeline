@@ -1,5 +1,5 @@
-use crate::gui::feed_list::FeedList;
-use crate::gui::feed_list::FeedListMsg::Reload;
+use crate::gui::feed_page::FeedPage;
+use crate::gui::subscriptions_page::SubscriptionsPage;
 
 use relm::Widget;
 use relm_derive::{widget, Msg};
@@ -7,6 +7,8 @@ use relm_derive::{widget, Msg};
 use gtk::prelude::*;
 use gtk::Inhibit;
 use gtk::Orientation::Vertical;
+
+use libhandy::ViewSwitcherBarBuilder;
 
 #[derive(Msg)]
 pub enum Msg {
@@ -23,20 +25,33 @@ impl Widget for Win {
         }
     }
 
+    fn init_view(&mut self) {
+        let view_switcher = ViewSwitcherBarBuilder::new()
+            .stack(&self.widgets.application_stack)
+            .reveal(true)
+            .build();
+        self.widgets.view_switcher_box.add(&view_switcher);
+        self.widgets.view_switcher_box.show_all();
+    }
+
     view! {
         gtk::Window {
+            #[name="view_switcher_box"]
             gtk::Box {
                 orientation: Vertical,
-                gtk::Button {
-                    clicked => feed_list@Reload,
-                    label: "Reload",
+                #[name="application_stack"]
+                gtk::Stack {
+                    FeedPage {
+                        child: {
+                            title: Some("Feed")
+                        }
+                    },
+                    SubscriptionsPage {
+                        child: {
+                            title: Some("Subscriptions")
+                        }
+                    }
                 },
-                gtk::Button {
-                    clicked => Msg::Quit,
-                    label: "Quit",
-                },
-                #[name="feed_list"]
-                FeedList
             },
             delete_event(_, _) => (Msg::Quit, Inhibit(false)),
         }
