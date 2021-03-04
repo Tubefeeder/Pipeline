@@ -1,0 +1,90 @@
+diff --git a/linux-image.sh b/linux-image.sh
+index 1fd03e9..b1aef33 100755
+--- a/linux-image.sh
++++ b/linux-image.sh
+@@ -1,12 +1,14 @@
+ #!/usr/bin/env bash
+ 
++# This file is originally from https://github.com/rust-embedded/cross but modified to work with Ubuntu 20.10, gtk and libhandy.
++
+ set -x
+ set -euo pipefail
+ 
+ main() {
+     # arch in the rust target
+     local arch="${1}" \
+-          kversion=4.19.0-11
++          kversion=5.8.0-25
+ 
+     local debsource="deb http://http.debian.net/debian/ buster main"
+     debsource="${debsource}\ndeb http://security.debian.org/ buster/updates main"
+@@ -21,7 +23,7 @@ main() {
+     case "${arch}" in
+         aarch64)
+             arch=arm64
+-            kernel="${kversion}-arm64"
++            kernel="${kversion}-generic"
+             ;;
+         armv7)
+             arch=armhf
+@@ -84,7 +86,7 @@ main() {
+             ;;
+         x86_64)
+             arch=amd64
+-            kernel="${kversion}-amd64"
++            kernel="${kversion}-generic"
+             ;;
+         *)
+             echo "Invalid arch: ${arch}"
+@@ -110,8 +112,8 @@ main() {
+     done
+ 
+     # Download packages
+-    mv /etc/apt/sources.list /etc/apt/sources.list.bak
+-    echo -e "${debsource}" > /etc/apt/sources.list
++    cp /etc/apt/sources.list /etc/apt/sources.list.bak
++    echo -e "${debsource}" >> /etc/apt/sources.list
+ 
+     # Old ubuntu does not support --add-architecture, so we directly change multiarch file
+     if [ -f /etc/dpkg/dpkg.cfg.d/multiarch ]; then
+@@ -136,6 +138,7 @@ main() {
+     chmod 777 /qemu "/qemu/${arch}"
+ 
+     cd "/qemu/${arch}"
++
+     apt-get -d --no-install-recommends download \
+         ${deps[@]+"${deps[@]}"} \
+         "busybox:${arch}" \
+@@ -216,17 +219,13 @@ EOF
+ 
+     cat << 'EOF' > $root/init
+ #!/bin/busybox sh
+-
+ set -e
+-
+ /bin/busybox --install
+-
+ mount -t devtmpfs devtmpfs /dev
+ mount -t proc none /proc
+ mount -t sysfs none /sys
+ mkdir /dev/pts
+ mount -t devpts none /dev/pts/
+-
+ # some archs does not have virtio modules
+ insmod /modules/failover.ko || true
+ insmod /modules/net_failover.ko || true
+@@ -239,14 +238,11 @@ insmod /modules/fscache.ko
+ insmod /modules/9pnet.ko
+ insmod /modules/9pnet_virtio.ko || true
+ insmod /modules/9p.ko
+-
+ ifconfig lo 127.0.0.1
+ ifconfig eth0 10.0.2.15
+ route add default gw 10.0.2.2 eth0
+-
+ mkdir /target
+ mount -t 9p -o trans=virtio target /target -oversion=9p2000.u || true
+-
+ exec dropbear -F -E -B
+ EOF
+ 
