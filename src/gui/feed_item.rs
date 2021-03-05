@@ -38,7 +38,7 @@ impl Widget for FeedListItem {
                     property_wrap_mode: WrapMode::Word
                 },
                 gtk::Label {
-                    text: &self.model.updated.to_string(),
+                    text: &self.model.published.to_string(),
                     ellipsize: EllipsizeMode::End,
                     property_wrap: true,
                     property_wrap_mode: WrapMode::Word

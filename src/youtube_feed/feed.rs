@@ -24,7 +24,7 @@ pub struct Entry {
     pub author: Author,
     pub link: Link,
     #[serde(with = "date_serializer")]
-    pub updated: NaiveDateTime,
+    pub published: NaiveDateTime,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -60,7 +60,7 @@ impl Feed {
             entries.append(&mut feed.entries);
         }
 
-        entries.sort_by_key(|e| e.updated);
+        entries.sort_by_key(|e| e.published);
         entries.reverse();
 
         Feed { entries }

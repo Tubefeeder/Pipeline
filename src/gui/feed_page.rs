@@ -1,24 +1,47 @@
-use crate::gui::feed_list::{FeedList, FeedListMsg::Reload};
+use crate::gui::app::AppMsg;
+use crate::gui::feed_list::{FeedList, FeedListMsg};
+use crate::youtube_feed::feed::Feed;
 
+use relm::StreamHandle;
 use relm::Widget;
-use relm_derive::widget;
+use relm_derive::{widget, Msg};
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
 
+#[derive(Msg)]
+pub enum FeedPageMsg {
+    Reload,
+    SetFeed(Feed),
+}
+
+pub struct FeedPageModel {
+    app_stream: StreamHandle<AppMsg>,
+}
+
 #[widget]
 impl Widget for FeedPage {
-    fn model() -> () {}
+    fn model(app_stream: StreamHandle<AppMsg>) -> FeedPageModel {
+        FeedPageModel { app_stream }
+    }
 
-    fn update(&mut self, _: ()) -> () {}
+    fn update(&mut self, event: FeedPageMsg) {
+        match event {
+            FeedPageMsg::Reload => {
+                self.model.app_stream.emit(AppMsg::Reload);
+            }
+            FeedPageMsg::SetFeed(feed) => {
+                self.components.feed_list.emit(FeedListMsg::SetFeed(feed));
+            }
+        }
+    }
 
     view! {
         gtk::Box {
             orientation: Vertical,
             gtk::Button {
                 label: "Reload",
-                clicked => feed_list@Reload
-
+                clicked => FeedPageMsg::Reload
             },
             #[name="feed_list"]
             FeedList

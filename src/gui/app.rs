@@ -1,6 +1,13 @@
-use crate::gui::feed_page::FeedPage;
+use crate::gui::feed_page::{FeedPage, FeedPageMsg};
 use crate::gui::subscriptions_page::SubscriptionsPage;
+use crate::subscriptions::channel::ChannelGroup;
+use crate::youtube_feed::feed::Feed;
 
+use std::path::PathBuf;
+use std::thread;
+
+use relm::Relm;
+use relm::StreamHandle;
 use relm::Widget;
 use relm_derive::{widget, Msg};
 
@@ -11,17 +18,58 @@ use gtk::Orientation::Vertical;
 use libhandy::ViewSwitcherBarBuilder;
 
 #[derive(Msg)]
-pub enum Msg {
+pub enum AppMsg {
+    Reload,
     Quit,
+}
+
+pub struct AppModel {
+    app_stream: StreamHandle<AppMsg>,
+    _subscriptions_file: PathBuf,
+    subscriptions: ChannelGroup,
 }
 
 #[widget]
 impl Widget for Win {
-    fn model() -> () {}
+    fn model(relm: &Relm<Self>, _: ()) -> AppModel {
+        let mut user_data_dir =
+            glib::get_user_data_dir().expect("could not get user data directory");
+        user_data_dir.push("tubefeeder");
 
-    fn update(&mut self, event: Msg) {
+        if !user_data_dir.exists() {
+            std::fs::create_dir_all(user_data_dir.clone()).expect("could not create user data dir");
+        }
+
+        let mut subscriptions_file_path = user_data_dir.clone();
+        subscriptions_file_path.push("subscriptions.db");
+
+        let subscriptions = ChannelGroup::get_from_file(subscriptions_file_path.clone())
+            .expect("could not parse subscriptions file");
+
+        AppModel {
+            app_stream: relm.stream().clone(),
+            _subscriptions_file: subscriptions_file_path,
+            subscriptions,
+        }
+    }
+
+    fn update(&mut self, event: AppMsg) {
         match event {
-            Msg::Quit => gtk::main_quit(),
+            AppMsg::Reload => {
+                let stream = self.components.feed_page.stream().clone();
+                let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
+                    stream.emit(FeedPageMsg::SetFeed(feed_option.unwrap_or(Feed::empty())));
+                });
+
+                let subscriptions = self.model.subscriptions.clone();
+
+                thread::spawn(move || {
+                    sender
+                        .send(futures::executor::block_on(subscriptions.get_feed()))
+                        .expect("could not send feed");
+                });
+            }
+            AppMsg::Quit => gtk::main_quit(),
         }
     }
 
@@ -41,7 +89,8 @@ impl Widget for Win {
                 orientation: Vertical,
                 #[name="application_stack"]
                 gtk::Stack {
-                    FeedPage {
+                    #[name="feed_page"]
+                    FeedPage(self.model.app_stream.clone()) {
                         child: {
                             title: Some("Feed")
                         }
@@ -53,7 +102,7 @@ impl Widget for Win {
                     }
                 },
             },
-            delete_event(_, _) => (Msg::Quit, Inhibit(false)),
+            delete_event(_, _) => (AppMsg::Quit, Inhibit(false)),
         }
     }
 }

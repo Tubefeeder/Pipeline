@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 gio = "*"
-gtk = "*"
+gtk = {version = "*", features = ["v3_16"]}
 glib = "*"
 pango = "*"
 relm = "*"

@@ -1,6 +1,17 @@
 use crate::errors::Error;
 use crate::youtube_feed::feed::{Author, Feed};
 
+use file_minidb::column::Column;
+use file_minidb::serializer::Serializable;
+use file_minidb::table::Table;
+use file_minidb::types::ColumnType;
+use file_minidb::values::Value;
+
+use std::convert::TryInto;
+use std::fs::OpenOptions;
+use std::io::{Read, Write};
+use std::path::PathBuf;
+
 use rayon::prelude::*;
 
 const URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";
@@ -70,6 +81,49 @@ impl ChannelGroup {
         }
     }
 
+    pub fn get_from_file(path: PathBuf) -> Result<ChannelGroup, Error> {
+        let mut group = ChannelGroup::new();
+
+        let mut subscriptions_file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(path.clone())
+            .expect("could not open subscriptions file");
+
+        let mut contents = String::new();
+        subscriptions_file
+            .read_to_string(&mut contents)
+            .expect("could not read subscriptions file");
+
+        if contents.is_empty() {
+            let column_id = Column::key("channel_id", ColumnType::String);
+            let table = Table::new(vec![column_id]).unwrap();
+            write!(subscriptions_file, "{}", table.serialize())
+                .expect("could not write to subscriptions file");
+        } else {
+            let table_res = Table::deserialize(contents);
+
+            if let Err(_e) = table_res {
+                return Err(Error::parsing(
+                    &("Parsing subscriptions file ".to_string() + &path.to_string_lossy()),
+                ));
+            }
+
+            let table = table_res.unwrap();
+
+            let entries = table.get_entries();
+
+            for entry in entries {
+                let values: Vec<Value> = entry.get_values();
+                let channel_id: Value = values[0].clone();
+                let channel_id_str: String = channel_id.try_into().unwrap();
+                group.add(Channel::new(&channel_id_str));
+            }
+        }
+        Ok(group)
+    }
+
     pub fn add(&mut self, channel: Channel) {
         if !self.channels.contains(&channel) {
             self.channels.push(channel);
@@ -77,19 +131,6 @@ impl ChannelGroup {
     }
 
     pub async fn get_feed(&self) -> Result<Feed, Error> {
-        // for channel in &self.channels {
-        //     let channel_feed = channel.get_feed();
-        //     if let Err(e) = channel_feed {
-        //         return Err(e);
-        //     } else {
-        //         feeds.push(channel_feed.unwrap());
-        //         // let rnd_delta: i64 = rng.gen_range(-250..250);
-        //         //     thread::sleep(time::Duration::from_millis(
-        //         //         (500 + rnd_delta).try_into().unwrap(),
-        //         //     ));
-        //     }
-        // }
-
         let feeds: Vec<Result<Feed, _>> = self.channels.par_iter().map(|c| c.get_feed()).collect();
 
         if let Some(Err(e)) = feeds.clone().par_iter().find_any(|x| x.clone().is_err()) {
