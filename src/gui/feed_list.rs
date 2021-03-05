@@ -59,13 +59,21 @@ impl Widget for FeedList {
                 self.model.feed = feed;
                 self.model.loaded_elements = 0;
 
+                let feed_list_clone = self.widgets.feed_list.clone();
+                self.widgets.feed_list.forall(|w| feed_list_clone.remove(w));
+
                 self.model.relm.stream().emit(FeedListMsg::LoadMore);
             }
             FeedListMsg::LoadMore => {
                 let loaded = self.model.loaded_elements;
-                if loaded + FEED_PARTITION_SIZE < self.model.feed.entries.len() {
-                    let new_entries = &self.model.feed.entries[self.model.loaded_elements
-                        ..self.model.loaded_elements + FEED_PARTITION_SIZE];
+                let entries = self.model.feed.entries.clone();
+
+                if loaded < entries.len() {
+                    let new_entries = &entries[self.model.loaded_elements
+                        ..std::cmp::min(
+                            self.model.loaded_elements + FEED_PARTITION_SIZE,
+                            entries.len(),
+                        )];
 
                     for entry in new_entries {
                         let widget = self

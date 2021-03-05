@@ -16,14 +16,33 @@ use rayon::prelude::*;
 
 const URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Debug, Hash)]
 pub struct Channel {
     id: String,
+    pub name: Option<String>,
 }
 
 impl Channel {
     pub fn new(id: &str) -> Self {
-        Channel { id: id.to_string() }
+        Channel {
+            id: id.to_string(),
+            name: None,
+        }
+    }
+
+    pub fn new_with_name(id: &str, name: &str) -> Self {
+        Channel {
+            id: id.to_string(),
+            name: Some(name.to_string()),
+        }
+    }
+
+    pub fn get_id(&self) -> String {
+        self.id.clone()
+    }
+
+    pub fn get_name(&self) -> Option<String> {
+        self.name.clone()
     }
 
     #[tokio::main]
@@ -63,15 +82,16 @@ impl Channel {
 
 impl From<Author> for Channel {
     fn from(author: Author) -> Self {
-        let id = author.uri.rsplit("/").last().unwrap();
+        let id = author.uri.split("/").last().unwrap();
+        let name = author.name;
 
-        Channel::new(id)
+        Channel::new_with_name(id, &name)
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ChannelGroup {
-    channels: Vec<Channel>,
+    pub channels: Vec<Channel>,
 }
 
 impl ChannelGroup {
@@ -79,6 +99,10 @@ impl ChannelGroup {
         ChannelGroup {
             channels: Vec::new(),
         }
+    }
+
+    pub fn get_channels(&self) -> Vec<Channel> {
+        self.channels.clone()
     }
 
     pub fn get_from_file(path: PathBuf) -> Result<ChannelGroup, Error> {

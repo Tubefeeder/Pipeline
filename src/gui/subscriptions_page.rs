@@ -1,21 +1,36 @@
+use crate::gui::subscription_list::{SubscriptionList, SubscriptionListMsg};
+use crate::subscriptions::channel::ChannelGroup;
+
 use relm::Widget;
-use relm_derive::widget;
+use relm_derive::{widget, Msg};
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
+
+#[derive(Msg)]
+pub enum SubscriptionsPageMsg {
+    SetSubscriptions(ChannelGroup),
+}
 
 #[widget]
 impl Widget for SubscriptionsPage {
     fn model() -> () {}
 
-    fn update(&mut self, _: ()) -> () {}
+    fn update(&mut self, event: SubscriptionsPageMsg) {
+        match event {
+            SubscriptionsPageMsg::SetSubscriptions(channels) => {
+                self.components
+                    .subscription_list
+                    .emit(SubscriptionListMsg::SetSubscriptions(channels));
+            }
+        }
+    }
 
     view! {
         gtk::Box {
             orientation: Vertical,
-            gtk::Label {
-                text: "TODO"
-            }
+            #[name="subscription_list"]
+            SubscriptionList
         }
     }
 }

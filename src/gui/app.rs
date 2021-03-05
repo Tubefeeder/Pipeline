@@ -1,8 +1,9 @@
 use crate::gui::feed_page::{FeedPage, FeedPageMsg};
-use crate::gui::subscriptions_page::SubscriptionsPage;
-use crate::subscriptions::channel::ChannelGroup;
+use crate::gui::subscriptions_page::{SubscriptionsPage, SubscriptionsPageMsg};
+use crate::subscriptions::channel::{Channel, ChannelGroup};
 use crate::youtube_feed::feed::Feed;
 
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::thread;
 
@@ -19,14 +20,22 @@ use libhandy::ViewSwitcherBarBuilder;
 
 #[derive(Msg)]
 pub enum AppMsg {
+    SetSubscriptions(ChannelGroup),
     Reload,
     Quit,
 }
 
 pub struct AppModel {
     app_stream: StreamHandle<AppMsg>,
-    _subscriptions_file: PathBuf,
+    subscriptions_file: PathBuf,
     subscriptions: ChannelGroup,
+}
+
+impl AppModel {
+    fn reload_subscriptions(&mut self) {
+        self.subscriptions = ChannelGroup::get_from_file(self.subscriptions_file.clone())
+            .unwrap_or(ChannelGroup::new());
+    }
 }
 
 #[widget]
@@ -43,31 +52,71 @@ impl Widget for Win {
         let mut subscriptions_file_path = user_data_dir.clone();
         subscriptions_file_path.push("subscriptions.db");
 
-        let subscriptions = ChannelGroup::get_from_file(subscriptions_file_path.clone())
-            .expect("could not parse subscriptions file");
-
-        AppModel {
+        let mut model = AppModel {
             app_stream: relm.stream().clone(),
-            _subscriptions_file: subscriptions_file_path,
-            subscriptions,
-        }
+            subscriptions_file: subscriptions_file_path,
+            subscriptions: ChannelGroup::new(),
+        };
+
+        model.reload_subscriptions();
+
+        model
     }
 
     fn update(&mut self, event: AppMsg) {
         match event {
             AppMsg::Reload => {
-                let stream = self.components.feed_page.stream().clone();
+                let feed_stream = self.components.feed_page.stream().clone();
+                let app_stream = self.model.app_stream.clone();
+                let subscriptions1 = self.model.subscriptions.clone();
+
                 let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
-                    stream.emit(FeedPageMsg::SetFeed(feed_option.unwrap_or(Feed::empty())));
+                    feed_stream.emit(FeedPageMsg::SetFeed(
+                        feed_option.clone().unwrap_or(Feed::empty()),
+                    ));
+
+                    if let Ok(feed) = feed_option {
+                        let channels: HashMap<String, String> = feed
+                            .entries
+                            .iter()
+                            .map(|e| {
+                                let channel: Channel = e.author.clone().into();
+                                (channel.get_id(), channel.get_name().unwrap())
+                            })
+                            .collect();
+
+                        let result = subscriptions1
+                            .channels
+                            .iter()
+                            .map(|channel| {
+                                let mut result = channel.clone();
+                                if let Some(name) = channels.get(&result.get_id()) {
+                                    result.name = Some(name.to_string());
+                                }
+                                result
+                            })
+                            .collect();
+
+                        app_stream
+                            .emit(AppMsg::SetSubscriptions(ChannelGroup { channels: result }));
+                    }
                 });
 
-                let subscriptions = self.model.subscriptions.clone();
+                let subscriptions2 = self.model.subscriptions.clone();
 
                 thread::spawn(move || {
                     sender
-                        .send(futures::executor::block_on(subscriptions.get_feed()))
+                        .send(futures::executor::block_on(subscriptions2.get_feed()))
                         .expect("could not send feed");
                 });
+            }
+            AppMsg::SetSubscriptions(subscriptions) => {
+                self.model.subscriptions = subscriptions;
+                self.components
+                    .subscriptions_page
+                    .emit(SubscriptionsPageMsg::SetSubscriptions(
+                        self.model.subscriptions.clone(),
+                    ));
             }
             AppMsg::Quit => gtk::main_quit(),
         }
@@ -80,6 +129,8 @@ impl Widget for Win {
             .build();
         self.widgets.view_switcher_box.add(&view_switcher);
         self.widgets.view_switcher_box.show_all();
+
+        self.model.app_stream.emit(AppMsg::Reload);
     }
 
     view! {
@@ -95,6 +146,7 @@ impl Widget for Win {
                             title: Some("Feed")
                         }
                     },
+                    #[name="subscriptions_page"]
                     SubscriptionsPage {
                         child: {
                             title: Some("Subscriptions")
