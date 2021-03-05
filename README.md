@@ -12,7 +12,7 @@ A Youtube-Client made for the Pinephone
 - Subscribe to a channel in the app
 - Filtering out unwanted videos in the feed
 
-# What it (probably) will never be ably to do
+# What it (probably) will never be able to do
 - Play videos in the application
 
 # Wiki
