@@ -14,9 +14,12 @@ use relm_derive::{widget, Msg};
 
 use gtk::prelude::*;
 use gtk::Inhibit;
+use gtk::Justification;
 use gtk::Orientation::Vertical;
 
 use libhandy::ViewSwitcherBarBuilder;
+
+use pango::{EllipsizeMode, WrapMode};
 
 #[derive(Msg)]
 pub enum AppMsg {
@@ -66,11 +69,24 @@ impl Widget for Win {
     fn update(&mut self, event: AppMsg) {
         match event {
             AppMsg::Reload => {
+                let error_label = self.widgets.error_label.clone();
+                error_label.set_visible(false);
+
+                let loading_spinner = self.widgets.loading_spinner.clone();
+                loading_spinner.set_visible(true);
+
                 let feed_stream = self.components.feed_page.stream().clone();
                 let app_stream = self.model.app_stream.clone();
                 let subscriptions1 = self.model.subscriptions.clone();
 
                 let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
+                    loading_spinner.set_visible(false);
+
+                    if let Err(e) = feed_option.clone() {
+                        error_label.set_visible(true);
+                        error_label.set_text(&format!("{}", e));
+                    }
+
                     feed_stream.emit(FeedPageMsg::SetFeed(
                         feed_option.clone().unwrap_or(Feed::empty()),
                     ));
@@ -130,6 +146,8 @@ impl Widget for Win {
         self.widgets.view_switcher_box.add(&view_switcher);
         self.widgets.view_switcher_box.show_all();
 
+        self.widgets.loading_spinner.start();
+
         self.model.app_stream.emit(AppMsg::Reload);
     }
 
@@ -137,6 +155,23 @@ impl Widget for Win {
         gtk::Window {
             #[name="view_switcher_box"]
             gtk::Box {
+                gtk::Box {
+                    orientation: Vertical,
+                    #[name="error_label"]
+                    gtk::Label {
+                        visible: false,
+                        ellipsize: EllipsizeMode::End,
+                        property_wrap: true,
+                        property_wrap_mode: WrapMode::Word,
+                        lines: 2,
+                        justify: Justification::Center
+                    },
+                    #[name="loading_spinner"]
+                    gtk::Spinner {
+                        visible: false,
+                        property_active: true
+                    }
+                },
                 orientation: Vertical,
                 #[name="application_stack"]
                 gtk::Stack {
