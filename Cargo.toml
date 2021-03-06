@@ -7,21 +7,21 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bytes = "*"
-gio = "*"
-gtk = {version = "*", features = ["v3_16"]}
-gdk-pixbuf = "*"
-glib = "*"
-pango = "*"
-relm = "*"
-relm-derive = "*"
-reqwest = {version = "*", features = ["rustls-tls", "blocking"], default-features = false}
-tokio = {version = "*", features = ["full"]}
+bytes = "1.0.1"
+gio = "0.9.0"
+gtk = {version = "0.9.0", features = ["v3_16"]}
+gdk-pixbuf = "0.9.0"
+glib = "0.10.3"
+pango = "0.9.0"
+relm = "0.21.0"
+relm-derive = "0.21.0"
+reqwest = {version = "0.11.1", features = ["rustls-tls", "blocking"], default-features = false}
+tokio = {version = "1.2.0", features = ["full"]}
 quick-xml = {version = "0.21", features = ["serialize"]}
 serde = {version = "1.0", features = ["derive"]}
-chrono = {version = "*", features = ["serde"]}
-libhandy = "*"
-rayon = "*"
-futures = "*"
+chrono = {version = "0.4.19", features = ["serde"]}
+libhandy = "0.7.1"
+rayon = "1.5.0"
+futures = "0.3.13"
 
 file-minidb = {git = "https://github.com/Schmiddiii/file-minidb.git"}
