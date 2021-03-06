@@ -1,11 +1,10 @@
 use crate::gui::subscription_list::{SubscriptionList, SubscriptionListMsg};
 use crate::subscriptions::channel::ChannelGroup;
 
-use relm::Widget;
-use relm_derive::{widget, Msg};
-
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
+use relm::Widget;
+use relm_derive::{widget, Msg};
 
 #[derive(Msg)]
 pub enum SubscriptionsPageMsg {

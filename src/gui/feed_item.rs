@@ -1,15 +1,13 @@
 use crate::gui::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::youtube_feed::feed::Entry;
 
-use relm::Relm;
-use relm::Widget;
-use relm_derive::{widget, Msg};
-
 use gtk::prelude::*;
 use gtk::Justification;
 use gtk::Orientation;
-
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
+use relm::Relm;
+use relm::Widget;
+use relm_derive::{widget, Msg};
 
 #[derive(Msg)]
 pub enum FeedListItemMsg {

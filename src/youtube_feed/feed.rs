@@ -1,9 +1,9 @@
 extern crate serde;
 
-use chrono::NaiveDateTime;
 use std::process::Command;
 use std::process::Stdio;
 
+use chrono::NaiveDateTime;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone)]

@@ -2,12 +2,11 @@ use crate::gui::app::AppMsg;
 use crate::gui::feed_list::{FeedList, FeedListMsg};
 use crate::youtube_feed::feed::Feed;
 
+use gtk::prelude::*;
+use gtk::Orientation::Vertical;
 use relm::StreamHandle;
 use relm::Widget;
 use relm_derive::{widget, Msg};
-
-use gtk::prelude::*;
-use gtk::Orientation::Vertical;
 
 #[derive(Msg)]
 pub enum FeedPageMsg {

@@ -3,16 +3,12 @@ use crate::youtube_feed::feed;
 use std::thread;
 
 use bytes::Bytes;
-
-use relm::{Channel, Relm, Widget};
-use relm_derive::{widget, Msg};
-
+use gdk_pixbuf::Pixbuf;
 use gio::{MemoryInputStream, NONE_CANCELLABLE};
-
 use gtk::prelude::*;
 use gtk::Image;
-
-use gdk_pixbuf::Pixbuf;
+use relm::{Channel, Relm, Widget};
+use relm_derive::{widget, Msg};
 
 pub struct ThumbnailModel {
     url: String,

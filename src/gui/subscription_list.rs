@@ -3,11 +3,9 @@ use crate::subscriptions::channel::ChannelGroup;
 
 use gtk::prelude::*;
 use gtk::SelectionMode;
-
 use relm::ContainerWidget;
 use relm::Relm;
 use relm::Widget;
-
 use relm_derive::{widget, Msg};
 
 const FEED_PARTITION_SIZE: usize = 20;
