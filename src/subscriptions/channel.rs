@@ -62,7 +62,9 @@ impl Channel {
                 return Err(Error::parsing(&self.id));
             }
 
-            Ok(res2.unwrap())
+            let res3 = res2.unwrap().replace("media:", "media_");
+
+            Ok(res3)
         }
         .await;
 
@@ -73,6 +75,7 @@ impl Channel {
         let feed_res: Result<Feed, quick_xml::DeError> = quick_xml::de::from_str(&content.unwrap());
 
         if feed_res.is_err() {
+            println!("Error parsing: {:?}", feed_res);
             return Err(Error::parsing(&self.id));
         }
 

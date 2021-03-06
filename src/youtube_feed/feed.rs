@@ -25,6 +25,19 @@ pub struct Entry {
     pub link: Link,
     #[serde(with = "date_serializer")]
     pub published: NaiveDateTime,
+    #[serde(rename = "media_group")]
+    pub media: Media,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct Media {
+    #[serde(rename = "media_thumbnail")]
+    pub thumbnail: Thumbnail,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct Thumbnail {
+    pub url: String,
 }
 
 #[derive(Debug, Deserialize, Clone)]

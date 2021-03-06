@@ -1,4 +1,4 @@
-use crate::gui::feed_item::FeedListItem;
+use crate::gui::feed_item::{FeedListItem, FeedListItemMsg};
 use crate::youtube_feed::feed::Feed;
 
 use gtk::prelude::*;
@@ -80,6 +80,7 @@ impl Widget for FeedList {
                             .widgets
                             .feed_list
                             .add_widget::<FeedListItem>(entry.clone());
+                        widget.emit(FeedListItemMsg::SetImage);
                         self.model.elements.push(widget);
                     }
 
