@@ -20,8 +20,10 @@ use relm_derive::{widget, Msg};
 
 #[derive(Msg)]
 pub enum AppMsg {
-    SetSubscriptions(ChannelGroup),
+    Error(String),
+    Loading(bool),
     Reload,
+    SetSubscriptions(ChannelGroup),
     Quit,
 }
 
@@ -29,6 +31,8 @@ pub struct AppModel {
     app_stream: StreamHandle<AppMsg>,
     subscriptions_file: PathBuf,
     subscriptions: ChannelGroup,
+    error_msg: String,
+    loading: bool,
 }
 
 impl AppModel {
@@ -56,6 +60,8 @@ impl Widget for Win {
             app_stream: relm.stream().clone(),
             subscriptions_file: subscriptions_file_path,
             subscriptions: ChannelGroup::new(),
+            error_msg: "".to_string(),
+            loading: false,
         };
 
         model.reload_subscriptions();
@@ -65,10 +71,13 @@ impl Widget for Win {
 
     fn update(&mut self, event: AppMsg) {
         match event {
+            AppMsg::Error(msg) => {
+                self.model.error_msg = msg;
+            }
+            AppMsg::Loading(loading) => {
+                self.model.loading = loading;
+            }
             AppMsg::Reload => {
-                let error_label = self.widgets.error_label.clone();
-                error_label.set_visible(false);
-
                 let loading_spinner = self.widgets.loading_spinner.clone();
                 loading_spinner.set_visible(true);
 
@@ -76,12 +85,12 @@ impl Widget for Win {
                 let app_stream = self.model.app_stream.clone();
                 let subscriptions1 = self.model.subscriptions.clone();
 
-                let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
-                    loading_spinner.set_visible(false);
+                app_stream.emit(AppMsg::Error("".to_string()));
+                app_stream.emit(AppMsg::Loading(true));
 
+                let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
                     if let Err(e) = feed_option.clone() {
-                        error_label.set_visible(true);
-                        error_label.set_text(&format!("{}", e));
+                        app_stream.emit(AppMsg::Error(format!("{}", e)));
                     }
 
                     feed_stream.emit(FeedPageMsg::SetFeed(
@@ -113,6 +122,7 @@ impl Widget for Win {
                         app_stream
                             .emit(AppMsg::SetSubscriptions(ChannelGroup { channels: result }));
                     }
+                    app_stream.emit(AppMsg::Loading(false));
                 });
 
                 let subscriptions2 = self.model.subscriptions.clone();
@@ -156,16 +166,17 @@ impl Widget for Win {
                     orientation: Vertical,
                     #[name="error_label"]
                     gtk::Label {
-                        visible: false,
+                        visible: !self.model.error_msg.is_empty(),
                         ellipsize: EllipsizeMode::End,
                         property_wrap: true,
                         property_wrap_mode: WrapMode::Word,
                         lines: 2,
-                        justify: Justification::Center
+                        justify: Justification::Center,
+                        text: &self.model.error_msg
                     },
                     #[name="loading_spinner"]
                     gtk::Spinner {
-                        visible: false,
+                        visible: self.model.loading,
                         property_active: true
                     }
                 },

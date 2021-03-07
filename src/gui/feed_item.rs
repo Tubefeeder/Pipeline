@@ -12,6 +12,7 @@ use relm_derive::{widget, Msg};
 #[derive(Msg)]
 pub enum FeedListItemMsg {
     SetImage,
+    Clicked,
 }
 
 #[widget]
@@ -24,6 +25,9 @@ impl Widget for FeedListItem {
         match event {
             FeedListItemMsg::SetImage => {
                 self.components.thumbnail.emit(ThumbnailMsg::SetImage);
+            }
+            FeedListItemMsg::Clicked => {
+                self.model.play();
             }
         }
     }

@@ -103,10 +103,6 @@ impl ChannelGroup {
         }
     }
 
-    pub fn get_channels(&self) -> Vec<Channel> {
-        self.channels.clone()
-    }
-
     pub fn get_from_file(path: PathBuf) -> Result<ChannelGroup, Error> {
         let mut group = ChannelGroup::new();
 
