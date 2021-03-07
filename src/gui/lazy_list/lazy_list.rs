@@ -1,19 +1,13 @@
 use super::list_element_builder::ListElementBuilder;
 
 use gtk::prelude::*;
-use gtk::Adjustment;
-use gtk::ListBoxRow;
-use gtk::SelectionMode;
-use relm::connect;
-use relm::Component;
-use relm::ContainerWidget;
-use relm::Relm;
-use relm::Update;
-use relm::Widget;
+use gtk::{Adjustment, ListBoxRow, PositionType, SelectionMode};
+use relm::{connect, Component, ContainerWidget, Relm, Update, Widget};
 use relm_derive::Msg;
 
 #[derive(Msg)]
 pub enum LazyListMsg<W: relm::Widget> {
+    EdgeReached(PositionType),
     SetListElementBuilder(Box<dyn ListElementBuilder<W>>),
     RowActivated(ListBoxRow),
     LoadMore,
@@ -51,6 +45,11 @@ impl<W: 'static + relm::Widget> Update for LazyList<W> {
 
     fn update(&mut self, event: LazyListMsg<W>) {
         match event {
+            LazyListMsg::EdgeReached(edge) => {
+                if edge == PositionType::Bottom {
+                    self.model.relm.stream().emit(LazyListMsg::LoadMore);
+                }
+            }
             LazyListMsg::SetListElementBuilder(builder) => {
                 self.model.builder = Some(builder);
 
@@ -109,8 +108,8 @@ impl<W: 'static + relm::Widget> Widget for LazyList<W> {
         connect!(
             relm,
             window,
-            connect_edge_reached(_, _),
-            LazyListMsg::LoadMore
+            connect_edge_reached(_, edge),
+            LazyListMsg::EdgeReached(edge)
         );
 
         let viewport = gtk::Viewport::new::<Adjustment, Adjustment>(None, None);

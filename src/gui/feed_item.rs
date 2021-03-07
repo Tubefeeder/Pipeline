@@ -2,11 +2,9 @@ use crate::gui::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::youtube_feed::feed::Entry;
 
 use gtk::prelude::*;
-use gtk::Justification;
-use gtk::Orientation;
+use gtk::{Justification, Orientation};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
-use relm::Relm;
-use relm::Widget;
+use relm::{Relm, Widget};
 use relm_derive::{widget, Msg};
 
 #[derive(Msg)]

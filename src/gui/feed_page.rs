@@ -5,8 +5,7 @@ use crate::youtube_feed::feed::{Entry, Feed};
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
-use relm::StreamHandle;
-use relm::Widget;
+use relm::{StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
 pub struct FeedElementBuilder {

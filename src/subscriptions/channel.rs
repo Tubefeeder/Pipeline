@@ -6,11 +6,9 @@ use std::fs::OpenOptions;
 use std::io::{Read, Write};
 use std::path::PathBuf;
 
-use file_minidb::column::Column;
-use file_minidb::serializer::Serializable;
-use file_minidb::table::Table;
-use file_minidb::types::ColumnType;
-use file_minidb::values::Value;
+use file_minidb::{
+    column::Column, serializer::Serializable, table::Table, types::ColumnType, values::Value,
+};
 use rayon::prelude::*;
 
 const URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";

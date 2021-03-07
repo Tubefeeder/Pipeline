@@ -8,14 +8,10 @@ use std::path::PathBuf;
 use std::thread;
 
 use gtk::prelude::*;
-use gtk::Inhibit;
-use gtk::Justification;
-use gtk::Orientation::Vertical;
+use gtk::{Inhibit, Justification, Orientation::Vertical};
 use libhandy::ViewSwitcherBarBuilder;
 use pango::{EllipsizeMode, WrapMode};
-use relm::Relm;
-use relm::StreamHandle;
-use relm::Widget;
+use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
 #[derive(Msg)]

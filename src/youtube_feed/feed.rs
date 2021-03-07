@@ -1,7 +1,6 @@
 extern crate serde;
 
-use std::process::Command;
-use std::process::Stdio;
+use std::process::{Command, Stdio};
 
 use chrono::NaiveDateTime;
 use serde::Deserialize;

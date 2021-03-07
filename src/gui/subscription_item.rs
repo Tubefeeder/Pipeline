@@ -3,8 +3,7 @@ use crate::subscriptions::channel::Channel;
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
 use pango::{AttrList, Attribute, EllipsizeMode};
-use relm::Relm;
-use relm::Widget;
+use relm::{Relm, Widget};
 use relm_derive::widget;
 
 #[widget]
