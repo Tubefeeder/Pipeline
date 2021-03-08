@@ -73,62 +73,7 @@ impl Widget for Win {
                 self.model.loading = loading;
             }
             AppMsg::Reload => {
-                let loading_spinner = self.widgets.loading_spinner.clone();
-                loading_spinner.set_visible(true);
-
-                let feed_stream = self.components.feed_page.stream().clone();
-                let app_stream = self.model.app_stream.clone();
-                let mut subscriptions1 = self.model.subscriptions.clone();
-
-                app_stream.emit(AppMsg::Error("".to_string()));
-                app_stream.emit(AppMsg::Loading(true));
-
-                let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
-                    if let Err(e) = feed_option.clone() {
-                        app_stream.emit(AppMsg::Error(format!("{}", e)));
-                    }
-
-                    feed_stream.emit(FeedPageMsg::SetFeed(
-                        feed_option.clone().unwrap_or(Feed::empty()),
-                    ));
-
-                    if let Ok(feed) = feed_option {
-                        // let channels: HashMap<String, String> = feed
-                        //     .entries
-                        //     .iter()
-                        //     .map(|e| {
-                        //         let channel: Channel = e.author.clone().into();
-                        //         (channel.get_id(), channel.get_name().unwrap())
-                        //     })
-                        //     .collect();
-
-                        // let result = subscriptions1
-                        //     .channels
-                        //     .iter()
-                        //     .map(|channel| {
-                        //         let mut result = channel.clone();
-                        //         if let Some(name) = channels.get(&result.get_id()) {
-                        //             result.name = Some(name.to_string());
-                        //         }
-                        //         result
-                        //     })
-                        //     .collect();
-
-                        let channels = feed.extract_channels();
-                        subscriptions1.resolve_name(&channels);
-
-                        app_stream.emit(AppMsg::SetSubscriptions(subscriptions1.clone()));
-                    }
-                    app_stream.emit(AppMsg::Loading(false));
-                });
-
-                let subscriptions2 = self.model.subscriptions.clone();
-
-                thread::spawn(move || {
-                    sender
-                        .send(futures::executor::block_on(subscriptions2.get_feed()))
-                        .expect("could not send feed");
-                });
+                self.reload();
             }
             AppMsg::SetSubscriptions(subscriptions) => {
                 self.model.subscriptions = subscriptions;
@@ -140,6 +85,44 @@ impl Widget for Win {
             }
             AppMsg::Quit => gtk::main_quit(),
         }
+    }
+
+    fn reload(&mut self) {
+        let loading_spinner = self.widgets.loading_spinner.clone();
+        loading_spinner.set_visible(true);
+
+        let feed_stream = self.components.feed_page.stream().clone();
+        let app_stream = self.model.app_stream.clone();
+        let mut subscriptions1 = self.model.subscriptions.clone();
+
+        app_stream.emit(AppMsg::Error("".to_string()));
+        app_stream.emit(AppMsg::Loading(true));
+
+        let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
+            if let Err(e) = feed_option.clone() {
+                app_stream.emit(AppMsg::Error(format!("{}", e)));
+            }
+
+            feed_stream.emit(FeedPageMsg::SetFeed(
+                feed_option.clone().unwrap_or(Feed::empty()),
+            ));
+
+            if let Ok(feed) = feed_option {
+                let channels = feed.extract_channels();
+                subscriptions1.resolve_name(&channels);
+
+                app_stream.emit(AppMsg::SetSubscriptions(subscriptions1.clone()));
+            }
+            app_stream.emit(AppMsg::Loading(false));
+        });
+
+        let subscriptions2 = self.model.subscriptions.clone();
+
+        thread::spawn(move || {
+            sender
+                .send(futures::executor::block_on(subscriptions2.get_feed()))
+                .expect("could not send feed");
+        });
     }
 
     fn init_view(&mut self) {
