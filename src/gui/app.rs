@@ -182,16 +182,16 @@ impl Widget for Win {
                 gtk::Stack {
                     #[name="feed_page"]
                     FeedPage {
-                        widget_name: &format!("{:?}", Page::Feed),
+                        widget_name: &String::from(Page::Feed),
                         child: {
-                            title: Some(&format!("{:?}", Page::Feed))
+                            title: Some(&String::from(Page::Feed))
                         }
                     },
                     #[name="subscriptions_page"]
                     SubscriptionsPage {
-                        widget_name: &format!("{:?}", Page::Subscriptions),
+                        widget_name: &String::from(Page::Subscriptions),
                         child: {
-                            title: Some(&format!("{:?}", Page::Subscriptions))
+                            title: Some(&String::from(Page::Subscriptions))
                         }
                     }
                 },

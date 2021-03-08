@@ -1,5 +1,6 @@
 use crate::gui::app::AppMsg;
 
+use std::convert::{From, Into};
 use std::str::FromStr;
 
 use gtk::{ButtonExt, WidgetExt};
@@ -26,14 +27,22 @@ impl FromStr for Page {
 
     fn from_str(string: &str) -> Result<Page, Self::Err> {
         let all_values = Page::get_all_values();
+        let owned = string.to_owned();
 
         for val in &all_values {
-            if &format!("{:?}", val) == string {
+            let val_str: String = val.clone().into();
+            if val_str == owned {
                 return Ok(val.clone());
             }
         }
 
         return Err(());
+    }
+}
+
+impl From<Page> for String {
+    fn from(page: Page) -> Self {
+        format!("{:?}", page)
     }
 }
 
@@ -55,7 +64,7 @@ impl Widget for HeaderBar {
         HeaderBarModel {
             app_stream: app_stream.clone(),
             page: STARTING_PAGE,
-            title: format!("{:?}", STARTING_PAGE),
+            title: STARTING_PAGE.into(),
         }
     }
 
@@ -68,7 +77,7 @@ impl Widget for HeaderBar {
 
     fn set_page(&mut self, page: Page) {
         self.model.page = page.clone();
-        self.model.title = format!("{:?}", page);
+        self.model.title = page.into();
     }
 
     view! {
@@ -78,7 +87,8 @@ impl Widget for HeaderBar {
 
             #[name="button_reload"]
             gtk::Button {
-                label: "Reload",
+                // label: "Reload",
+                image: Some(&gtk::Image::from_icon_name(Some("view-refresh"), gtk::IconSize::LargeToolbar)),
                 clicked => HeaderBarMsg::Reload,
                 visible: self.model.page == Page::Feed
             }
