@@ -1,5 +1,5 @@
 use crate::gui::thumbnail::{Thumbnail, ThumbnailMsg};
-use crate::youtube_feed::feed::Entry;
+use crate::youtube_feed::Entry;
 
 use gtk::prelude::*;
 use gtk::{Justification, Orientation};

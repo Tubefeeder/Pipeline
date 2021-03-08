@@ -1,6 +1,6 @@
 use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
 use crate::gui::subscription_item::SubscriptionItem;
-use crate::subscriptions::channel::{Channel, ChannelGroup};
+use crate::subscriptions::{Channel, ChannelGroup};
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;

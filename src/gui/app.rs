@@ -1,7 +1,7 @@
 use crate::gui::feed_page::{FeedPage, FeedPageMsg};
 use crate::gui::subscriptions_page::{SubscriptionsPage, SubscriptionsPageMsg};
-use crate::subscriptions::channel::{Channel, ChannelGroup};
-use crate::youtube_feed::feed::Feed;
+use crate::subscriptions::{Channel, ChannelGroup};
+use crate::youtube_feed::Feed;
 
 use std::collections::HashMap;
 use std::path::PathBuf;

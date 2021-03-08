@@ -3,7 +3,7 @@ mod gui;
 mod subscriptions;
 mod youtube_feed;
 
-use crate::gui::app::Win;
+use crate::gui::Win;
 
 use relm::Widget;
 

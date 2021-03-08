@@ -1,7 +1,7 @@
 use crate::gui::app::AppMsg;
 use crate::gui::feed_item::{FeedListItem, FeedListItemMsg};
 use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
-use crate::youtube_feed::feed::{Entry, Feed};
+use crate::youtube_feed::{Entry, Feed};
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;

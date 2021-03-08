@@ -1,5 +1,5 @@
 use crate::errors::Error;
-use crate::youtube_feed::feed::{Author, Feed};
+use crate::youtube_feed::{Author, Feed};
 
 use std::convert::TryInto;
 use std::fs::OpenOptions;

@@ -1,4 +1,4 @@
-use crate::youtube_feed::feed;
+use crate::youtube_feed;
 
 use std::thread;
 
@@ -23,7 +23,7 @@ pub enum ThumbnailMsg {
 
 #[widget]
 impl Widget for Thumbnail {
-    fn model(relm: &Relm<Self>, thumbnail: feed::Thumbnail) -> ThumbnailModel {
+    fn model(relm: &Relm<Self>, thumbnail: youtube_feed::Thumbnail) -> ThumbnailModel {
         ThumbnailModel {
             url: thumbnail.url,
             relm: relm.clone(),

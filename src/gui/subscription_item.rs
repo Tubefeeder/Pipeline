@@ -1,4 +1,4 @@
-use crate::subscriptions::channel::Channel;
+use crate::subscriptions::Channel;
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;

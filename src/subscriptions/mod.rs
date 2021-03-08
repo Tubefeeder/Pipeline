@@ -1,1 +1,3 @@
-pub mod channel;
+mod channel;
+
+pub use channel::{Channel, ChannelGroup};
