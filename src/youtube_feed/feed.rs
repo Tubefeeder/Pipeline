@@ -1,22 +1,20 @@
 extern crate serde;
 
+use crate::subscriptions::{Channel, ChannelGroup};
+
 use std::process::{Command, Stdio};
 
 use chrono::NaiveDateTime;
 use serde::Deserialize;
 
+/// The youtube feed.
 #[derive(Debug, Deserialize, Clone)]
 pub struct Feed {
     #[serde(rename = "entry")]
     pub entries: Vec<Entry>,
 }
 
-#[derive(Debug, Deserialize, Clone)]
-pub struct Author {
-    pub name: String,
-    pub uri: String,
-}
-
+/// A single entry
 #[derive(Debug, Deserialize, Clone)]
 pub struct Entry {
     pub title: String,
@@ -28,22 +26,33 @@ pub struct Entry {
     pub media: Media,
 }
 
+/// The author of the video.
+#[derive(Debug, Deserialize, Clone)]
+pub struct Author {
+    pub name: String,
+    pub uri: String,
+}
+
+/// The media information of the video. Only used for the thumbnail.
 #[derive(Debug, Deserialize, Clone)]
 pub struct Media {
     #[serde(rename = "media_thumbnail")]
     pub thumbnail: Thumbnail,
 }
 
+/// The thumbnail link of the video.
 #[derive(Debug, Deserialize, Clone)]
 pub struct Thumbnail {
     pub url: String,
 }
 
+/// The link to the video.
 #[derive(Debug, Deserialize, Clone)]
 pub struct Link {
     pub href: String,
 }
 
+/// Deserializing `NativeDateTime`
 mod date_serializer {
     use chrono::NaiveDateTime;
 
@@ -61,10 +70,12 @@ mod date_serializer {
 }
 
 impl Feed {
+    /// Create a new, empty feed.
     pub fn empty() -> Self {
         Feed { entries: vec![] }
     }
 
+    /// Combine two feeds into one feed. Will also sort the result by date.
     pub fn combine(feeds: Vec<Feed>) -> Feed {
         let mut entries: Vec<Entry> = Vec::new();
 
@@ -77,9 +88,21 @@ impl Feed {
 
         Feed { entries }
     }
+
+    /// Extract the channels of the given feed.
+    pub fn extract_channels(&self) -> ChannelGroup {
+        let channels: Vec<Channel> = self
+            .entries
+            .iter()
+            .map(|e| e.author.clone().into())
+            .collect();
+
+        return ChannelGroup { channels };
+    }
 }
 
 impl Entry {
+    /// Play the video using mpv.
     pub fn play(&self) {
         let _res = Command::new("mpv")
             .arg(&self.link.href)

@@ -1,18 +1,9 @@
 use crate::errors::Error;
 use crate::youtube_feed::{Author, Feed};
 
-use std::convert::TryInto;
-use std::fs::OpenOptions;
-use std::io::{Read, Write};
-use std::path::PathBuf;
-
-use file_minidb::{
-    column::Column, serializer::Serializable, table::Table, types::ColumnType, values::Value,
-};
-use rayon::prelude::*;
-
 const URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";
 
+/// A single channel with a id and an optional name.
 #[derive(PartialEq, Eq, Clone, Debug, Hash)]
 pub struct Channel {
     id: String,
@@ -20,6 +11,7 @@ pub struct Channel {
 }
 
 impl Channel {
+    /// Create a new channel with just the id.
     pub fn new(id: &str) -> Self {
         Channel {
             id: id.to_string(),
@@ -27,6 +19,7 @@ impl Channel {
         }
     }
 
+    /// Create a new channel with the id and the name.
     pub fn new_with_name(id: &str, name: &str) -> Self {
         Channel {
             id: id.to_string(),
@@ -34,14 +27,21 @@ impl Channel {
         }
     }
 
+    /// Returns the id of the channel.
     pub fn get_id(&self) -> String {
         self.id.clone()
     }
 
+    /// Returns the channel of the channel.
     pub fn get_name(&self) -> Option<String> {
         self.name.clone()
     }
 
+    /// Gets the feed of the channel.
+    /// Result in an error if the website of the channel feed could not be loaded.
+    /// This may be because there is no internet connection or the channel does not exist.
+    /// It will also return an error if the website could not be parsed.
+    /// This may be because youtube changed the feed site.
     #[tokio::main]
     pub async fn get_feed(&self) -> Result<Feed, Error> {
         let url = URL.to_string() + &self.id;
@@ -59,6 +59,7 @@ impl Channel {
                 return Err(Error::parsing(&self.id));
             }
 
+            // Replace all occurences of `meida:` with `media_` as serde does not seem to like `:`.
             let res3 = res2.unwrap().replace("media:", "media_");
 
             Ok(res3)
@@ -72,7 +73,6 @@ impl Channel {
         let feed_res: Result<Feed, quick_xml::DeError> = quick_xml::de::from_str(&content.unwrap());
 
         if feed_res.is_err() {
-            println!("Error parsing: {:?}", feed_res);
             return Err(Error::parsing(&self.id));
         }
 
@@ -81,87 +81,12 @@ impl Channel {
 }
 
 impl From<Author> for Channel {
+    /// Convert a author to a channel.
+    /// Will always set the channel name.
     fn from(author: Author) -> Self {
         let id = author.uri.split("/").last().unwrap();
         let name = author.name;
 
         Channel::new_with_name(id, &name)
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct ChannelGroup {
-    pub channels: Vec<Channel>,
-}
-
-impl ChannelGroup {
-    pub fn new() -> Self {
-        ChannelGroup {
-            channels: Vec::new(),
-        }
-    }
-
-    pub fn get_from_file(path: PathBuf) -> Result<ChannelGroup, Error> {
-        let mut group = ChannelGroup::new();
-
-        let mut subscriptions_file = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .open(path.clone())
-            .expect("could not open subscriptions file");
-
-        let mut contents = String::new();
-        subscriptions_file
-            .read_to_string(&mut contents)
-            .expect("could not read subscriptions file");
-
-        if contents.is_empty() {
-            let column_id = Column::key("channel_id", ColumnType::String);
-            let table = Table::new(vec![column_id]).unwrap();
-            write!(subscriptions_file, "{}", table.serialize())
-                .expect("could not write to subscriptions file");
-        } else {
-            let table_res = Table::deserialize(contents);
-
-            if let Err(_e) = table_res {
-                return Err(Error::parsing(
-                    &("Parsing subscriptions file ".to_string() + &path.to_string_lossy()),
-                ));
-            }
-
-            let table = table_res.unwrap();
-
-            let entries = table.get_entries();
-
-            for entry in entries {
-                let values: Vec<Value> = entry.get_values();
-                let channel_id: Value = values[0].clone();
-                let channel_id_str: String = channel_id.try_into().unwrap();
-                group.add(Channel::new(&channel_id_str));
-            }
-        }
-        Ok(group)
-    }
-
-    pub fn add(&mut self, channel: Channel) {
-        if !self.channels.contains(&channel) {
-            self.channels.push(channel);
-        }
-    }
-
-    pub async fn get_feed(&self) -> Result<Feed, Error> {
-        let feeds: Vec<Result<Feed, _>> = self.channels.par_iter().map(|c| c.get_feed()).collect();
-
-        if let Some(Err(e)) = feeds.clone().par_iter().find_any(|x| x.clone().is_err()) {
-            return Err(e.clone());
-        }
-
-        Ok(Feed::combine(
-            feeds
-                .par_iter()
-                .map(|f| f.as_ref().unwrap().clone())
-                .collect(),
-        ))
     }
 }

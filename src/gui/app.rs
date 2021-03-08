@@ -1,9 +1,8 @@
 use crate::gui::feed_page::{FeedPage, FeedPageMsg};
 use crate::gui::subscriptions_page::{SubscriptionsPage, SubscriptionsPageMsg};
-use crate::subscriptions::{Channel, ChannelGroup};
+use crate::subscriptions::ChannelGroup;
 use crate::youtube_feed::Feed;
 
-use std::collections::HashMap;
 use std::path::PathBuf;
 use std::thread;
 
@@ -79,7 +78,7 @@ impl Widget for Win {
 
                 let feed_stream = self.components.feed_page.stream().clone();
                 let app_stream = self.model.app_stream.clone();
-                let subscriptions1 = self.model.subscriptions.clone();
+                let mut subscriptions1 = self.model.subscriptions.clone();
 
                 app_stream.emit(AppMsg::Error("".to_string()));
                 app_stream.emit(AppMsg::Loading(true));
@@ -94,29 +93,31 @@ impl Widget for Win {
                     ));
 
                     if let Ok(feed) = feed_option {
-                        let channels: HashMap<String, String> = feed
-                            .entries
-                            .iter()
-                            .map(|e| {
-                                let channel: Channel = e.author.clone().into();
-                                (channel.get_id(), channel.get_name().unwrap())
-                            })
-                            .collect();
+                        // let channels: HashMap<String, String> = feed
+                        //     .entries
+                        //     .iter()
+                        //     .map(|e| {
+                        //         let channel: Channel = e.author.clone().into();
+                        //         (channel.get_id(), channel.get_name().unwrap())
+                        //     })
+                        //     .collect();
 
-                        let result = subscriptions1
-                            .channels
-                            .iter()
-                            .map(|channel| {
-                                let mut result = channel.clone();
-                                if let Some(name) = channels.get(&result.get_id()) {
-                                    result.name = Some(name.to_string());
-                                }
-                                result
-                            })
-                            .collect();
+                        // let result = subscriptions1
+                        //     .channels
+                        //     .iter()
+                        //     .map(|channel| {
+                        //         let mut result = channel.clone();
+                        //         if let Some(name) = channels.get(&result.get_id()) {
+                        //             result.name = Some(name.to_string());
+                        //         }
+                        //         result
+                        //     })
+                        //     .collect();
 
-                        app_stream
-                            .emit(AppMsg::SetSubscriptions(ChannelGroup { channels: result }));
+                        let channels = feed.extract_channels();
+                        subscriptions1.resolve_name(&channels);
+
+                        app_stream.emit(AppMsg::SetSubscriptions(subscriptions1.clone()));
                     }
                     app_stream.emit(AppMsg::Loading(false));
                 });
