@@ -1,4 +1,3 @@
-use crate::gui::app::AppMsg;
 use crate::gui::feed_item::{FeedListItem, FeedListItemMsg};
 use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
 use crate::youtube_feed::{Entry, Feed};
@@ -44,25 +43,15 @@ impl ListElementBuilder<FeedListItem> for FeedElementBuilder {
 
 #[derive(Msg)]
 pub enum FeedPageMsg {
-    Reload,
     SetFeed(Feed),
-}
-
-pub struct FeedPageModel {
-    app_stream: StreamHandle<AppMsg>,
 }
 
 #[widget]
 impl Widget for FeedPage {
-    fn model(app_stream: StreamHandle<AppMsg>) -> FeedPageModel {
-        FeedPageModel { app_stream }
-    }
+    fn model() {}
 
     fn update(&mut self, event: FeedPageMsg) {
         match event {
-            FeedPageMsg::Reload => {
-                self.model.app_stream.emit(AppMsg::Reload);
-            }
             FeedPageMsg::SetFeed(feed) => {
                 self.components
                     .feed_list
@@ -76,10 +65,6 @@ impl Widget for FeedPage {
     view! {
         gtk::Box {
             orientation: Vertical,
-            gtk::Button {
-                label: "Reload",
-                clicked => FeedPageMsg::Reload
-            },
             #[name="feed_list"]
             LazyList<FeedListItem>
         }

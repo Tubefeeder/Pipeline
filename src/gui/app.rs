@@ -1,9 +1,11 @@
 use crate::gui::feed_page::{FeedPage, FeedPageMsg};
+use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
 use crate::gui::subscriptions_page::{SubscriptionsPage, SubscriptionsPageMsg};
 use crate::subscriptions::ChannelGroup;
 use crate::youtube_feed::Feed;
 
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::thread;
 
 use gtk::prelude::*;
@@ -130,6 +132,17 @@ impl Widget for Win {
             .stack(&self.widgets.application_stack)
             .reveal(true)
             .build();
+
+        let header_bar_stream = self.components.header_bar.stream().clone();
+
+        self.widgets
+            .application_stack
+            .connect_property_visible_child_notify(move |stack| {
+                let child = stack.get_visible_child().unwrap();
+                let title = child.get_widget_name();
+                header_bar_stream.emit(HeaderBarMsg::SetPage(Page::from_str(&title).unwrap()));
+            });
+
         self.widgets.view_switcher_box.add(&view_switcher);
         self.widgets.view_switcher_box.show_all();
 
@@ -142,6 +155,10 @@ impl Widget for Win {
         gtk::Window {
             #[name="view_switcher_box"]
             gtk::Box {
+                #[name="header_bar"]
+                HeaderBar(self.model.app_stream.clone()) {
+                },
+
                 gtk::Box {
                     orientation: Vertical,
                     #[name="error_label"]
@@ -164,15 +181,17 @@ impl Widget for Win {
                 #[name="application_stack"]
                 gtk::Stack {
                     #[name="feed_page"]
-                    FeedPage(self.model.app_stream.clone()) {
+                    FeedPage {
+                        widget_name: &format!("{:?}", Page::Feed),
                         child: {
-                            title: Some("Feed")
+                            title: Some(&format!("{:?}", Page::Feed))
                         }
                     },
                     #[name="subscriptions_page"]
                     SubscriptionsPage {
+                        widget_name: &format!("{:?}", Page::Subscriptions),
                         child: {
-                            title: Some("Subscriptions")
+                            title: Some(&format!("{:?}", Page::Subscriptions))
                         }
                     }
                 },

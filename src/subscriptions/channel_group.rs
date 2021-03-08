@@ -111,11 +111,12 @@ impl ChannelGroup {
         self.channels = self
             .channels
             .iter()
-            .filter(|c| c.name.is_none())
             .map(|c| {
                 let mut result = c.clone();
-                if let Some(name) = hashmap.get(&c.get_id()) {
-                    result.name = name.clone()
+                if c.name == None {
+                    if let Some(name) = hashmap.get(&c.get_id()) {
+                        result.name = name.clone()
+                    }
                 }
                 result
             })
