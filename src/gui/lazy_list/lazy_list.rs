@@ -52,6 +52,7 @@ impl<W: 'static + relm::Widget> Update for LazyList<W> {
             }
             LazyListMsg::SetListElementBuilder(builder) => {
                 self.model.builder = Some(builder);
+                self.model.elements = vec![];
 
                 let list_clone = self.list.clone();
                 self.list.forall(|w| list_clone.remove(w));
