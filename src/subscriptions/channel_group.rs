@@ -28,9 +28,9 @@ impl ChannelGroup {
     }
 
     /// Parses the channel group from the file at the given path.
-    /// The file must not exist, but it is created afterwards and a empty channel group will be returned.
+    /// The file must not exist, but it is created and a empty channel group will be returned.
     /// An error will be returned if the file could not be parsed.
-    pub fn get_from_file(path: PathBuf) -> Result<ChannelGroup, Error> {
+    pub fn get_from_file(path: &PathBuf) -> Result<ChannelGroup, Error> {
         let mut group = ChannelGroup::new();
 
         let mut subscriptions_file = OpenOptions::new()
@@ -71,6 +71,29 @@ impl ChannelGroup {
             }
         }
         Ok(group)
+    }
+
+    /// Writes the channel id's into the given file.
+    /// The file must not exist, but it is created if it does not exist.
+    pub fn write_to_file(&self, path: &PathBuf) -> Result<(), Error> {
+        let mut subscriptions_file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(path.clone())
+            .expect("could not open subscriptions file");
+
+        let column_id = Column::key("channel_id", ColumnType::String);
+        let mut table = Table::new(vec![column_id]).unwrap();
+
+        for channel in &self.channels {
+            table
+                .insert(vec![channel.get_id().into()])
+                .expect("Could not append to table");
+        }
+
+        write!(subscriptions_file, "{}", table.serialize()).expect("Error writing file");
+
+        Ok(())
     }
 
     /// Add a channel to the channel group.

@@ -36,8 +36,8 @@ pub struct AppModel {
 
 impl AppModel {
     fn reload_subscriptions(&mut self) {
-        self.subscriptions = ChannelGroup::get_from_file(self.subscriptions_file.clone())
-            .unwrap_or(ChannelGroup::new());
+        self.subscriptions =
+            ChannelGroup::get_from_file(&self.subscriptions_file).unwrap_or(ChannelGroup::new());
     }
 }
 
@@ -90,6 +90,9 @@ impl Widget for Win {
             AppMsg::AddSubscription(channel) => {
                 let mut new_group = self.model.subscriptions.clone();
                 new_group.add(channel);
+                new_group
+                    .write_to_file(&self.model.subscriptions_file)
+                    .expect("Could not write to file");
                 self.model
                     .app_stream
                     .emit(AppMsg::SetSubscriptions(new_group));
