@@ -1,13 +1,40 @@
 use crate::errors::Error;
 use crate::youtube_feed::{Author, Feed};
 
+use std::cmp::Ordering;
+
 const URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";
 
 /// A single channel with a id and an optional name.
-#[derive(PartialEq, Eq, Clone, Debug, Hash)]
+#[derive(Clone, Debug, Hash)]
 pub struct Channel {
     id: String,
     pub name: Option<String>,
+}
+
+impl PartialEq for Channel {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl Eq for Channel {}
+
+impl PartialOrd for Channel {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Channel {
+    fn cmp(&self, other: &Self) -> Ordering {
+        match (self.name.clone(), other.name.clone()) {
+            (Some(sname), Some(oname)) => sname.cmp(&oname),
+            (Some(_), None) => Ordering::Less,
+            (None, Some(_)) => Ordering::Greater,
+            (None, None) => self.id.cmp(&other.id),
+        }
+    }
 }
 
 impl Channel {

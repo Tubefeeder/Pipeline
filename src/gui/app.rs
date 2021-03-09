@@ -1,7 +1,7 @@
 use crate::gui::feed_page::{FeedPage, FeedPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
 use crate::gui::subscriptions_page::{SubscriptionsPage, SubscriptionsPageMsg};
-use crate::subscriptions::ChannelGroup;
+use crate::subscriptions::{Channel, ChannelGroup};
 use crate::youtube_feed::Feed;
 
 use std::path::PathBuf;
@@ -21,6 +21,8 @@ pub enum AppMsg {
     Loading(bool),
     Reload,
     SetSubscriptions(ChannelGroup),
+    AddSubscription(Channel),
+    ToggleAddSubscription,
     Quit,
 }
 
@@ -85,6 +87,18 @@ impl Widget for Win {
                         self.model.subscriptions.clone(),
                     ));
             }
+            AppMsg::AddSubscription(channel) => {
+                let mut new_group = self.model.subscriptions.clone();
+                new_group.add(channel);
+                self.model
+                    .app_stream
+                    .emit(AppMsg::SetSubscriptions(new_group));
+            }
+            AppMsg::ToggleAddSubscription => {
+                self.components
+                    .subscriptions_page
+                    .emit(SubscriptionsPageMsg::ToggleAddSubscription);
+            }
             AppMsg::Quit => gtk::main_quit(),
         }
     }
@@ -134,6 +148,7 @@ impl Widget for Win {
             .build();
 
         let header_bar_stream = self.components.header_bar.stream().clone();
+        header_bar_stream.emit(HeaderBarMsg::SetPage(Page::Feed));
 
         self.widgets
             .application_stack
@@ -147,6 +162,11 @@ impl Widget for Win {
         self.widgets.view_switcher_box.show_all();
 
         self.widgets.loading_spinner.start();
+
+        // Hide the subscription entry (Visible by default, no idea why).
+        let subscriptions_page = &self.components.subscriptions_page;
+        subscriptions_page.emit(SubscriptionsPageMsg::ToggleAddSubscription);
+        subscriptions_page.emit(SubscriptionsPageMsg::ToggleAddSubscription);
 
         self.model.app_stream.emit(AppMsg::Reload);
     }
@@ -188,7 +208,7 @@ impl Widget for Win {
                         }
                     },
                     #[name="subscriptions_page"]
-                    SubscriptionsPage {
+                    SubscriptionsPage(self.model.app_stream.clone()) {
                         widget_name: &String::from(Page::Subscriptions),
                         child: {
                             title: Some(&String::from(Page::Subscriptions))

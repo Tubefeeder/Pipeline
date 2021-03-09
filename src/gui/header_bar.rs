@@ -49,6 +49,7 @@ impl From<Page> for String {
 #[derive(Msg)]
 pub enum HeaderBarMsg {
     SetPage(Page),
+    AddSubscription,
     Reload,
 }
 
@@ -72,6 +73,9 @@ impl Widget for HeaderBar {
         match event {
             HeaderBarMsg::SetPage(page) => self.set_page(page),
             HeaderBarMsg::Reload => self.model.app_stream.emit(AppMsg::Reload),
+            HeaderBarMsg::AddSubscription => {
+                self.model.app_stream.emit(AppMsg::ToggleAddSubscription)
+            }
         }
     }
 
@@ -85,12 +89,15 @@ impl Widget for HeaderBar {
         libhandy::HeaderBar {
             title: Some(&self.model.title),
 
-            #[name="button_reload"]
             gtk::Button {
-                // label: "Reload",
                 image: Some(&gtk::Image::from_icon_name(Some("view-refresh"), gtk::IconSize::LargeToolbar)),
                 clicked => HeaderBarMsg::Reload,
                 visible: self.model.page == Page::Feed
+            },
+            gtk::Button {
+                image: Some(&gtk::Image::from_icon_name(Some("list-add"), gtk::IconSize::LargeToolbar)),
+                clicked => HeaderBarMsg::AddSubscription,
+                visible: self.model.page == Page::Subscriptions
             }
         }
     }

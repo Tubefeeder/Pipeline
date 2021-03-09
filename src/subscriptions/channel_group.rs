@@ -78,6 +78,7 @@ impl ChannelGroup {
     pub fn add(&mut self, channel: Channel) {
         if !self.channels.contains(&channel) {
             self.channels.push(channel);
+            self.channels.sort();
         }
     }
 
@@ -121,5 +122,7 @@ impl ChannelGroup {
                 result
             })
             .collect();
+
+        self.channels.sort();
     }
 }
