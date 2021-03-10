@@ -4,7 +4,7 @@ use crate::youtube_feed::Feed;
 
 use std::collections::HashMap;
 use std::convert::TryInto;
-use std::fs::OpenOptions;
+use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::PathBuf;
 
@@ -30,58 +30,88 @@ impl ChannelGroup {
     /// Parses the channel group from the file at the given path.
     /// The file must not exist, but it is created and a empty channel group will be returned.
     /// An error will be returned if the file could not be parsed.
-    pub fn get_from_file(path: &PathBuf) -> Result<ChannelGroup, Error> {
-        let mut group = ChannelGroup::new();
-
-        let mut subscriptions_file = OpenOptions::new()
+    pub fn get_from_path(path: &PathBuf) -> Result<Self, Error> {
+        let subscriptions_file_res = OpenOptions::new()
             .read(true)
             .write(true)
             .create(true)
-            .open(path.clone())
-            .expect("could not open subscriptions file");
+            .open(path.clone());
 
-        let mut contents = String::new();
-        subscriptions_file
-            .read_to_string(&mut contents)
-            .expect("could not read subscriptions file");
-
-        if contents.is_empty() {
-            let column_id = Column::key("channel_id", ColumnType::String);
-            let table = Table::new(vec![column_id]).unwrap();
-            write!(subscriptions_file, "{}", table.serialize())
-                .expect("could not write to subscriptions file");
+        if let Ok(mut subscriptions_file) = subscriptions_file_res {
+            return ChannelGroup::get_from_file(path, &mut subscriptions_file);
         } else {
-            let table_res = Table::deserialize(contents);
-
-            if let Err(_e) = table_res {
-                return Err(Error::parsing(
-                    &("Parsing subscriptions file ".to_string() + &path.to_string_lossy()),
-                ));
-            }
-
-            let table = table_res.unwrap();
-
-            let entries = table.get_entries();
-
-            for entry in entries {
-                let values: Vec<Value> = entry.get_values();
-                let channel_id: Value = values[0].clone();
-                let channel_id_str: String = channel_id.try_into().unwrap();
-                group.add(Channel::new(&channel_id_str));
-            }
+            return Err(Error::general_subscriptions(
+                "opening",
+                &path.to_string_lossy(),
+            ));
         }
-        Ok(group)
     }
 
-    /// Writes the channel id's into the given file.
+    /// Parses the channel group from the given file.
+    /// The file must not exist, but it is created and a empty channel group will be returned.
+    /// An error will be returned if the file could not be parsed.
+    fn get_from_file(path: &PathBuf, subscriptions_file: &mut File) -> Result<Self, Error> {
+        let mut group = ChannelGroup::new();
+
+        let mut contents = String::new();
+        if subscriptions_file.read_to_string(&mut contents).is_ok() {
+            if contents.is_empty() {
+                let column_id = Column::key("channel_id", ColumnType::String);
+                let table = Table::new(vec![column_id]).unwrap();
+                let res = write!(subscriptions_file, "{}", table.serialize());
+
+                if res.is_err() {
+                    return Err(Error::general_subscriptions(
+                        "writing",
+                        &path.to_string_lossy(),
+                    ));
+                }
+            } else {
+                let table_res = Table::deserialize(contents);
+
+                if let Err(_e) = table_res {
+                    return Err(Error::parsing_subscriptions(&path.to_string_lossy()));
+                }
+
+                let table = table_res.unwrap();
+
+                let entries = table.get_entries();
+
+                for entry in entries {
+                    let values: Vec<Value> = entry.get_values();
+                    let channel_id: Value = values[0].clone();
+                    let channel_id_str: String = channel_id.try_into().unwrap();
+                    group.add(Channel::new(&channel_id_str));
+                }
+            }
+            return Ok(group);
+        } else {
+            return Err(Error::general_subscriptions(
+                "reading",
+                &path.to_string_lossy(),
+            ));
+        }
+    }
+
+    /// Writes the channel id's into the given file at the given path.
     /// The file must not exist, but it is created if it does not exist.
-    pub fn write_to_file(&self, path: &PathBuf) -> Result<(), Error> {
-        let mut subscriptions_file = OpenOptions::new()
+    pub fn write_to_path(&self, path: &PathBuf) -> Result<(), Error> {
+        let subscriptions_file_res = OpenOptions::new()
             .write(true)
             .create(true)
-            .open(path.clone())
-            .expect("could not open subscriptions file");
+            .open(path.clone());
 
+        if let Ok(mut subscriptions_file) = subscriptions_file_res {
+            self.write_to_file(path, &mut subscriptions_file)
+        } else {
+            Err(Error::general_subscriptions(
+                "opening",
+                &path.to_string_lossy(),
+            ))
+        }
+    }
+
+    fn write_to_file(&self, path: &PathBuf, subscriptions_file: &mut File) -> Result<(), Error> {
         let column_id = Column::key("channel_id", ColumnType::String);
         let mut table = Table::new(vec![column_id]).unwrap();
 
@@ -91,9 +121,16 @@ impl ChannelGroup {
                 .expect("Could not append to table");
         }
 
-        write!(subscriptions_file, "{}", table.serialize()).expect("Error writing file");
+        let write_res = write!(subscriptions_file, "{}", table.serialize());
 
-        Ok(())
+        if write_res.is_err() {
+            Err(Error::general_subscriptions(
+                "writing",
+                &path.to_string_lossy(),
+            ))
+        } else {
+            Ok(())
+        }
     }
 
     /// Add a channel to the channel group.

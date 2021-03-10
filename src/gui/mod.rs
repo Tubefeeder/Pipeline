@@ -1,4 +1,5 @@
 mod app;
+mod error_label;
 mod feed_item;
 mod feed_page;
 mod header_bar;

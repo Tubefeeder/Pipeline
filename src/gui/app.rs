@@ -1,3 +1,5 @@
+use crate::errors::Error;
+use crate::gui::error_label::{ErrorLabel, ErrorLabelMsg};
 use crate::gui::feed_page::{FeedPage, FeedPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
 use crate::gui::subscriptions_page::{SubscriptionsPage, SubscriptionsPageMsg};
@@ -9,15 +11,13 @@ use std::str::FromStr;
 use std::thread;
 
 use gtk::prelude::*;
-use gtk::{Inhibit, Justification, Orientation::Vertical};
+use gtk::{Inhibit, Orientation::Vertical};
 use libhandy::ViewSwitcherBarBuilder;
-use pango::{EllipsizeMode, WrapMode};
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
 #[derive(Msg)]
 pub enum AppMsg {
-    Error(String),
     Loading(bool),
     Reload,
     SetSubscriptions(ChannelGroup),
@@ -30,14 +30,20 @@ pub struct AppModel {
     app_stream: StreamHandle<AppMsg>,
     subscriptions_file: PathBuf,
     subscriptions: ChannelGroup,
-    error_msg: String,
     loading: bool,
+    startup_err: Option<Error>,
 }
 
 impl AppModel {
-    fn reload_subscriptions(&mut self) {
-        self.subscriptions =
-            ChannelGroup::get_from_file(&self.subscriptions_file).unwrap_or(ChannelGroup::new());
+    fn reload_subscriptions(&mut self) -> Result<(), Error> {
+        let subscription_res = ChannelGroup::get_from_path(&self.subscriptions_file);
+        self.subscriptions = subscription_res.clone().unwrap_or(ChannelGroup::new());
+
+        if let Err(e) = subscription_res {
+            Err(e)
+        } else {
+            Ok(())
+        }
     }
 }
 
@@ -59,20 +65,21 @@ impl Widget for Win {
             app_stream: relm.stream().clone(),
             subscriptions_file: subscriptions_file_path,
             subscriptions: ChannelGroup::new(),
-            error_msg: "".to_string(),
             loading: false,
+            startup_err: None,
         };
 
-        model.reload_subscriptions();
+        let err = model.reload_subscriptions();
+
+        if let Err(e) = err {
+            model.startup_err = Some(e);
+        }
 
         model
     }
 
     fn update(&mut self, event: AppMsg) {
         match event {
-            AppMsg::Error(msg) => {
-                self.model.error_msg = msg;
-            }
             AppMsg::Loading(loading) => {
                 self.model.loading = loading;
             }
@@ -90,12 +97,17 @@ impl Widget for Win {
             AppMsg::AddSubscription(channel) => {
                 let mut new_group = self.model.subscriptions.clone();
                 new_group.add(channel);
-                new_group
-                    .write_to_file(&self.model.subscriptions_file)
-                    .expect("Could not write to file");
-                self.model
-                    .app_stream
-                    .emit(AppMsg::SetSubscriptions(new_group));
+                let write_res = new_group.write_to_path(&self.model.subscriptions_file);
+
+                if let Err(e) = write_res {
+                    self.components
+                        .error_label
+                        .emit(ErrorLabelMsg::Set(Some(e)));
+                } else {
+                    self.model
+                        .app_stream
+                        .emit(AppMsg::SetSubscriptions(new_group));
+                }
             }
             AppMsg::ToggleAddSubscription => {
                 self.components
@@ -113,13 +125,20 @@ impl Widget for Win {
         let feed_stream = self.components.feed_page.stream().clone();
         let app_stream = self.model.app_stream.clone();
         let mut subscriptions1 = self.model.subscriptions.clone();
+        let error_label_stream = self.components.error_label.stream().clone();
 
-        app_stream.emit(AppMsg::Error("".to_string()));
+        // Dont override errors from startup
+        if self.model.startup_err.is_none() {
+            error_label_stream.emit(ErrorLabelMsg::Set(None));
+        } else {
+            self.model.startup_err = None;
+        }
+
         app_stream.emit(AppMsg::Loading(true));
 
         let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
             if let Err(e) = feed_option.clone() {
-                app_stream.emit(AppMsg::Error(format!("{}", e)));
+                error_label_stream.emit(ErrorLabelMsg::Set(Some(e)));
             }
 
             feed_stream.emit(FeedPageMsg::SetFeed(
@@ -145,11 +164,16 @@ impl Widget for Win {
     }
 
     fn init_view(&mut self) {
+        // Build view switcher
         let view_switcher = ViewSwitcherBarBuilder::new()
             .stack(&self.widgets.application_stack)
             .reveal(true)
             .build();
 
+        self.widgets.view_switcher_box.add(&view_switcher);
+        self.widgets.view_switcher_box.show_all();
+
+        // Build header bar
         let header_bar_stream = self.components.header_bar.stream().clone();
         header_bar_stream.emit(HeaderBarMsg::SetPage(Page::Feed));
 
@@ -161,15 +185,16 @@ impl Widget for Win {
                 header_bar_stream.emit(HeaderBarMsg::SetPage(Page::from_str(&title).unwrap()));
             });
 
-        self.widgets.view_switcher_box.add(&view_switcher);
-        self.widgets.view_switcher_box.show_all();
-
         self.widgets.loading_spinner.start();
 
         // Hide the subscription entry (Visible by default, no idea why).
         let subscriptions_page = &self.components.subscriptions_page;
         subscriptions_page.emit(SubscriptionsPageMsg::ToggleAddSubscription);
         subscriptions_page.emit(SubscriptionsPageMsg::ToggleAddSubscription);
+
+        self.components
+            .error_label
+            .emit(ErrorLabelMsg::Set(self.model.startup_err.clone()));
 
         self.model.app_stream.emit(AppMsg::Reload);
     }
@@ -185,15 +210,16 @@ impl Widget for Win {
                 gtk::Box {
                     orientation: Vertical,
                     #[name="error_label"]
-                    gtk::Label {
-                        visible: !self.model.error_msg.is_empty(),
-                        ellipsize: EllipsizeMode::End,
-                        property_wrap: true,
-                        property_wrap_mode: WrapMode::Word,
-                        lines: 2,
-                        justify: Justification::Center,
-                        text: &self.model.error_msg
-                    },
+                    ErrorLabel {},
+                    // gtk::Label {
+                    //     visible: !self.model.error_msg.is_empty(),
+                    //     ellipsize: EllipsizeMode::End,
+                    //     property_wrap: true,
+                    //     property_wrap_mode: WrapMode::Word,
+                    //     lines: 2,
+                    //     justify: Justification::Center,
+                    //     text: &self.model.error_msg
+                    // },
                     #[name="loading_spinner"]
                     gtk::Spinner {
                         visible: self.model.loading,

@@ -83,7 +83,7 @@ impl Channel {
             let res2 = res1.unwrap().text().await;
 
             if res2.is_err() {
-                return Err(Error::parsing(&self.id));
+                return Err(Error::parsing_website(&self.id));
             }
 
             // Replace all occurences of `meida:` with `media_` as serde does not seem to like `:`.
@@ -100,7 +100,7 @@ impl Channel {
         let feed_res: Result<Feed, quick_xml::DeError> = quick_xml::de::from_str(&content.unwrap());
 
         if feed_res.is_err() {
-            return Err(Error::parsing(&self.id));
+            return Err(Error::parsing_website(&self.id));
         }
 
         Ok(feed_res.unwrap())
