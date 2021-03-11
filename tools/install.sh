@@ -1,7 +1,9 @@
 #!/bin/sh
 
-BINFILE="target/aarch64-unknown-linux-gnu/debug/tubefeeder"
+BINFILE_COMPILED="target/aarch64-unknown-linux-gnu/debug/tubefeeder"
+BINFILE_ALT="tubefeeder-aarch"
 DESKTOPFILE="tubefeeder.desktop"
+BINFILE=$BINFILE_COMPILED
 
 # Check all prerequisites
 if [ -z "$1" ]; then
@@ -14,9 +16,13 @@ if [ -z "$2" ]; then
     exit
 fi
 
+if ! [ -f "$BINFILE_COMPILED" ]; then
+    BINFILE=$BINFILE_ALT
+fi
+
 if ! [ -f "$BINFILE" ]; then
     echo "The Tubefeeder binary does not seem to exist"
-    echo "Make sure you alread have the compiled binary in $BINFILE"
+    echo "Make sure you alread have the compiled binary in $BINFILE_COMPILED or the downloaded binary as $BINFILE_ALT"
     exit
 fi
 
@@ -41,6 +47,10 @@ mkdir -p ~/.config/mpv/scripts
 mkdir -p ~/.config/mpv/scripts-opt/
 
 sed -i "s/{user}/$1/g" /tmp/tubefeeder.desktop
+
+if [ -f "/tmp/tubefeeder-aarch" ]; then
+    mv /tmp/tubefeeder-aarch /tmp/tubefeeder
+fi
 
 mv /tmp/tubefeeder ~/.local/bin
 mv /tmp/tubefeeder.desktop ~/.local/share/applications
