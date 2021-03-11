@@ -29,7 +29,7 @@ impl PartialOrd for Channel {
 impl Ord for Channel {
     fn cmp(&self, other: &Self) -> Ordering {
         match (self.name.clone(), other.name.clone()) {
-            (Some(sname), Some(oname)) => sname.cmp(&oname),
+            (Some(sname), Some(oname)) => sname.to_uppercase().cmp(&oname.to_uppercase()),
             (Some(_), None) => Ordering::Less,
             (None, Some(_)) => Ordering::Greater,
             (None, None) => self.id.cmp(&other.id),

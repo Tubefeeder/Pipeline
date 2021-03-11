@@ -2,7 +2,7 @@ use crate::gui::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::youtube_feed::Entry;
 
 use gtk::prelude::*;
-use gtk::{Justification, Orientation};
+use gtk::{Align, Justification, Orientation};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
 use relm::{Relm, Widget};
 use relm_derive::{widget, Msg};
@@ -67,21 +67,23 @@ impl Widget for FeedListItem {
                         property_wrap: true,
                         property_wrap_mode: WrapMode::Word,
                         lines: 2,
-                        justify: Justification::Center
+                        justify: Justification::Left,
                     },
                     #[name="label_author"]
                     gtk::Label {
                         text: &self.model.author.name,
                         ellipsize: EllipsizeMode::End,
                         property_wrap: true,
-                        property_wrap_mode: WrapMode::Word
+                        property_wrap_mode: WrapMode::Word,
+                        halign: Align::Start
                     },
                     #[name="label_date"]
                     gtk::Label {
                         text: &self.model.published.to_string(),
                         ellipsize: EllipsizeMode::End,
                         property_wrap: true,
-                        property_wrap_mode: WrapMode::Word
+                        property_wrap_mode: WrapMode::Word,
+                        halign: Align::Start
                     },
                 }
             }

@@ -22,6 +22,7 @@ pub enum AppMsg {
     Reload,
     SetSubscriptions(ChannelGroup),
     AddSubscription(Channel),
+    RemoveSubscription(Channel),
     ToggleAddSubscription,
     Quit,
 }
@@ -97,6 +98,21 @@ impl Widget for Win {
             AppMsg::AddSubscription(channel) => {
                 let mut new_group = self.model.subscriptions.clone();
                 new_group.add(channel);
+                let write_res = new_group.write_to_path(&self.model.subscriptions_file);
+
+                if let Err(e) = write_res {
+                    self.components
+                        .error_label
+                        .emit(ErrorLabelMsg::Set(Some(e)));
+                } else {
+                    self.model
+                        .app_stream
+                        .emit(AppMsg::SetSubscriptions(new_group));
+                }
+            }
+            AppMsg::RemoveSubscription(channel) => {
+                let mut new_group = self.model.subscriptions.clone();
+                new_group.remove(channel);
                 let write_res = new_group.write_to_path(&self.model.subscriptions_file);
 
                 if let Err(e) = write_res {
@@ -201,6 +217,7 @@ impl Widget for Win {
 
     view! {
         gtk::Window {
+            decorated: false,
             #[name="view_switcher_box"]
             gtk::Box {
                 #[name="header_bar"]
@@ -211,15 +228,6 @@ impl Widget for Win {
                     orientation: Vertical,
                     #[name="error_label"]
                     ErrorLabel {},
-                    // gtk::Label {
-                    //     visible: !self.model.error_msg.is_empty(),
-                    //     ellipsize: EllipsizeMode::End,
-                    //     property_wrap: true,
-                    //     property_wrap_mode: WrapMode::Word,
-                    //     lines: 2,
-                    //     justify: Justification::Center,
-                    //     text: &self.model.error_msg
-                    // },
                     #[name="loading_spinner"]
                     gtk::Spinner {
                         visible: self.model.loading,

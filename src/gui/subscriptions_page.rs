@@ -9,23 +9,28 @@ use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
 pub struct SubscriptionElementBuilder {
-    chunks: Vec<Vec<Channel>>,
+    chunks: Vec<Vec<(Channel, StreamHandle<AppMsg>)>>,
 }
 
 impl SubscriptionElementBuilder {
-    fn new(group: ChannelGroup) -> Self {
+    fn new(group: ChannelGroup, app_stream: StreamHandle<AppMsg>) -> Self {
         SubscriptionElementBuilder {
             chunks: group
                 .channels
                 .chunks(20)
-                .map(|slice| slice.to_vec())
-                .collect::<Vec<Vec<Channel>>>(),
+                .map(|slice| {
+                    slice
+                        .iter()
+                        .map(|c| (c.clone(), app_stream.clone()))
+                        .collect()
+                })
+                .collect::<Vec<Vec<(Channel, StreamHandle<AppMsg>)>>>(),
         }
     }
 }
 
 impl ListElementBuilder<SubscriptionItem> for SubscriptionElementBuilder {
-    fn poll(&mut self) -> Vec<Channel> {
+    fn poll(&mut self) -> Vec<(Channel, StreamHandle<AppMsg>)> {
         if !self.chunks.is_empty() {
             self.chunks.remove(0)
         } else {
@@ -63,7 +68,7 @@ impl Widget for SubscriptionsPage {
                 self.components
                     .subscription_list
                     .emit(LazyListMsg::SetListElementBuilder(Box::new(
-                        SubscriptionElementBuilder::new(channels),
+                        SubscriptionElementBuilder::new(channels, self.model.app_stream.clone()),
                     )));
             }
             SubscriptionsPageMsg::ToggleAddSubscription => {

@@ -1,18 +1,44 @@
+use crate::gui::app::AppMsg;
 use crate::subscriptions::Channel;
 
 use gtk::prelude::*;
+use gtk::Align;
 use gtk::Orientation::Vertical;
 use pango::{AttrList, Attribute, EllipsizeMode};
-use relm::{Relm, Widget};
-use relm_derive::widget;
+use relm::{Relm, StreamHandle, Widget};
+use relm_derive::{widget, Msg};
+
+#[derive(Msg)]
+pub enum SubscriptionItemMsg {
+    Remove,
+}
+
+pub struct SubscriptionsItemModel {
+    channel: Channel,
+    app_stream: StreamHandle<AppMsg>,
+}
 
 #[widget]
 impl Widget for SubscriptionItem {
-    fn model(_: &Relm<Self>, channel: Channel) -> Channel {
-        channel
+    fn model(
+        _: &Relm<Self>,
+        (channel, app_stream): (Channel, StreamHandle<AppMsg>),
+    ) -> SubscriptionsItemModel {
+        SubscriptionsItemModel {
+            channel,
+            app_stream,
+        }
     }
 
-    fn update(&mut self, _: ()) {}
+    fn update(&mut self, event: SubscriptionItemMsg) {
+        match event {
+            SubscriptionItemMsg::Remove => {
+                self.model
+                    .app_stream
+                    .emit(AppMsg::RemoveSubscription(self.model.channel.clone()));
+            }
+        }
+    }
 
     fn init_view(&mut self) {
         let name_attr_list = AttrList::new();
@@ -29,17 +55,25 @@ impl Widget for SubscriptionItem {
     view! {
         gtk::ListBoxRow {
             gtk::Box {
-                orientation: Vertical,
-                #[name="label_name"]
-                gtk::Label {
-                    text: &self.model.get_name().unwrap_or("".to_string()),
-                    ellipsize: EllipsizeMode::End,
+                gtk::Button {
+                    image: Some(&gtk::Image::from_icon_name(Some("list-remove"), gtk::IconSize::LargeToolbar)),
+                    clicked => SubscriptionItemMsg::Remove,
                 },
-                #[name="label_id"]
-                gtk::Label {
-                    text: &self.model.get_id(),
-                    ellipsize: EllipsizeMode::End,
-                },
+                gtk::Box {
+                    orientation: Vertical,
+                    #[name="label_name"]
+                    gtk::Label {
+                        text: &self.model.channel.get_name().unwrap_or("".to_string()),
+                        ellipsize: EllipsizeMode::End,
+                        halign: Align::Start
+                    },
+                    #[name="label_id"]
+                    gtk::Label {
+                        text: &self.model.channel.get_id(),
+                        ellipsize: EllipsizeMode::End,
+                        halign: Align::Start
+                    },
+                }
             }
         }
     }
