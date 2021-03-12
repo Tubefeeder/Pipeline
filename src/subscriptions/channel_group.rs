@@ -197,3 +197,125 @@ impl ChannelGroup {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_new_group_is_empty() {
+        let group = ChannelGroup::new();
+        assert!(group.channels.is_empty());
+    }
+
+    #[test]
+    fn test_add_new_channel() {
+        let mut group = ChannelGroup::new();
+        group.add(Channel::new("abcdef"));
+        assert_eq!(group.channels.len(), 1);
+        assert_eq!(group.channels, vec![Channel::new("abcdef")]);
+
+        group.add(Channel::new("ghijkl"));
+        assert_eq!(group.channels.len(), 2);
+        assert_eq!(
+            group.channels,
+            vec![Channel::new("abcdef"), Channel::new("ghijkl")]
+        );
+
+        group.add(Channel::new("mnopqr"));
+        assert_eq!(group.channels.len(), 3);
+        assert_eq!(
+            group.channels,
+            vec![
+                Channel::new("abcdef"),
+                Channel::new("ghijkl"),
+                Channel::new("mnopqr")
+            ]
+        );
+    }
+
+    #[test]
+    fn test_channels_sorted() {
+        let mut group = ChannelGroup::new();
+        group.add(Channel::new_with_name("ghijkl", "a"));
+        group.add(Channel::new_with_name("abcdef", "b"));
+        group.add(Channel::new_with_name("mnopqr", "c"));
+        assert_eq!(
+            group.channels,
+            vec![
+                Channel::new_with_name("ghijkl", "a"),
+                Channel::new_with_name("abcdef", "b"),
+                Channel::new_with_name("mnopqr", "c")
+            ]
+        );
+    }
+
+    #[test]
+    fn test_channels_sorted_mixed_case() {
+        let mut group = ChannelGroup::new();
+        group.add(Channel::new_with_name("ghijkl", "a"));
+        group.add(Channel::new_with_name("abcdef", "B"));
+        group.add(Channel::new_with_name("mnopqr", "c"));
+        assert_eq!(
+            group.channels,
+            vec![
+                Channel::new_with_name("ghijkl", "a"),
+                Channel::new_with_name("abcdef", "B"),
+                Channel::new_with_name("mnopqr", "c")
+            ]
+        );
+    }
+
+    #[test]
+    fn test_insert_same_id() {
+        let mut group = ChannelGroup::new();
+        group.add(Channel::new_with_name("abcdef", "a"));
+        group.add(Channel::new_with_name("abcdef", "b"));
+        assert_eq!(group.channels.len(), 1);
+        assert_eq!(group.channels, vec![Channel::new_with_name("abcdef", "a"),]);
+    }
+
+    #[test]
+    fn test_remove() {
+        let mut group = ChannelGroup::new();
+        group.add(Channel::new("abcdef"));
+        assert_eq!(group.channels.len(), 1);
+        group.remove(Channel::new("abcdef"));
+        assert_eq!(group.channels.len(), 0);
+    }
+
+    #[test]
+    fn test_remove_with_name() {
+        let mut group = ChannelGroup::new();
+        group.add(Channel::new_with_name("abcdef", "a"));
+        assert_eq!(group.channels.len(), 1);
+        group.remove(Channel::new("abcdef"));
+        assert_eq!(group.channels.len(), 0);
+    }
+
+    #[test]
+    fn test_resolve_name() {
+        let mut group1 = ChannelGroup::new();
+        group1.add(Channel::new_with_name("abcdef", "a"));
+        group1.add(Channel::new("ghijkl"));
+        group1.add(Channel::new("mnopqr"));
+
+        let mut group2 = ChannelGroup::new();
+        group2.add(Channel::new_with_name("abcdef", "a2"));
+        group2.add(Channel::new_with_name("ghijkl", "b"));
+        group2.add(Channel::new_with_name("mnopqr", "c"));
+        group2.add(Channel::new_with_name("stuvwx", "d"));
+
+        group1.resolve_name(&group2);
+
+        assert_eq!(group1.channels.len(), 3);
+        assert_eq!(
+            group1.channels,
+            vec![
+                Channel::new_with_name("abcdef", "a"),
+                Channel::new_with_name("ghijkl", "b"),
+                Channel::new_with_name("mnopqr", "c"),
+            ]
+        );
+    }
+}

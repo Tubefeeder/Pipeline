@@ -117,3 +117,15 @@ impl From<Author> for Channel {
         Channel::new_with_name(id, &name)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_order() {
+        assert!(Channel::new("abcdef") < Channel::new("ghijkl"));
+        assert!(Channel::new("abcdef") > Channel::new_with_name("ghijkl", "z"));
+        assert!(Channel::new_with_name("abcdef", "z") > Channel::new_with_name("ghijkl", "a"));
+    }
+}
