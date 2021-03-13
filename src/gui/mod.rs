@@ -1,4 +1,5 @@
 mod app;
+mod date_label;
 mod error_label;
 mod feed_item;
 mod feed_page;

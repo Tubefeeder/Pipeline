@@ -31,11 +31,13 @@ impl EntryFilter {
         })
     }
 
+    #[allow(dead_code)]
     /// Get the title filter as a string.
     pub fn get_title_filter_string(&self) -> String {
         self.title_filter.clone().to_string()
     }
 
+    #[allow(dead_code)]
     /// Get the channel filter as a string.
     pub fn get_channel_filter_string(&self) -> String {
         self.title_filter.clone().to_string()

@@ -1,5 +1,5 @@
 use crate::errors::Error;
-use crate::filter::{EntryFilter, EntryFilterGroup};
+use crate::filter::EntryFilterGroup;
 use crate::gui::error_label::{ErrorLabel, ErrorLabelMsg};
 use crate::gui::feed_page::{FeedPage, FeedPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};

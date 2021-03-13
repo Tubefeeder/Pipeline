@@ -2,7 +2,7 @@ use crate::errors::Error;
 use crate::filter::EntryFilter;
 use crate::youtube_feed::Entry;
 
-use std::convert::{TryFrom, TryInto};
+use std::convert::TryFrom;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::PathBuf;
@@ -105,6 +105,7 @@ impl EntryFilterGroup {
         }
     }
 
+    #[allow(dead_code)]
     /// Writes the filters into the given file at the given path.
     /// The file must not exist, but it is created if it does not exist.
     pub fn write_to_path(&self, path: &PathBuf) -> Result<(), Error> {
@@ -120,6 +121,7 @@ impl EntryFilterGroup {
         }
     }
 
+    #[allow(dead_code)]
     fn write_to_file(&self, path: &PathBuf, filter_file: &mut File) -> Result<(), Error> {
         let column_title = Column::new("title_filter", ColumnType::String);
         let column_channel = Column::new("channel_filter", ColumnType::String);

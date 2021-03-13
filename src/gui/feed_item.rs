@@ -1,3 +1,4 @@
+use crate::gui::date_label::DateLabel;
 use crate::gui::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::youtube_feed::Entry;
 
@@ -133,13 +134,7 @@ impl Widget for FeedListItem {
                         halign: Align::Start
                     },
                     #[name="label_date"]
-                    gtk::Label {
-                        text: &self.model.entry.published.to_string(),
-                        ellipsize: EllipsizeMode::End,
-                        property_wrap: true,
-                        property_wrap_mode: WrapMode::Word,
-                        halign: Align::Start
-                    },
+                    DateLabel(self.model.entry.published.clone()) {}
                 }
             }
         }
