@@ -1,4 +1,5 @@
 mod errors;
+mod filter;
 mod gui;
 mod subscriptions;
 mod youtube_feed;

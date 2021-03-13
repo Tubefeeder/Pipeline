@@ -1,4 +1,5 @@
 use crate::errors::Error;
+use crate::filter::{EntryFilter, EntryFilterGroup};
 use crate::gui::error_label::{ErrorLabel, ErrorLabelMsg};
 use crate::gui::feed_page::{FeedPage, FeedPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
@@ -29,8 +30,13 @@ pub enum AppMsg {
 
 pub struct AppModel {
     app_stream: StreamHandle<AppMsg>,
+
     subscriptions_file: PathBuf,
     subscriptions: ChannelGroup,
+
+    filter_file: PathBuf,
+    filter: EntryFilterGroup,
+
     loading: bool,
     startup_err: Option<Error>,
 }
@@ -41,6 +47,17 @@ impl AppModel {
         self.subscriptions = subscription_res.clone().unwrap_or(ChannelGroup::new());
 
         if let Err(e) = subscription_res {
+            Err(e)
+        } else {
+            Ok(())
+        }
+    }
+
+    fn reload_filters(&mut self) -> Result<(), Error> {
+        let filter_res = EntryFilterGroup::get_from_path(&self.filter_file);
+        self.filter = filter_res.clone().unwrap_or(EntryFilterGroup::new());
+
+        if let Err(e) = filter_res {
             Err(e)
         } else {
             Ok(())
@@ -62,18 +79,26 @@ impl Widget for Win {
         let mut subscriptions_file_path = user_data_dir.clone();
         subscriptions_file_path.push("subscriptions.db");
 
+        let mut filter_file_path = user_data_dir.clone();
+        filter_file_path.push("filters.db");
+
         let mut model = AppModel {
             app_stream: relm.stream().clone(),
             subscriptions_file: subscriptions_file_path,
             subscriptions: ChannelGroup::new(),
+            filter_file: filter_file_path,
+            filter: EntryFilterGroup::new(),
             loading: false,
             startup_err: None,
         };
 
         let err = model.reload_subscriptions();
+        let err2 = model.reload_filters();
 
         if let Err(e) = err {
             model.startup_err = Some(e);
+        } else if let Err(e) = err2 {
+            model.startup_err = Some(e)
         }
 
         model
@@ -143,6 +168,8 @@ impl Widget for Win {
         let mut subscriptions1 = self.model.subscriptions.clone();
         let error_label_stream = self.components.error_label.stream().clone();
 
+        let filter = self.model.filter.clone();
+
         // Dont override errors from startup
         if self.model.startup_err.is_none() {
             error_label_stream.emit(ErrorLabelMsg::Set(None));
@@ -157,9 +184,10 @@ impl Widget for Win {
                 error_label_stream.emit(ErrorLabelMsg::Set(Some(e)));
             }
 
-            feed_stream.emit(FeedPageMsg::SetFeed(
-                feed_option.clone().unwrap_or(Feed::empty()),
-            ));
+            let mut feed = feed_option.clone().unwrap_or(Feed::empty());
+            feed.filter(&filter);
+
+            feed_stream.emit(FeedPageMsg::SetFeed(feed));
 
             if let Ok(feed) = feed_option {
                 let channels = feed.extract_channels();

@@ -1,5 +1,6 @@
 extern crate serde;
 
+use crate::filter::EntryFilterGroup;
 use crate::subscriptions::{Channel, ChannelGroup};
 
 use std::process::{Child, Command, Stdio};
@@ -98,6 +99,16 @@ impl Feed {
             .collect();
 
         return ChannelGroup { channels };
+    }
+
+    /// Filter out entries matching one filter in the `EntryFilterGroup`.
+    pub fn filter(&mut self, filter: &EntryFilterGroup) {
+        self.entries = self
+            .entries
+            .iter()
+            .filter(|e| !filter.matches_any(e))
+            .cloned()
+            .collect()
     }
 }
 
