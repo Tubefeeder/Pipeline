@@ -7,10 +7,11 @@ A Youtube-Client made for the Pinephone
 - Show the feed of your subscribed channels
 - Play the video with mpv when clicking the feed item
 - Subscribe to a channel in the app (only by channel id)
+- Filtering out unwanted videos in the feed (in a file)
 
 # What it cannot do (yet)
 - Subscribe to a channel in the app by channel name
-- Filtering out unwanted videos in the feed
+- Filtering out unwanted videos in the feed (in the app)
 
 # What it (probably) will never be able to do
 - Play videos in the application
