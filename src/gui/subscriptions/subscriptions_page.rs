@@ -1,6 +1,6 @@
 use crate::gui::app::AppMsg;
 use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
-use crate::gui::subscription_item::SubscriptionItem;
+use crate::gui::subscriptions::subscription_item::SubscriptionItem;
 use crate::subscriptions::{Channel, ChannelGroup};
 
 use gtk::prelude::*;

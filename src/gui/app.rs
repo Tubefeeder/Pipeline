@@ -1,9 +1,9 @@
 use crate::errors::Error;
 use crate::filter::EntryFilterGroup;
 use crate::gui::error_label::{ErrorLabel, ErrorLabelMsg};
-use crate::gui::feed_page::{FeedPage, FeedPageMsg};
+use crate::gui::feed::{FeedPage, FeedPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
-use crate::gui::subscriptions_page::{SubscriptionsPage, SubscriptionsPageMsg};
+use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
 use crate::subscriptions::{Channel, ChannelGroup};
 use crate::youtube_feed::Feed;
 

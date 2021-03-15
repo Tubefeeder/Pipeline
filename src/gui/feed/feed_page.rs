@@ -1,4 +1,4 @@
-use crate::gui::feed_item::{FeedListItem, FeedListItemMsg};
+use crate::gui::feed::feed_item::{FeedListItem, FeedListItemMsg};
 use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
 use crate::youtube_feed::{Entry, Feed};
 

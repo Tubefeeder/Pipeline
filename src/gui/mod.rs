@@ -1,12 +1,8 @@
 mod app;
-mod date_label;
 mod error_label;
-mod feed_item;
-mod feed_page;
+mod feed;
 mod header_bar;
 mod lazy_list;
-mod subscription_item;
-mod subscriptions_page;
-mod thumbnail;
+mod subscriptions;
 
 pub use app::Win;

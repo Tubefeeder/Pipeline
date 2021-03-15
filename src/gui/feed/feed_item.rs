@@ -1,5 +1,5 @@
-use crate::gui::date_label::DateLabel;
-use crate::gui::thumbnail::{Thumbnail, ThumbnailMsg};
+use crate::gui::feed::date_label::DateLabel;
+use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::youtube_feed::Entry;
 
 use std::sync::{Arc, Mutex};
