@@ -13,12 +13,13 @@ const STARTING_PAGE: Page = Page::Feed;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Page {
     Feed,
+    Filters,
     Subscriptions,
 }
 
 impl Page {
     fn get_all_values() -> Vec<Page> {
-        vec![Page::Feed, Page::Subscriptions]
+        vec![Page::Feed, Page::Filters, Page::Subscriptions]
     }
 }
 
@@ -50,6 +51,7 @@ impl From<Page> for String {
 pub enum HeaderBarMsg {
     SetPage(Page),
     AddSubscription,
+    AddFilter,
     Reload,
 }
 
@@ -76,6 +78,7 @@ impl Widget for HeaderBar {
             HeaderBarMsg::AddSubscription => {
                 self.model.app_stream.emit(AppMsg::ToggleAddSubscription)
             }
+            HeaderBarMsg::AddFilter => self.model.app_stream.emit(AppMsg::ToggleAddFilter),
         }
     }
 
@@ -93,6 +96,11 @@ impl Widget for HeaderBar {
                 image: Some(&gtk::Image::from_icon_name(Some("view-refresh"), gtk::IconSize::LargeToolbar)),
                 clicked => HeaderBarMsg::Reload,
                 visible: self.model.page == Page::Feed
+            },
+            gtk::Button {
+                image: Some(&gtk::Image::from_icon_name(Some("list-add"), gtk::IconSize::LargeToolbar)),
+                clicked => HeaderBarMsg::AddFilter,
+                visible: self.model.page == Page::Filters
             },
             gtk::Button {
                 image: Some(&gtk::Image::from_icon_name(Some("list-add"), gtk::IconSize::LargeToolbar)),

@@ -1,7 +1,8 @@
 use crate::errors::Error;
-use crate::filter::EntryFilterGroup;
+use crate::filter::{EntryFilter, EntryFilterGroup};
 use crate::gui::error_label::{ErrorLabel, ErrorLabelMsg};
 use crate::gui::feed::{FeedPage, FeedPageMsg};
+use crate::gui::filter::{FilterPage, FilterPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
 use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
 use crate::subscriptions::{Channel, ChannelGroup};
@@ -25,6 +26,11 @@ pub enum AppMsg {
     AddSubscription(Channel),
     RemoveSubscription(Channel),
     ToggleAddSubscription,
+    SetFilters(EntryFilterGroup),
+    AddFilter(EntryFilter),
+    RemoveFilter(EntryFilter),
+    ToggleAddFilter,
+    Error(Error),
     Quit,
 }
 
@@ -155,6 +161,52 @@ impl Widget for Win {
                     .subscriptions_page
                     .emit(SubscriptionsPageMsg::ToggleAddSubscription);
             }
+            AppMsg::SetFilters(filter) => {
+                self.model.filter = filter;
+                self.components
+                    .filter_page
+                    .emit(FilterPageMsg::SetFilters(self.model.filter.clone()));
+            }
+            AppMsg::AddFilter(filter) => {
+                let mut new_filter_group = self.model.filter.clone();
+                new_filter_group.add(filter);
+                let write_res = new_filter_group.write_to_path(&self.model.filter_file);
+
+                if let Err(e) = write_res {
+                    self.components
+                        .error_label
+                        .emit(ErrorLabelMsg::Set(Some(e)));
+                } else {
+                    self.model
+                        .app_stream
+                        .emit(AppMsg::SetFilters(new_filter_group));
+                }
+            }
+            AppMsg::RemoveFilter(filter) => {
+                let mut new_filter_group = self.model.filter.clone();
+                new_filter_group.remove(filter);
+                let write_res = new_filter_group.write_to_path(&self.model.filter_file);
+
+                if let Err(e) = write_res {
+                    self.components
+                        .error_label
+                        .emit(ErrorLabelMsg::Set(Some(e)));
+                } else {
+                    self.model
+                        .app_stream
+                        .emit(AppMsg::SetFilters(new_filter_group));
+                }
+            }
+            AppMsg::ToggleAddFilter => {
+                self.components
+                    .filter_page
+                    .emit(FilterPageMsg::ToggleAddFilter);
+            }
+            AppMsg::Error(error) => {
+                self.components
+                    .error_label
+                    .emit(ErrorLabelMsg::Set(Some(error)));
+            }
             AppMsg::Quit => gtk::main_quit(),
         }
     }
@@ -236,10 +288,18 @@ impl Widget for Win {
         subscriptions_page.emit(SubscriptionsPageMsg::ToggleAddSubscription);
         subscriptions_page.emit(SubscriptionsPageMsg::ToggleAddSubscription);
 
+        // Hide the filter entry (Visible by default, no idea why).
+        let filter_page = &self.components.filter_page;
+        filter_page.emit(FilterPageMsg::ToggleAddFilter);
+        filter_page.emit(FilterPageMsg::ToggleAddFilter);
+
         self.components
             .error_label
             .emit(ErrorLabelMsg::Set(self.model.startup_err.clone()));
 
+        self.model
+            .app_stream
+            .emit(AppMsg::SetFilters(self.model.filter.clone()));
         self.model.app_stream.emit(AppMsg::Reload);
     }
 
@@ -270,6 +330,13 @@ impl Widget for Win {
                         widget_name: &String::from(Page::Feed),
                         child: {
                             title: Some(&String::from(Page::Feed))
+                        }
+                    },
+                    #[name="filter_page"]
+                    FilterPage(self.model.app_stream.clone()) {
+                        widget_name: &String::from(Page::Filters),
+                        child: {
+                            title: Some(&String::from(Page::Filters))
                         }
                     },
                     #[name="subscriptions_page"]

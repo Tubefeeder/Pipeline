@@ -163,6 +163,7 @@ impl ChannelGroup {
         let subscriptions_file_res = OpenOptions::new()
             .write(true)
             .create(true)
+            .truncate(true)
             .open(path.clone());
 
         if let Ok(mut subscriptions_file) = subscriptions_file_res {

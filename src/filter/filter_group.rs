@@ -13,28 +13,43 @@ use file_minidb::{
     column::Column, serializer::Serializable, table::Table, types::ColumnType, values::Value,
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct EntryFilterGroup {
     filters: Vec<EntryFilter>,
 }
 
 impl EntryFilterGroup {
-    /// Create a new, empty filter group
+    /// Create a new, empty filter group.
     pub fn new() -> EntryFilterGroup {
         EntryFilterGroup { filters: vec![] }
     }
 
-    /// Add a filter to the group
+    /// Add a filter to the group.
     pub fn add(&mut self, filter: EntryFilter) {
         self.filters.push(filter)
     }
 
-    /// Check if any filter matches
+    /// Removes a filter of the filter group.
+    pub fn remove(&mut self, filter: EntryFilter) {
+        self.filters = self
+            .filters
+            .clone()
+            .into_iter()
+            .filter(|f| f.clone() != filter)
+            .collect();
+    }
+
+    /// Check if any filter matches.
     pub fn matches_any(&self, entry: &Entry) -> bool {
         self.filters
             .par_iter()
             .find_any(|f| f.matches(entry))
             .is_some()
+    }
+
+    /// Get the filters.
+    pub fn get_filters(&self) -> Vec<EntryFilter> {
+        self.filters.clone()
     }
 
     /// Parses the filter group from the file at the given path.
@@ -105,13 +120,13 @@ impl EntryFilterGroup {
         }
     }
 
-    #[allow(dead_code)]
     /// Writes the filters into the given file at the given path.
     /// The file must not exist, but it is created if it does not exist.
     pub fn write_to_path(&self, path: &PathBuf) -> Result<(), Error> {
         let filter_file_res = OpenOptions::new()
             .write(true)
             .create(true)
+            .truncate(true)
             .open(path.clone());
 
         if let Ok(mut filter_file) = filter_file_res {
@@ -121,7 +136,6 @@ impl EntryFilterGroup {
         }
     }
 
-    #[allow(dead_code)]
     fn write_to_file(&self, path: &PathBuf, filter_file: &mut File) -> Result<(), Error> {
         let column_title = Column::new("title_filter", ColumnType::String);
         let column_channel = Column::new("channel_filter", ColumnType::String);
