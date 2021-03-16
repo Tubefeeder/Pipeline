@@ -18,11 +18,11 @@ A Youtube-Client made for the Pinephone
 # What it can do
 - Show the feed of your subscribed channels
 - Play the video with mpv when clicking the feed item
-- Subscribe to a channel in the app (only by channel id)
+- Subscribe to a channel in the app
 - Filtering out unwanted videos in the feed
 
 # What it cannot do (yet)
-- Subscribe to a channel in the app by channel name
+Tell me what features you want to be included by opening an [issue](https://github.com/Schmiddiii/Tubefeeder/issues).
 
 # What it (probably) will never be able to do
 - Play videos in the application
