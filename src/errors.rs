@@ -24,7 +24,7 @@ impl fmt::Display for Error {
             ),
             ErrorType::ParseWebsite(channel_id) => write!(
                 f,
-                "Could not parse feed of channel. Is {} a valid channel id?",
+                "Could not parse feed of channel. Is {} a valid channel id or name?",
                 channel_id
             ),
             ErrorType::ParseSubscriptions(subscriptions_file) => write!(

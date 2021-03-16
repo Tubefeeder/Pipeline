@@ -1,7 +1,10 @@
+use crate::errors::Error;
 use crate::gui::app::AppMsg;
 use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
 use crate::gui::subscriptions::subscription_item::SubscriptionItem;
 use crate::subscriptions::{Channel, ChannelGroup};
+
+use std::thread;
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
@@ -74,21 +77,38 @@ impl Widget for SubscriptionsPage {
             SubscriptionsPageMsg::ToggleAddSubscription => {
                 self.model.add_subscription_visible = !self.model.add_subscription_visible;
             }
-            SubscriptionsPageMsg::AddSubscription => {
-                let channel_id = &self.widgets.channel_id_entry.get_text();
-
-                self.widgets.channel_id_entry.set_text("");
-                self.model
-                    .relm
-                    .stream()
-                    .emit(SubscriptionsPageMsg::ToggleAddSubscription);
-
-                let new_channel = Channel::new(channel_id);
-                self.model
-                    .app_stream
-                    .emit(AppMsg::AddSubscription(new_channel));
-            }
+            SubscriptionsPageMsg::AddSubscription => self.add_subscription(),
         }
+    }
+
+    fn add_subscription(&mut self) {
+        let channel_name = self.widgets.channel_name_entry.get_text();
+
+        self.widgets.channel_name_entry.set_text("");
+        self.model
+            .relm
+            .stream()
+            .emit(SubscriptionsPageMsg::ToggleAddSubscription);
+
+        let app_stream = self.model.app_stream.clone();
+
+        let (_channel, sender) =
+            relm::Channel::new(
+                move |new_channel: Result<Channel, Error>| match new_channel {
+                    Ok(channel) => {
+                        app_stream.emit(AppMsg::AddSubscription(channel));
+                    }
+                    Err(e) => {
+                        app_stream.emit(AppMsg::Error(e));
+                    }
+                },
+            );
+
+        thread::spawn(move || {
+            sender
+                .send(Channel::from_name(&channel_name))
+                .expect("Could not send channel");
+        });
     }
 
     view! {
@@ -97,9 +117,9 @@ impl Widget for SubscriptionsPage {
 
             gtk::Box {
                 visible: self.model.add_subscription_visible,
-                #[name="channel_id_entry"]
+                #[name="channel_name_entry"]
                 gtk::Entry {
-                    placeholder_text: Some("Channel ID")
+                    placeholder_text: Some("Channel Name")
                 },
                 gtk::Button {
                     clicked => SubscriptionsPageMsg::AddSubscription,

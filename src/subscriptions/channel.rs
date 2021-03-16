@@ -3,7 +3,9 @@ use crate::youtube_feed::{Author, Feed};
 
 use std::cmp::Ordering;
 
-const URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";
+use regex::Regex;
+
+const FEED_URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";
 
 /// A single channel with a id and an optional name.
 #[derive(Clone, Debug, Hash)]
@@ -54,6 +56,41 @@ impl Channel {
         }
     }
 
+    /// Cretes a new channel from the given name.
+    /// Will try to download the channels youtube page and get the id.
+    #[tokio::main]
+    pub async fn from_name(name: &str) -> Result<Self, Error> {
+        let url = format!("https://www.youtube.com/user/{}", name);
+        let content: Result<String, Error> = async {
+            let response = reqwest::get(&url).await;
+
+            if response.is_err() {
+                return Err(Error::networking());
+            }
+
+            let parsed = response.unwrap().text().await;
+
+            if parsed.is_err() {
+                return Err(Error::parsing_website(name));
+            }
+
+            Ok(parsed.unwrap())
+        }
+        .await;
+
+        if let Err(e) = content {
+            Err(e)
+        } else {
+            let regex = Regex::new(r#""externalId":"([0-9a-zA-Z_\-]*)"#).unwrap();
+
+            if let Some(id) = regex.captures(&content.unwrap()) {
+                Ok(Channel::new_with_name(&id[1].to_string(), name))
+            } else {
+                Err(Error::parsing_website(name))
+            }
+        }
+    }
+
     /// Returns the id of the channel.
     pub fn get_id(&self) -> String {
         self.id.clone()
@@ -71,7 +108,7 @@ impl Channel {
     /// This may be because youtube changed the feed site.
     #[tokio::main]
     pub async fn get_feed(&self) -> Result<Feed, Error> {
-        let url = URL.to_string() + &self.id;
+        let url = FEED_URL.to_string() + &self.id;
 
         let content: Result<String, Error> = async {
             let res1 = reqwest::get(&url).await;
@@ -86,7 +123,7 @@ impl Channel {
                 return Err(Error::parsing_website(&self.id));
             }
 
-            // Replace all occurences of `meida:` with `media_` as serde does not seem to like `:`.
+            // Replace all occurences of `media:` with `media_` as serde does not seem to like `:`.
             let res3 = res2.unwrap().replace("media:", "media_");
 
             Ok(res3)
@@ -127,5 +164,28 @@ mod test {
         assert!(Channel::new("abcdef") < Channel::new("ghijkl"));
         assert!(Channel::new("abcdef") > Channel::new_with_name("ghijkl", "z"));
         assert!(Channel::new_with_name("abcdef", "z") > Channel::new_with_name("ghijkl", "a"));
+    }
+
+    #[test]
+    fn test_get_id_from_name() {
+        let name = "Brodie Robertson";
+
+        let from_name = Channel::from_name(name);
+
+        assert!(from_name.is_ok());
+
+        assert_eq!(
+            from_name.unwrap(),
+            Channel::new_with_name("UCld68syR8Wi-GY_n4CaoJGA", name)
+        );
+    }
+
+    #[test]
+    fn test_get_id_invalid_name() {
+        let name = "I hope nobody will ever call their youtube-channel this name";
+
+        let from_name = Channel::from_name(name);
+
+        assert!(from_name.is_err());
     }
 }
