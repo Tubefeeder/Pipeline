@@ -13,13 +13,19 @@ const STARTING_PAGE: Page = Page::Feed;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Page {
     Feed,
+    WatchLater,
     Filters,
     Subscriptions,
 }
 
 impl Page {
     fn get_all_values() -> Vec<Page> {
-        vec![Page::Feed, Page::Filters, Page::Subscriptions]
+        vec![
+            Page::Feed,
+            Page::WatchLater,
+            Page::Filters,
+            Page::Subscriptions,
+        ]
     }
 }
 

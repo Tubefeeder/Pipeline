@@ -1,3 +1,4 @@
+use crate::gui::app::AppMsg;
 use crate::gui::feed::date_label::DateLabel;
 use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::youtube_feed::Entry;
@@ -8,7 +9,7 @@ use std::thread;
 use gtk::prelude::*;
 use gtk::{Align, ImageExt, Justification, Orientation};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
-use relm::{Relm, Widget};
+use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
 #[derive(Msg)]
@@ -16,9 +17,11 @@ pub enum FeedListItemMsg {
     SetImage,
     Clicked,
     SetPlaying(bool),
+    WatchLater,
 }
 
 pub struct FeedListItemModel {
+    app_stream: StreamHandle<AppMsg>,
     entry: Entry,
     playing: bool,
     relm: Relm<FeedListItem>,
@@ -34,8 +37,12 @@ impl Drop for FeedListItem {
 
 #[widget]
 impl Widget for FeedListItem {
-    fn model(relm: &Relm<Self>, entry: Entry) -> FeedListItemModel {
+    fn model(
+        relm: &Relm<Self>,
+        (entry, app_stream): (Entry, StreamHandle<AppMsg>),
+    ) -> FeedListItemModel {
         FeedListItemModel {
+            app_stream,
             entry,
             playing: false,
             relm: relm.clone(),
@@ -73,6 +80,11 @@ impl Widget for FeedListItem {
                         }
                     });
                 }
+            }
+            FeedListItemMsg::WatchLater => {
+                self.model
+                    .app_stream
+                    .emit(AppMsg::ToggleWatchLater(self.model.entry.clone()));
             }
         }
     }
@@ -135,6 +147,10 @@ impl Widget for FeedListItem {
                     },
                     #[name="label_date"]
                     DateLabel(self.model.entry.published.clone()) {}
+                },
+                gtk::Button {
+                    clicked => FeedListItemMsg::WatchLater,
+                    image: Some(&gtk::Image::from_icon_name(Some("appointment-soon"), gtk::IconSize::LargeToolbar)),
                 }
             }
         }

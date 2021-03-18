@@ -6,7 +6,7 @@ use crate::gui::filter::{FilterPage, FilterPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
 use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
 use crate::subscriptions::{Channel, ChannelGroup};
-use crate::youtube_feed::Feed;
+use crate::youtube_feed::{Entry, Feed};
 
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -31,6 +31,7 @@ pub enum AppMsg {
     RemoveFilter(EntryFilter),
     ToggleAddFilter,
     Error(Error),
+    ToggleWatchLater(Entry),
     Quit,
 }
 
@@ -42,6 +43,8 @@ pub struct AppModel {
 
     filter_file: PathBuf,
     filter: EntryFilterGroup,
+
+    watch_later: Feed,
 
     loading: bool,
     startup_err: Option<Error>,
@@ -94,6 +97,7 @@ impl Widget for Win {
             subscriptions: ChannelGroup::new(),
             filter_file: filter_file_path,
             filter: EntryFilterGroup::new(),
+            watch_later: Feed::empty(),
             loading: false,
             startup_err: None,
         };
@@ -201,6 +205,18 @@ impl Widget for Win {
                 self.components
                     .filter_page
                     .emit(FilterPageMsg::ToggleAddFilter);
+            }
+            AppMsg::ToggleWatchLater(entry) => {
+                let current = &mut self.model.watch_later.entries;
+                if !current.contains(&entry) {
+                    current.push(entry);
+                } else {
+                    current.retain(|e| e != &entry);
+                }
+
+                self.components
+                    .watch_later_page
+                    .emit(FeedPageMsg::SetFeed(self.model.watch_later.clone()));
             }
             AppMsg::Error(error) => {
                 self.components
@@ -326,10 +342,17 @@ impl Widget for Win {
                 #[name="application_stack"]
                 gtk::Stack {
                     #[name="feed_page"]
-                    FeedPage {
+                    FeedPage(self.model.app_stream.clone()) {
                         widget_name: &String::from(Page::Feed),
                         child: {
                             title: Some(&String::from(Page::Feed))
+                        }
+                    },
+                    #[name="watch_later_page"]
+                    FeedPage(self.model.app_stream.clone()) {
+                        widget_name: &String::from(Page::WatchLater),
+                        child: {
+                            title: Some(&String::from(Page::WatchLater))
                         }
                     },
                     #[name="filter_page"]
