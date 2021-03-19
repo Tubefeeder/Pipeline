@@ -11,6 +11,8 @@ enum ErrorType {
     ParseWebsite(String),
     ParseSubscriptions(String),
     GeneralSubscriptions(String, String),
+    ParseFeed(String),
+    GeneralFeed(String, String),
     ParseFilter(String),
     GeneralFilter(String, String),
 }
@@ -36,6 +38,16 @@ impl fmt::Display for Error {
                 f,
                 "Error {} the subscription file {}.",
                 error_type, subscriptions_file
+            ),
+            ErrorType::ParseFeed(feed_file) => write!(
+                f,
+                "Could not parse feed. Check the construction of {}.",
+                feed_file
+            ),
+            ErrorType::GeneralFeed(error_type, feed_file) => write!(
+                f,
+                "Error {} the subscription file {}.",
+                error_type, feed_file
             ),
             ErrorType::ParseFilter(regex) => {
                 write!(f, "Could not parse the regex {}.", regex)
@@ -86,6 +98,18 @@ impl Error {
     pub fn general_filter(error_type: &str, filter_file: &str) -> Self {
         Error {
             error_type: ErrorType::GeneralFilter(error_type.to_string(), filter_file.to_string()),
+        }
+    }
+
+    pub fn parsing_feed(feed_file: &str) -> Self {
+        Error {
+            error_type: ErrorType::ParseFeed(feed_file.to_string()),
+        }
+    }
+
+    pub fn general_feed(error_type: &str, feed_file: &str) -> Self {
+        Error {
+            error_type: ErrorType::GeneralFeed(error_type.to_string(), feed_file.to_string()),
         }
     }
 }

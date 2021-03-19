@@ -1,9 +1,18 @@
 extern crate serde;
 
+use crate::errors::Error;
 use crate::filter::EntryFilterGroup;
 use crate::subscriptions::{Channel, ChannelGroup};
 
+use std::convert::TryInto;
+use std::fs::{File, OpenOptions};
+use std::io::{Read, Write};
+use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
+
+use file_minidb::{
+    column::Column, serializer::Serializable, table::Table, types::ColumnType, values::Value,
+};
 
 use chrono::NaiveDateTime;
 use serde::Deserialize;
@@ -109,6 +118,168 @@ impl Feed {
             .filter(|e| !filter.matches_any(e))
             .cloned()
             .collect()
+    }
+
+    /// Parses the feed from the file at the given path.
+    /// The file must not exist, but it is created and a empty feed will be returned.
+    /// An error will be returned if the file could not be parsed.
+    pub fn get_from_path(path: &PathBuf) -> Result<Self, Error> {
+        let feed_file_res = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(path.clone());
+
+        if let Ok(mut feed_file) = feed_file_res {
+            return Feed::get_from_file(path, &mut feed_file);
+        } else {
+            return Err(Error::general_feed("opening", &path.to_string_lossy()));
+        }
+    }
+
+    /// Parses the feed from the given file.
+    /// The file must not exist, but it is created and a empty feed will be returned.
+    /// An error will be returned if the file could not be parsed.
+    fn get_from_file(path: &PathBuf, feed_file: &mut File) -> Result<Self, Error> {
+        let mut feed_entries: Vec<Entry> = vec![];
+
+        let mut contents = String::new();
+        if feed_file.read_to_string(&mut contents).is_ok() {
+            if contents.is_empty() {
+                let column_url = Column::key("url", ColumnType::String);
+                let column_title = Column::key("title", ColumnType::String);
+                let column_published = Column::key("published", ColumnType::String);
+                let column_author_name = Column::key("author_name", ColumnType::String);
+                let column_author_uri = Column::key("author_uri", ColumnType::String);
+                let column_thumbnail = Column::key("thumbnail", ColumnType::String);
+                let table = Table::new(vec![
+                    column_url,
+                    column_title,
+                    column_published,
+                    column_author_name,
+                    column_author_uri,
+                    column_thumbnail,
+                ])
+                .unwrap();
+                let res = write!(feed_file, "{}", table.serialize());
+
+                if res.is_err() {
+                    return Err(Error::general_feed("writing", &path.to_string_lossy()));
+                }
+            } else {
+                let table_res = Table::deserialize(contents);
+
+                if let Err(_e) = table_res {
+                    return Err(Error::parsing_feed(&path.to_string_lossy()));
+                }
+
+                let table = table_res.unwrap();
+
+                let entries = table.get_entries();
+
+                for entry in entries {
+                    let values: Vec<Value> = entry.get_values();
+                    let url: String = values[0].clone().try_into().unwrap();
+                    let title: String = values[1].clone().try_into().unwrap();
+                    let published: String = values[2].clone().try_into().unwrap();
+                    let author_name: String = values[3].clone().try_into().unwrap();
+                    let author_uri: String = values[4].clone().try_into().unwrap();
+                    let thumbnail: String = values[5].clone().try_into().unwrap();
+
+                    let date = NaiveDateTime::parse_from_str(&published, "%Y-%m-%dT%H:%M:%S+00:00");
+
+                    if let Err(_) = date {
+                        return Err(Error::parsing_feed(&path.to_string_lossy()));
+                    }
+
+                    let author = Author {
+                        name: author_name,
+                        uri: author_uri,
+                    };
+
+                    let media = Media {
+                        thumbnail: Thumbnail { url: thumbnail },
+                    };
+
+                    let link = Link { href: url };
+
+                    let feed_entry = Entry {
+                        title: title,
+                        author: author,
+                        link: link,
+                        published: date.unwrap(),
+                        media: media,
+                    };
+
+                    feed_entries.push(feed_entry);
+                }
+            }
+            return Ok(Feed {
+                entries: feed_entries,
+            });
+        } else {
+            return Err(Error::general_feed("reading", &path.to_string_lossy()));
+        }
+    }
+
+    /// Writes the channel id's into the given file at the given path.
+    /// The file must not exist, but it is created if it does not exist.
+    pub fn write_to_path(&self, path: &PathBuf) -> Result<(), Error> {
+        let feed_file_res = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(path.clone());
+
+        if let Ok(mut feed_file) = feed_file_res {
+            self.write_to_file(path, &mut feed_file)
+        } else {
+            Err(Error::general_feed("opening", &path.to_string_lossy()))
+        }
+    }
+
+    fn write_to_file(&self, path: &PathBuf, feed_file: &mut File) -> Result<(), Error> {
+        let column_url = Column::key("url", ColumnType::String);
+        let column_title = Column::key("title", ColumnType::String);
+        let column_published = Column::key("published", ColumnType::String);
+        let column_author_name = Column::key("author_name", ColumnType::String);
+        let column_author_uri = Column::key("author_uri", ColumnType::String);
+        let column_thumbnail = Column::key("thumbnail", ColumnType::String);
+        let mut table = Table::new(vec![
+            column_url,
+            column_title,
+            column_published,
+            column_author_name,
+            column_author_uri,
+            column_thumbnail,
+        ])
+        .unwrap();
+
+        for entry in &self.entries {
+            table
+                .insert(vec![
+                    entry.clone().link.href.into(),
+                    entry.clone().title.into(),
+                    entry
+                        .clone()
+                        .published
+                        .format("%Y-%m-%dT%H:%M:%S+00:00")
+                        .to_string()
+                        .into(),
+                    entry.clone().author.name.into(),
+                    entry.clone().author.uri.into(),
+                    entry.clone().media.thumbnail.url.into(),
+                ])
+                .expect("Could not append to table");
+        }
+
+        let write_res = write!(feed_file, "{}", table.serialize());
+
+        if write_res.is_err() {
+            Err(Error::general_feed("writing", &path.to_string_lossy()))
+        } else {
+            Ok(())
+        }
     }
 }
 

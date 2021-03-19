@@ -44,6 +44,7 @@ pub struct AppModel {
     filter_file: PathBuf,
     filter: EntryFilterGroup,
 
+    watch_later_file: PathBuf,
     watch_later: Feed,
 
     loading: bool,
@@ -72,6 +73,17 @@ impl AppModel {
             Ok(())
         }
     }
+
+    fn reload_watch_later(&mut self) -> Result<(), Error> {
+        let watch_later_res = Feed::get_from_path(&self.watch_later_file);
+        self.watch_later = watch_later_res.clone().unwrap_or(Feed::empty());
+
+        if let Err(e) = watch_later_res {
+            Err(e)
+        } else {
+            Ok(())
+        }
+    }
 }
 
 #[widget]
@@ -91,12 +103,16 @@ impl Widget for Win {
         let mut filter_file_path = user_data_dir.clone();
         filter_file_path.push("filters.db");
 
+        let mut watch_later_file_path = user_data_dir.clone();
+        watch_later_file_path.push("watch_later.db");
+
         let mut model = AppModel {
             app_stream: relm.stream().clone(),
             subscriptions_file: subscriptions_file_path,
             subscriptions: ChannelGroup::new(),
             filter_file: filter_file_path,
             filter: EntryFilterGroup::new(),
+            watch_later_file: watch_later_file_path,
             watch_later: Feed::empty(),
             loading: false,
             startup_err: None,
@@ -104,10 +120,13 @@ impl Widget for Win {
 
         let err = model.reload_subscriptions();
         let err2 = model.reload_filters();
+        let err3 = model.reload_watch_later();
 
         if let Err(e) = err {
             model.startup_err = Some(e);
         } else if let Err(e) = err2 {
+            model.startup_err = Some(e)
+        } else if let Err(e) = err3 {
             model.startup_err = Some(e)
         }
 
@@ -214,9 +233,20 @@ impl Widget for Win {
                     current.retain(|e| e != &entry);
                 }
 
-                self.components
-                    .watch_later_page
-                    .emit(FeedPageMsg::SetFeed(self.model.watch_later.clone()));
+                let write_res = self
+                    .model
+                    .watch_later
+                    .write_to_path(&self.model.watch_later_file);
+
+                if let Err(e) = write_res {
+                    self.components
+                        .error_label
+                        .emit(ErrorLabelMsg::Set(Some(e)));
+                } else {
+                    self.components
+                        .watch_later_page
+                        .emit(FeedPageMsg::SetFeed(self.model.watch_later.clone()));
+                }
             }
             AppMsg::Error(error) => {
                 self.components
@@ -317,6 +347,10 @@ impl Widget for Win {
             .app_stream
             .emit(AppMsg::SetFilters(self.model.filter.clone()));
         self.model.app_stream.emit(AppMsg::Reload);
+
+        self.components
+            .watch_later_page
+            .emit(FeedPageMsg::SetFeed(self.model.watch_later.clone()));
     }
 
     view! {
