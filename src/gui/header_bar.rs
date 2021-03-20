@@ -49,7 +49,10 @@ impl FromStr for Page {
 
 impl From<Page> for String {
     fn from(page: Page) -> Self {
-        format!("{:?}", page)
+        match page {
+            Page::WatchLater => "Watch Later".to_string(),
+            _ => format!("{:?}", page),
+        }
     }
 }
 

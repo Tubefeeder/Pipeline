@@ -8,6 +8,12 @@ A Youtube-Client made for the Pinephone
       <img src="/screenshots/tubefeeder_screenshot_feed.png" alt="Feed" width="400"/>
     </td>
     <td>
+      <img src="/screenshots/tubefeeder_screenshot_watch_later.png" alt="Feed" width="400"/>
+    </td>
+    <td>
+      <img src="/screenshots/tubefeeder_screenshot_filters.png" alt="Feed" width="400"/>
+    </td>
+    <td>
       <img src="/screenshots/tubefeeder_screenshot_subscriptions.png" alt="Subscriptions" width="400"/>
     </td>
     <tr>
@@ -20,6 +26,7 @@ A Youtube-Client made for the Pinephone
 - Play the video with mpv when clicking the feed item
 - Subscribe to a channel in the app
 - Filtering out unwanted videos in the feed
+- A watch-later list
 
 # What it cannot do (yet)
 Tell me what features you want to be included by opening an [issue](https://github.com/Schmiddiii/Tubefeeder/issues).
