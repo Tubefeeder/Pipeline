@@ -7,7 +7,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 use gtk::prelude::*;
-use gtk::{Align, ImageExt, Justification, Orientation};
+use gtk::{Align, ImageExt, Justification, Orientation, PackType};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
@@ -90,6 +90,22 @@ impl Widget for FeedListItem {
     }
 
     fn init_view(&mut self) {
+        self.widgets.box_content.set_child_packing(
+            &self.widgets.button_watch_later,
+            false,
+            true,
+            0,
+            PackType::End,
+        );
+
+        self.widgets.box_content.set_child_packing(
+            &self.widgets.box_info,
+            true,
+            true,
+            0,
+            PackType::Start,
+        );
+
         let title_attr_list = AttrList::new();
         title_attr_list.insert(Attribute::new_size(12 * pango::SCALE).unwrap());
         self.widgets
@@ -114,6 +130,7 @@ impl Widget for FeedListItem {
 
     view! {
         gtk::ListBoxRow {
+            #[name="box_content"]
             gtk::Box {
                 orientation: Orientation::Horizontal,
 
@@ -125,6 +142,7 @@ impl Widget for FeedListItem {
                 #[name="thumbnail"]
                 Thumbnail(self.model.entry.media.thumbnail.clone()),
 
+                #[name="box_info"]
                 gtk::Box {
                     orientation: Orientation::Vertical,
 
@@ -148,6 +166,7 @@ impl Widget for FeedListItem {
                     #[name="label_date"]
                     DateLabel(self.model.entry.published.clone()) {}
                 },
+                #[name="button_watch_later"]
                 gtk::Button {
                     clicked => FeedListItemMsg::WatchLater,
                     image: Some(&gtk::Image::from_icon_name(Some("appointment-soon"), gtk::IconSize::LargeToolbar)),
