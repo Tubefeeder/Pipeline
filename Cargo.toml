@@ -1,6 +1,6 @@
 [package]
 name = "tubefeeder"
-version = "0.2.0"
+version = "1.0.0"
 authors = ["Julian Schmidhuber <schmidhuberj2@protonmail.com>"]
 edition = "2018"
 

@@ -19,8 +19,6 @@ A Youtube-Client made for the Pinephone
     <tr>
 </table>
 
-# WARNING: This is still in in alpha, but should work
-
 # What it can do
 - Show the feed of your subscribed channels
 - Play the video with mpv when clicking the feed item
