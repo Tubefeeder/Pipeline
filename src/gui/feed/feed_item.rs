@@ -3,7 +3,6 @@ use crate::gui::feed::date_label::DateLabel;
 use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::youtube_feed::Entry;
 
-use std::sync::{Arc, Mutex};
 use std::thread;
 
 use gtk::prelude::*;
@@ -25,14 +24,6 @@ pub struct FeedListItemModel {
     entry: Entry,
     playing: bool,
     relm: Relm<FeedListItem>,
-    killed: Arc<Mutex<bool>>,
-}
-
-impl Drop for FeedListItem {
-    fn drop(&mut self) {
-        let mut killed = self.model.killed.lock().unwrap();
-        *killed = true;
-    }
 }
 
 #[widget]
@@ -46,7 +37,6 @@ impl Widget for FeedListItem {
             entry,
             playing: false,
             relm: relm.clone(),
-            killed: Arc::new(Mutex::new(false)),
         }
     }
 
@@ -70,14 +60,9 @@ impl Widget for FeedListItem {
                         stream.emit(FeedListItemMsg::SetPlaying(false));
                     });
 
-                    let killed_arc = self.model.killed.clone();
-
                     thread::spawn(move || {
                         let _ = child.wait();
-                        let killed = (*killed_arc).lock().unwrap();
-                        if !*killed {
-                            sender.send(()).expect("Could not send message");
-                        }
+                        sender.send(()).expect("Could not send message");
                     });
                 }
             }
