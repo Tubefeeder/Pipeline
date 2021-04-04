@@ -354,8 +354,7 @@ impl Widget for Win {
     }
 
     view! {
-        gtk::Window {
-            decorated: false,
+        libhandy::Window {
             #[name="view_switcher_box"]
             gtk::Box {
                 #[name="header_bar"]
