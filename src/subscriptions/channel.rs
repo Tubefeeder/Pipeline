@@ -60,7 +60,7 @@ impl Channel {
     /// Will try to download the channels youtube page and get the id.
     #[tokio::main]
     pub async fn from_name(name: &str) -> Result<Self, Error> {
-        let url = format!("https://www.youtube.com/user/{}", name);
+        let url = format!("https://www.youtube.com/c/{}/featured", name);
         let content: Result<String, Error> = async {
             let response = reqwest::get(&url).await;
 
