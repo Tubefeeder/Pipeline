@@ -11,6 +11,9 @@ use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
+/// The ration between the fonts of the title and the channel/date.
+const FONT_RATIO: f32 = 2.0 / 3.0;
+
 #[derive(Msg)]
 pub enum FeedListItemMsg {
     SetImage,
@@ -91,14 +94,27 @@ impl Widget for FeedListItem {
             PackType::Start,
         );
 
+        let font_size = gtk::Settings::get_default()
+            .unwrap()
+            .get_property_gtk_font_name()
+            .unwrap()
+            .to_string()
+            .split(" ")
+            .last()
+            .unwrap_or("")
+            .parse::<i32>()
+            .unwrap_or(12);
+
         let title_attr_list = AttrList::new();
-        title_attr_list.insert(Attribute::new_size(12 * pango::SCALE).unwrap());
+        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
         self.widgets
             .label_title
             .set_attributes(Some(&title_attr_list));
 
         let author_attr_list = AttrList::new();
-        author_attr_list.insert(Attribute::new_size(8 * pango::SCALE).unwrap());
+        author_attr_list.insert(
+            Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
+        );
         self.widgets
             .label_author
             .set_attributes(Some(&author_attr_list));
