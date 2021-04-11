@@ -1,4 +1,5 @@
 use crate::gui::app::AppMsg;
+use crate::gui::{get_font_size, FONT_RATIO};
 use crate::subscriptions::Channel;
 
 use gtk::prelude::*;
@@ -41,14 +42,17 @@ impl Widget for SubscriptionItem {
     }
 
     fn init_view(&mut self) {
+        let font_size = get_font_size();
         let name_attr_list = AttrList::new();
-        name_attr_list.insert(Attribute::new_size(15 * pango::SCALE).unwrap());
+        name_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
         self.widgets
             .label_name
             .set_attributes(Some(&name_attr_list));
 
         let id_attr_list = AttrList::new();
-        id_attr_list.insert(Attribute::new_size(7 * pango::SCALE).unwrap());
+        id_attr_list.insert(
+            Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
+        );
         self.widgets.label_id.set_attributes(Some(&id_attr_list));
     }
 

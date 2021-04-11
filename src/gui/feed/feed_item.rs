@@ -1,6 +1,7 @@
 use crate::gui::app::AppMsg;
 use crate::gui::feed::date_label::DateLabel;
 use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
+use crate::gui::{get_font_size, FONT_RATIO};
 use crate::youtube_feed::Entry;
 
 use std::thread;
@@ -10,9 +11,6 @@ use gtk::{Align, ImageExt, Justification, Orientation, PackType};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
-
-/// The ration between the fonts of the title and the channel/date.
-const FONT_RATIO: f32 = 2.0 / 3.0;
 
 #[derive(Msg)]
 pub enum FeedListItemMsg {
@@ -94,16 +92,7 @@ impl Widget for FeedListItem {
             PackType::Start,
         );
 
-        let font_size = gtk::Settings::get_default()
-            .unwrap()
-            .get_property_gtk_font_name()
-            .unwrap()
-            .to_string()
-            .split(" ")
-            .last()
-            .unwrap_or("")
-            .parse::<i32>()
-            .unwrap_or(12);
+        let font_size = get_font_size();
 
         let title_attr_list = AttrList::new();
         title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
