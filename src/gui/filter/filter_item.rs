@@ -1,5 +1,6 @@
 use crate::filter::EntryFilter;
 use crate::gui::app::AppMsg;
+use crate::gui::{get_font_size, FONT_RATIO};
 
 use gtk::prelude::*;
 use gtk::Align;
@@ -38,14 +39,17 @@ impl Widget for FilterItem {
     }
 
     fn init_view(&mut self) {
+        let font_size = get_font_size();
         let title_attr_list = AttrList::new();
-        title_attr_list.insert(Attribute::new_size(15 * pango::SCALE).unwrap());
+        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
         self.widgets
             .label_title
             .set_attributes(Some(&title_attr_list));
 
         let channel_attr_list = AttrList::new();
-        channel_attr_list.insert(Attribute::new_size(12 * pango::SCALE).unwrap());
+        channel_attr_list.insert(
+            Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
+        );
         self.widgets
             .label_channel
             .set_attributes(Some(&channel_attr_list));

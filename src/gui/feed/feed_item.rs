@@ -1,6 +1,7 @@
 use crate::gui::app::AppMsg;
 use crate::gui::feed::date_label::DateLabel;
 use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
+use crate::gui::{get_font_size, FONT_RATIO};
 use crate::youtube_feed::Entry;
 
 use std::thread;
@@ -91,14 +92,18 @@ impl Widget for FeedListItem {
             PackType::Start,
         );
 
+        let font_size = get_font_size();
+
         let title_attr_list = AttrList::new();
-        title_attr_list.insert(Attribute::new_size(12 * pango::SCALE).unwrap());
+        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
         self.widgets
             .label_title
             .set_attributes(Some(&title_attr_list));
 
         let author_attr_list = AttrList::new();
-        author_attr_list.insert(Attribute::new_size(8 * pango::SCALE).unwrap());
+        author_attr_list.insert(
+            Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
+        );
         self.widgets
             .label_author
             .set_attributes(Some(&author_attr_list));
@@ -118,6 +123,7 @@ impl Widget for FeedListItem {
             #[name="box_content"]
             gtk::Box {
                 orientation: Orientation::Horizontal,
+                spacing: 8,
 
                 #[name="playing"]
                 gtk::Image {
@@ -130,6 +136,7 @@ impl Widget for FeedListItem {
                 #[name="box_info"]
                 gtk::Box {
                     orientation: Orientation::Vertical,
+                    spacing: 4,
 
                     #[name="label_title"]
                     gtk::Label {
