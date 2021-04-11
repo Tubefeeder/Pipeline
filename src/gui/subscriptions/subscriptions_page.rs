@@ -106,7 +106,7 @@ impl Widget for SubscriptionsPage {
 
         thread::spawn(move || {
             sender
-                .send(Channel::from_name(&channel_name))
+                .send(Channel::from_id_or_name(&channel_name))
                 .expect("Could not send channel");
         });
     }
@@ -119,7 +119,7 @@ impl Widget for SubscriptionsPage {
                 visible: self.model.add_subscription_visible,
                 #[name="channel_name_entry"]
                 gtk::Entry {
-                    placeholder_text: Some("Channel Name")
+                    placeholder_text: Some("Channel Name or ID")
                 },
                 gtk::Button {
                     clicked => SubscriptionsPageMsg::AddSubscription,
