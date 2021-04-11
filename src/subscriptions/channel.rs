@@ -56,11 +56,23 @@ impl Channel {
         }
     }
 
+    /// Try to create a channel from a given `&str`, that may be a id or name.
+    /// It first tries to check if it is a valid id, otherwise it will try to interpret
+    /// it as a channel name.
+    #[tokio::main]
+    pub async fn from_id_or_name(id_or_name: &str) -> Result<Self, Error> {
+        let from_id = Channel::new(id_or_name);
+        if from_id.get_feed_no_main().await.is_ok() {
+            Ok(from_id)
+        } else {
+            Channel::from_name(id_or_name).await
+        }
+    }
+
     /// Cretes a new channel from the given name.
     /// Will try to download the channels youtube page and get the id.
-    #[tokio::main]
-    pub async fn from_name(name: &str) -> Result<Self, Error> {
-        let url = format!("https://www.youtube.com/user/{}", name);
+    async fn from_name(name: &str) -> Result<Self, Error> {
+        let url = format!("https://www.youtube.com/c/{}/featured", name);
         let content: Result<String, Error> = async {
             let response = reqwest::get(&url).await;
 
@@ -108,6 +120,11 @@ impl Channel {
     /// This may be because youtube changed the feed site.
     #[tokio::main]
     pub async fn get_feed(&self) -> Result<Feed, Error> {
+        self.get_feed_no_main().await
+    }
+
+    /// Get the feed without needing `#[tokio::main]`.
+    async fn get_feed_no_main(&self) -> Result<Feed, Error> {
         let url = FEED_URL.to_string() + &self.id;
 
         let content: Result<String, Error> = async {
