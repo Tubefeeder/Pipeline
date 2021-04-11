@@ -123,6 +123,7 @@ impl Widget for FeedListItem {
             #[name="box_content"]
             gtk::Box {
                 orientation: Orientation::Horizontal,
+                spacing: 8,
 
                 #[name="playing"]
                 gtk::Image {
@@ -135,6 +136,7 @@ impl Widget for FeedListItem {
                 #[name="box_info"]
                 gtk::Box {
                     orientation: Orientation::Vertical,
+                    spacing: 4,
 
                     #[name="label_title"]
                     gtk::Label {
