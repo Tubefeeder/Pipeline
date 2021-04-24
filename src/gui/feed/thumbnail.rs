@@ -3,12 +3,14 @@ use crate::youtube_feed;
 use std::thread;
 
 use bytes::Bytes;
-use gdk_pixbuf::Pixbuf;
+use gdk_pixbuf::{Colorspace, Pixbuf};
 use gio::{MemoryInputStream, NONE_CANCELLABLE};
 use gtk::prelude::*;
-use gtk::Image;
 use relm::{Channel, Relm, Widget};
 use relm_derive::{widget, Msg};
+
+const WIDTH: i32 = 120;
+const HEIGHT: i32 = 90;
 
 pub struct ThumbnailModel {
     url: String,
@@ -66,22 +68,26 @@ impl Widget for Thumbnail {
     }
 
     fn set_image_bytes(&mut self, bytes: Bytes) {
-        let image_box = self.widgets.image_box.clone();
-
         let glib_bytes = glib::Bytes::from(&bytes.to_vec());
         let stream = MemoryInputStream::from_bytes(&glib_bytes);
         let pixbuf =
-            Pixbuf::from_stream_at_scale(&stream, 120, 90, true, NONE_CANCELLABLE).unwrap();
-        let image = Image::from_pixbuf(Some(&pixbuf));
+            Pixbuf::from_stream_at_scale(&stream, WIDTH, HEIGHT, true, NONE_CANCELLABLE).unwrap();
 
-        image_box.add(&image);
+        self.widgets.image.set_from_pixbuf(Some(&pixbuf));
+    }
 
-        image_box.show_all();
+    fn init_view(&mut self) {
+        let pixbuf =
+            Pixbuf::new(Colorspace::Rgb, true, 8, WIDTH, HEIGHT).expect("Could not create empty");
+        pixbuf.fill(0);
+
+        self.widgets.image.set_from_pixbuf(Some(&pixbuf));
     }
 
     view! {
-        #[name="image_box"]
         gtk::Box {
+            #[name="image"]
+            gtk::Image {}
         },
     }
 }
