@@ -1,5 +1,7 @@
 use crate::youtube_feed;
 
+use std::fs::File;
+use std::io::{Read, Write};
 use std::thread;
 
 use bytes::Bytes;
@@ -44,6 +46,22 @@ impl Widget for Thumbnail {
     fn set_image(&mut self) {
         let url = self.model.url.clone();
 
+        let image_id = url.split("/").nth(4);
+        let mut cached = false;
+        let mut cache_file = None;
+
+        if let Some(id) = image_id {
+            let mut user_data_dir =
+                glib::get_user_cache_dir().expect("could not get user cache directory");
+            user_data_dir.push("tubefeeder");
+            user_data_dir.push(&format!("{}.thumbnail", id));
+            cache_file = Some(user_data_dir);
+
+            if cache_file.clone().unwrap().exists() {
+                cached = true;
+            }
+        }
+
         let stream = self.model.relm.stream().clone();
 
         let (_channel, sender) = Channel::new(move |bytes| {
@@ -51,19 +69,38 @@ impl Widget for Thumbnail {
         });
 
         thread::spawn(move || {
-            let response = reqwest::blocking::get(&url);
+            if !cached {
+                let response = reqwest::blocking::get(&url);
 
-            if response.is_err() {
-                return;
+                if response.is_err() {
+                    return;
+                }
+
+                let parsed = response.unwrap().bytes();
+
+                if parsed.is_err() {
+                    return;
+                }
+
+                let parsed_bytes = parsed.unwrap();
+
+                sender
+                    .send(parsed_bytes.clone())
+                    .expect("could not send bytes");
+
+                // Save file to cache.
+                if let Some(cache_file) = cache_file {
+                    if let Ok(mut cache) = File::create(cache_file) {
+                        cache.write_all(&parsed_bytes).unwrap_or(());
+                    }
+                }
+            } else {
+                if let Ok(mut cache) = File::open(cache_file.unwrap()) {
+                    let mut buffer = vec![];
+                    cache.read_to_end(&mut buffer).unwrap_or_default();
+                    sender.send(buffer.into()).expect("could not send bytes");
+                }
             }
-
-            let parsed = response.unwrap().bytes();
-
-            if parsed.is_err() {
-                return;
-            }
-
-            sender.send(parsed.unwrap()).expect("could not send bytes");
         });
     }
 
