@@ -105,6 +105,14 @@ impl AppModel {
 #[widget]
 impl Widget for Win {
     fn model(relm: &Relm<Self>, _: ()) -> AppModel {
+        let mut user_cache_dir =
+            glib::get_user_cache_dir().expect("could not get user cache directory");
+        user_cache_dir.push("tubefeeder");
+
+        if !user_cache_dir.exists() {
+            std::fs::create_dir_all(user_cache_dir).expect("could not create user cache dir");
+        }
+
         let mut user_data_dir =
             glib::get_user_data_dir().expect("could not get user data directory");
         user_data_dir.push("tubefeeder");
@@ -269,7 +277,17 @@ impl Widget for Win {
                     .error_label
                     .emit(ErrorLabelMsg::Set(Some(error)));
             }
-            AppMsg::Quit => gtk::main_quit(),
+            AppMsg::Quit => {
+                gtk::main_quit();
+
+                let mut user_cache_dir =
+                    glib::get_user_cache_dir().expect("could not get user cache directory");
+                user_cache_dir.push("tubefeeder");
+
+                if user_cache_dir.exists() {
+                    std::fs::remove_dir_all(user_cache_dir).unwrap_or(());
+                }
+            }
         }
     }
 
