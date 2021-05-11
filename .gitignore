@@ -1,2 +1,6 @@
 /target
 *~*
+Tubefeeder-latest-*.AppImage
+AppDir
+appimage-builder-cache
+libapprun_hooks.so
