@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>tubefeeder</id>
+  <project_license>GPL-3.0+</project_license>
+  <metadata_license>FSFAP</metadata_license>
+  <name>Tubefeeder</name>
+  <summary>A Youtube-Client made for the Pinephone</summary>
+
+  <description>
+    <p>
+    Tubefeeder allows to watch youtube videos on your Pinephone,
+    including features like a subscription list, a filter list and 
+    a watch-later list.
+    </p>
+    <p>
+    This application uses mpv to play the videos. 
+    Make sure you have mpv installed.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">tubefeeder.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>The feed</caption>
+      <image>https://github.com/Schmiddiii/Tubefeeder/blob/master/screenshots/tubefeeder_screenshot_feed.png?raw=true</image>
+    </screenshot>
+    <screenshot type="default">
+      <caption>The watch later list</caption>
+      <image>https://github.com/Schmiddiii/Tubefeeder/blob/master/screenshots/tubefeeder_screenshot_watch_later.png?raw=true</image>
+    </screenshot>
+    <screenshot type="default">
+      <caption>The filter</caption>
+      <image>https://github.com/Schmiddiii/Tubefeeder/blob/master/screenshots/tubefeeder_screenshot_filters.png?raw=true</image>
+    </screenshot>
+    <screenshot>
+      <caption>The subscriptions</caption>
+      <image>https://github.com/Schmiddiii/Tubefeeder/blob/master/screenshots/tubefeeder_screenshot_subscriptions.png?raw=true</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://www.schmidhuberj.de/Tubefeeder/</url>
+
+  <provides>
+    <binary>tubefeeder</binary>
+  </provides>
+</component>
+

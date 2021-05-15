@@ -4,4 +4,4 @@ Icon=tubefeeder
 Name=Tubefeeder
 StartupWMClass=Tubefeeder
 Exec=/home/{user}/.local/bin/tubefeeder
-Categories=Video
+Categories=Video;AudioVideo
