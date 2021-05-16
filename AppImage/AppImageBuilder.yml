@@ -6,21 +6,21 @@ script:
   - mkdir -p AppDir/usr/bin
   - mkdir -p AppDir/usr/share/icons/16x16
   - mkdir -p AppDir/usr/share/metainfo
-  - cp ../tubefeeder.desktop AppDir
+  - cp ../tubefeeder.desktop AppDir/de.schmidhuberj.tubefeeder.desktop
   - cp ../tubefeeder.png AppDir/usr/share/icons/16x16
   - cp ../target/aarch64-unknown-linux-gnu/release/tubefeeder AppDir/usr/bin/
-  - cp tubefeeder.metainfo.xml AppDir/usr/share/metainfo/ 
+  - cp de.schmidhuberj.tubefeeder.appdata.xml AppDir/usr/share/metainfo/ 
 
 AppDir:
   path: ./AppDir
   app_info:
-    id: tubefeeder
+    id: de.schmidhuberj.tubefeeder
     name: Tubefeeder
     icon: tubefeeder
     version: latest
     exec: usr/bin/tubefeeder
     exec_args: $@
-  runtime:
+  runtime: 
     env:
       APPDIR_LIBRARY_PATH: '$APPDIR/lib/aarch64-linux-gnu:$APPDIR/usr/lib/aarch64-linux-gnu:$APPDIR/usr/lib:$APPDIR/usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders:$APPDIR/usr/lib/aarch64-linux-gnu/samba:$APPDIR/usr/lib/aarch64-linux-gnu/pulseaudio:$APPDIR/usr/lib/aarch64-linux-gnu/blas:$APPDIR/usr/lib/aarch64-linux-gnu/lapack:$APPDIR/usr/lib/aarch64-linux-gnu/lapack' 
   apt:

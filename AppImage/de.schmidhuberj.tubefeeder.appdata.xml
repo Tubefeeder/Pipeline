@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>tubefeeder</id>
+  <id>de.schmidhuberj.tubefeeder</id>
   <project_license>GPL-3.0+</project_license>
   <metadata_license>FSFAP</metadata_license>
   <name>Tubefeeder</name>
@@ -17,8 +17,6 @@
     Make sure you have mpv installed.
     </p>
   </description>
-
-  <launchable type="desktop-id">tubefeeder.desktop</launchable>
 
   <screenshots>
     <screenshot type="default">
