@@ -1,8 +1,9 @@
 #!/bin/sh
 
-BINFILE_COMPILED="target/aarch64-unknown-linux-gnu/debug/tubefeeder"
+BINFILE_COMPILED="target/aarch64-unknown-linux-gnu/release/tubefeeder"
 BINFILE_ALT="tubefeeder-aarch"
 DESKTOPFILE="tubefeeder.desktop"
+IMAGEFILE="tubefeeder.png"
 BINFILE=$BINFILE_COMPILED
 
 # Check all prerequisites
@@ -35,11 +36,12 @@ read unused
 echo "Installing"
 
 # Copy all the files
-scp $BINFILE $DESKTOPFILE $1@$2:/tmp
+scp $BINFILE $DESKTOPFILE $IMAGEFILE $1@$2:/tmp
 
 # Create config files and move everything to the right place
 ssh $1@$2 <<EOF
 mkdir -p ~/.local/bin/
+mkdir -p ~/.local/share/icons/
 mkdir -p ~/.local/share/tubefeeder/
 mkdir -p ~/.local/share/applications/
 mkdir -p ~/.config/mpv/
@@ -54,6 +56,7 @@ fi
 
 mv /tmp/tubefeeder ~/.local/bin
 mv /tmp/tubefeeder.desktop ~/.local/share/applications
+mv /tmp/tubefeeder.png ~/.local/share/icons
 
 touch ~/.config/mpv/mpv.conf
 echo "ytdl-format=bestvideo[height<=?720]+worstaudio/worst" > ~/.config/mpv/mpv.conf
