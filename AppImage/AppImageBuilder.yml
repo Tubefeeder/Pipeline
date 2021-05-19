@@ -20,21 +20,41 @@ AppDir:
     version: latest
     exec: usr/bin/tubefeeder
     exec_args: $@
-  runtime: 
-    env:
-      APPDIR_LIBRARY_PATH: '$APPDIR/lib/aarch64-linux-gnu:$APPDIR/usr/lib/aarch64-linux-gnu:$APPDIR/usr/lib:$APPDIR/usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders:$APPDIR/usr/lib/aarch64-linux-gnu/samba:$APPDIR/usr/lib/aarch64-linux-gnu/pulseaudio:$APPDIR/usr/lib/aarch64-linux-gnu/blas:$APPDIR/usr/lib/aarch64-linux-gnu/lapack:$APPDIR/usr/lib/aarch64-linux-gnu/lapack' 
   apt:
     arch: arm64
     sources:
       - sourceline: 'deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports groovy main universe'
         key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
     include: 
-      - libhandy-1-0:arm64
-      - gnome-settings-daemon:arm64
-      - librsvg2-common:arm64
+      - libhandy-1-0
+      - gnome-settings-daemon
+      - librsvg2-common
     exclude:
       - adwaita-icon-theme
       - humanity-icon-theme
+      - libice6
+      - libnss-nisplus
+      - libnss-nis
+      - libstdc++6-arm64-cross
+      - libglib2.0-0
+      - libasound2
+      - libfontconfig1
+      - libthai
+      - libfreetype6
+      - libharfbuzz0b
+      - libcom-err2
+      - libexpat1
+      - libgcc-s1
+      - libgpg-error0
+      - libp11-kit0
+      - libsm6
+      - libuuid1
+      - zlib1g
+      - libpangoft2-1.0-0
+      - libpangocairo-1.0-0
+      - libpango-1.0-0
+      - libfribidi0
+      - libgmp10
 
   files:
     include: []
@@ -44,6 +64,12 @@ AppDir:
     - usr/share/doc/*/changelog.*
     - usr/share/doc/*/NEWS.*
     - usr/share/doc/*/TODO.*
+
+  test:
+    ubuntu:
+      image: appimagecrafters/tests-env:ubuntu-bionic
+      command: "./AppRun"
+      use_host_x: True
 
 AppImage:
   arch: aarch64
