@@ -1,0 +1,77 @@
+# appimage-builder recipe see https://appimage-builder.readthedocs.io for details
+version: 1
+
+script: 
+  - rm -rf AppDir | true
+  - mkdir -p AppDir/usr/bin
+  - mkdir -p AppDir/usr/share/icons/16x16
+  - mkdir -p AppDir/usr/share/metainfo
+  - cp ../tubefeeder.desktop AppDir/de.schmidhuberj.tubefeeder.desktop
+  - cp ../tubefeeder.png AppDir/usr/share/icons/16x16
+  - cp ../target/aarch64-unknown-linux-gnu/release/tubefeeder AppDir/usr/bin/
+  - cp de.schmidhuberj.tubefeeder.appdata.xml AppDir/usr/share/metainfo/ 
+
+AppDir:
+  path: ./AppDir
+  app_info:
+    id: de.schmidhuberj.tubefeeder
+    name: Tubefeeder
+    icon: tubefeeder
+    version: latest
+    exec: usr/bin/tubefeeder
+    exec_args: $@
+  apt:
+    arch: arm64
+    sources:
+      - sourceline: 'deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports groovy main universe'
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
+    include: 
+      - libhandy-1-0
+      - gnome-settings-daemon
+      - librsvg2-common
+    exclude:
+      - adwaita-icon-theme
+      - humanity-icon-theme
+      - libice6
+      - libnss-nisplus
+      - libnss-nis
+      - libstdc++6-arm64-cross
+      - libglib2.0-0
+      - libasound2
+      - libfontconfig1
+      - libthai
+      - libfreetype6
+      - libharfbuzz0b
+      - libcom-err2
+      - libexpat1
+      - libgcc-s1
+      - libgpg-error0
+      - libp11-kit0
+      - libsm6
+      - libuuid1
+      - zlib1g
+      - libpangoft2-1.0-0
+      - libpangocairo-1.0-0
+      - libpango-1.0-0
+      - libfribidi0
+      - libgmp10
+
+  files:
+    include: []
+    exclude:
+    - usr/share/man
+    - usr/share/doc/*/README.*
+    - usr/share/doc/*/changelog.*
+    - usr/share/doc/*/NEWS.*
+    - usr/share/doc/*/TODO.*
+
+  test:
+    ubuntu:
+      image: appimagecrafters/tests-env:ubuntu-bionic
+      command: "./AppRun"
+      use_host_x: True
+
+AppImage:
+  arch: aarch64
+  update-information: guess
+  sign-key: None
