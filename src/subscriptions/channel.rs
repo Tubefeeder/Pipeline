@@ -183,11 +183,11 @@ mod test {
         assert!(Channel::new_with_name("abcdef", "z") > Channel::new_with_name("ghijkl", "a"));
     }
 
-    #[test]
-    fn test_get_id_from_name() {
+    #[tokio::test]
+    async fn test_get_id_from_name() {
         let name = "Brodie Robertson";
 
-        let from_name = Channel::from_name(name);
+        let from_name = Channel::from_name(name).await;
 
         assert!(from_name.is_ok());
 
@@ -197,11 +197,11 @@ mod test {
         );
     }
 
-    #[test]
-    fn test_get_id_invalid_name() {
+    #[tokio::test]
+    async fn test_get_id_invalid_name() {
         let name = "I hope nobody will ever call their youtube-channel this name";
 
-        let from_name = Channel::from_name(name);
+        let from_name = Channel::from_name(name).await;
 
         assert!(from_name.is_err());
     }
