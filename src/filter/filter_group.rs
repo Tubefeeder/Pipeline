@@ -63,9 +63,9 @@ impl EntryFilterGroup {
             .open(path.clone());
 
         if let Ok(mut filter_file) = filter_file_res {
-            return EntryFilterGroup::get_from_file(path, &mut filter_file);
+            EntryFilterGroup::get_from_file(path, &mut filter_file)
         } else {
-            return Err(Error::general_filter("opening", &path.to_string_lossy()));
+            Err(Error::general_filter("opening", &path.to_string_lossy()))
         }
     }
 
@@ -114,9 +114,9 @@ impl EntryFilterGroup {
                     group.add(new_filter.unwrap());
                 }
             }
-            return Ok(group);
+            Ok(group)
         } else {
-            return Err(Error::general_filter("reading", &path.to_string_lossy()));
+            Err(Error::general_filter("reading", &path.to_string_lossy()))
         }
     }
 

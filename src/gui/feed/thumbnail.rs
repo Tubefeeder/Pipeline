@@ -46,7 +46,7 @@ impl Widget for Thumbnail {
     fn set_image(&mut self) {
         let url = self.model.url.clone();
 
-        let image_id = url.split("/").nth(4);
+        let image_id = url.split('/').nth(4);
         let mut cached = false;
         let mut cache_file = None;
 
@@ -94,12 +94,10 @@ impl Widget for Thumbnail {
                         cache.write_all(&parsed_bytes).unwrap_or(());
                     }
                 }
-            } else {
-                if let Ok(mut cache) = File::open(cache_file.unwrap()) {
+            } else if let Ok(mut cache) = File::open(cache_file.unwrap()) {
                     let mut buffer = vec![];
                     cache.read_to_end(&mut buffer).unwrap_or_default();
                     sender.send(buffer.into()).expect("could not send bytes");
-                }
             }
         });
     }
