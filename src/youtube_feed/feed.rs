@@ -107,7 +107,7 @@ impl Feed {
             .map(|e| e.author.clone().into())
             .collect();
 
-        return ChannelGroup { channels };
+        ChannelGroup { channels }
     }
 
     /// Filter out entries matching one filter in the `EntryFilterGroup`.
@@ -131,9 +131,9 @@ impl Feed {
             .open(path.clone());
 
         if let Ok(mut feed_file) = feed_file_res {
-            return Feed::get_from_file(path, &mut feed_file);
+            Feed::get_from_file(path, &mut feed_file)
         } else {
-            return Err(Error::general_feed("opening", &path.to_string_lossy()));
+            Err(Error::general_feed("opening", &path.to_string_lossy()))
         }
     }
 
@@ -188,7 +188,7 @@ impl Feed {
 
                     let date = NaiveDateTime::parse_from_str(&published, "%Y-%m-%dT%H:%M:%S+00:00");
 
-                    if let Err(_) = date {
+                    if date.is_err() {
                         return Err(Error::parsing_feed(&path.to_string_lossy()));
                     }
 
@@ -204,21 +204,21 @@ impl Feed {
                     let link = Link { href: url };
 
                     let feed_entry = Entry {
-                        title: title,
-                        author: author,
-                        link: link,
+                        title,
+                        author,
+                        link,
                         published: date.unwrap(),
-                        media: media,
+                        media,
                     };
 
                     feed_entries.push(feed_entry);
                 }
             }
-            return Ok(Feed {
+            Ok(Feed {
                 entries: feed_entries,
-            });
+            })
         } else {
-            return Err(Error::general_feed("reading", &path.to_string_lossy()));
+            Err(Error::general_feed("reading", &path.to_string_lossy()))
         }
     }
 

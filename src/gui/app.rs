@@ -25,9 +25,9 @@ pub fn get_font_size() -> i32 {
     gtk::Settings::get_default()
         .unwrap()
         .get_property_gtk_font_name()
-        .unwrap_or(" ".into())
+        .unwrap_or_else(||" ".into())
         .to_string()
-        .split(" ")
+        .split(' ')
         .last()
         .unwrap_or("")
         .parse::<i32>()
@@ -70,7 +70,7 @@ pub struct AppModel {
 impl AppModel {
     fn reload_subscriptions(&mut self) -> Result<(), Error> {
         let subscription_res = ChannelGroup::get_from_path(&self.subscriptions_file);
-        self.subscriptions = subscription_res.clone().unwrap_or(ChannelGroup::new());
+        self.subscriptions = subscription_res.clone().unwrap_or_else(|_|ChannelGroup::new());
 
         if let Err(e) = subscription_res {
             Err(e)
@@ -81,7 +81,7 @@ impl AppModel {
 
     fn reload_filters(&mut self) -> Result<(), Error> {
         let filter_res = EntryFilterGroup::get_from_path(&self.filter_file);
-        self.filter = filter_res.clone().unwrap_or(EntryFilterGroup::new());
+        self.filter = filter_res.clone().unwrap_or_else(|_| EntryFilterGroup::new());
 
         if let Err(e) = filter_res {
             Err(e)
@@ -92,7 +92,7 @@ impl AppModel {
 
     fn reload_watch_later(&mut self) -> Result<(), Error> {
         let watch_later_res = Feed::get_from_path(&self.watch_later_file);
-        self.watch_later = watch_later_res.clone().unwrap_or(Feed::empty());
+        self.watch_later = watch_later_res.clone().unwrap_or_else(|_| Feed::empty());
 
         if let Err(e) = watch_later_res {
             Err(e)
@@ -127,7 +127,7 @@ impl Widget for Win {
         let mut filter_file_path = user_data_dir.clone();
         filter_file_path.push("filters.db");
 
-        let mut watch_later_file_path = user_data_dir.clone();
+        let mut watch_later_file_path = user_data_dir;
         watch_later_file_path.push("watch_later.db");
 
         let mut model = AppModel {
@@ -295,10 +295,10 @@ impl Widget for Win {
         let loading_spinner = self.widgets.loading_spinner.clone();
         loading_spinner.set_visible(true);
 
-        let feed_stream = self.components.feed_page.stream().clone();
+        let feed_stream = self.components.feed_page.stream();
         let app_stream = self.model.app_stream.clone();
         let mut subscriptions1 = self.model.subscriptions.clone();
-        let error_label_stream = self.components.error_label.stream().clone();
+        let error_label_stream = self.components.error_label.stream();
 
         let filter = self.model.filter.clone();
 
@@ -316,7 +316,7 @@ impl Widget for Win {
                 error_label_stream.emit(ErrorLabelMsg::Set(Some(e)));
             }
 
-            let mut feed = feed_option.clone().unwrap_or(Feed::empty());
+            let mut feed = feed_option.clone().unwrap_or_else(|_| Feed::empty());
             feed.filter(&filter);
 
             feed_stream.emit(FeedPageMsg::SetFeed(feed));
@@ -350,7 +350,7 @@ impl Widget for Win {
         self.widgets.view_switcher_box.show_all();
 
         // Build header bar
-        let header_bar_stream = self.components.header_bar.stream().clone();
+        let header_bar_stream = self.components.header_bar.stream();
         header_bar_stream.emit(HeaderBarMsg::SetPage(Page::Feed));
 
         self.widgets

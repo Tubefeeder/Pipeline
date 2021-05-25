@@ -1,5 +1,5 @@
-mod filter;
+mod filter_entries;
 mod filter_group;
 
-pub use filter::EntryFilter;
+pub use filter_entries::EntryFilter;
 pub use filter_group::EntryFilterGroup;

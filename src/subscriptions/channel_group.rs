@@ -52,7 +52,7 @@ impl ChannelGroup {
     pub async fn get_feed(&self) -> Result<Feed, Error> {
         let feeds: Vec<Result<Feed, _>> = self.channels.par_iter().map(|c| c.get_feed()).collect();
 
-        if let Some(Err(e)) = feeds.clone().par_iter().find_any(|x| x.clone().is_err()) {
+        if let Some(Err(e)) = feeds.par_iter().find_any(|x| x.is_err()) {
             return Err(e.clone());
         }
 
@@ -102,12 +102,12 @@ impl ChannelGroup {
             .open(path.clone());
 
         if let Ok(mut subscriptions_file) = subscriptions_file_res {
-            return ChannelGroup::get_from_file(path, &mut subscriptions_file);
+            ChannelGroup::get_from_file(path, &mut subscriptions_file)
         } else {
-            return Err(Error::general_subscriptions(
+            Err(Error::general_subscriptions(
                 "opening",
                 &path.to_string_lossy(),
-            ));
+            ))
         }
     }
 
@@ -148,12 +148,12 @@ impl ChannelGroup {
                     group.add(Channel::new(&channel_id_str));
                 }
             }
-            return Ok(group);
+            Ok(group)
         } else {
-            return Err(Error::general_subscriptions(
+            Err(Error::general_subscriptions(
                 "reading",
                 &path.to_string_lossy(),
-            ));
+            ))
         }
     }
 
