@@ -1,6 +1,8 @@
 # Tubefeeder
 A Youtube-Client made for the Pinephone
 
+[![Matrix](https://img.shields.io/badge/Matrix-Join-brightgreen)](https://matrix.to/#/%23tubefeeder:matrix.org?via=matrix.org)
+
 # Screenshots
 <table>
   <tr>
