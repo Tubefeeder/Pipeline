@@ -4,11 +4,12 @@ use crate::youtube_feed::{Author, Feed};
 use std::cmp::Ordering;
 
 use regex::Regex;
+use std::hash::{Hash, Hasher};
 
 const FEED_URL: &str = "https://www.youtube.com/feeds/videos.xml?channel_id=";
 
 /// A single channel with a id and an optional name.
-#[derive(Clone, Debug, Hash)]
+#[derive(Clone, Debug)]
 pub struct Channel {
     id: String,
     pub name: Option<String>,
@@ -17,6 +18,12 @@ pub struct Channel {
 impl PartialEq for Channel {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
+    }
+}
+
+impl Hash for Channel {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
     }
 }
 
@@ -165,7 +172,7 @@ impl From<Author> for Channel {
     /// Convert a author to a channel.
     /// Will always set the channel name.
     fn from(author: Author) -> Self {
-        let id = author.uri.split("/").last().unwrap();
+        let id = author.uri.split('/').last().unwrap();
         let name = author.name;
 
         Channel::new_with_name(id, &name)

@@ -108,7 +108,7 @@ impl Widget for FeedListItem {
             .label_author
             .set_attributes(Some(&author_attr_list));
 
-        let date_attr_list = author_attr_list.clone();
+        let date_attr_list = author_attr_list;
         self.widgets
             .label_date
             .set_attributes(Some(&date_attr_list));

@@ -43,7 +43,7 @@ impl FromStr for Page {
             }
         }
 
-        return Err(());
+        Err(())
     }
 }
 
@@ -74,7 +74,7 @@ pub struct HeaderBarModel {
 impl Widget for HeaderBar {
     fn model(_relm: &Relm<Self>, app_stream: StreamHandle<AppMsg>) -> HeaderBarModel {
         HeaderBarModel {
-            app_stream: app_stream.clone(),
+            app_stream,
             page: STARTING_PAGE,
             title: STARTING_PAGE.into(),
         }
