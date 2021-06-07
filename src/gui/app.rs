@@ -34,6 +34,19 @@ pub fn get_font_size() -> i32 {
         .unwrap_or(12)
 }
 
+pub fn init_icons() {
+    let res_bytes = include_bytes!("../../resources.gresource");
+
+    let gbytes = glib::Bytes::from_static(res_bytes.as_ref());
+    let resource = gio::Resource::from_data(&gbytes).unwrap();
+
+    let icon_theme = gtk::IconTheme::get_default().unwrap_or(gtk::IconTheme::new());
+
+    icon_theme.add_resource_path("/org/gnome/design/IconLibrary/data/icons/");
+
+    gio::resources_register(&resource);
+}
+
 #[derive(Msg)]
 pub enum AppMsg {
     Loading(bool),
@@ -105,6 +118,8 @@ impl AppModel {
 #[widget]
 impl Widget for Win {
     fn model(relm: &Relm<Self>, _: ()) -> AppModel {
+        init_icons();
+
         let mut user_cache_dir =
             glib::get_user_cache_dir().expect("could not get user cache directory");
         user_cache_dir.push("tubefeeder");
@@ -349,6 +364,7 @@ impl Widget for Win {
         self.widgets.view_switcher_box.add(&view_switcher);
         self.widgets.view_switcher_box.show_all();
 
+
         // Build header bar
         let header_bar_stream = self.components.header_bar.stream();
         header_bar_stream.emit(HeaderBarMsg::SetPage(Page::Feed));
@@ -412,6 +428,7 @@ impl Widget for Win {
                     FeedPage(self.model.app_stream.clone()) {
                         widget_name: &String::from(Page::Feed),
                         child: {
+                            icon_name: Some("go-home-symbolic"),
                             title: Some(&String::from(Page::Feed))
                         }
                     },
@@ -419,6 +436,7 @@ impl Widget for Win {
                     FeedPage(self.model.app_stream.clone()) {
                         widget_name: &String::from(Page::WatchLater),
                         child: {
+                            icon_name: Some("alarm-symbolic"),
                             title: Some(&String::from(Page::WatchLater))
                         }
                     },
@@ -426,6 +444,7 @@ impl Widget for Win {
                     FilterPage(self.model.app_stream.clone()) {
                         widget_name: &String::from(Page::Filters),
                         child: {
+                            icon_name: Some("funnel-symbolic"),
                             title: Some(&String::from(Page::Filters))
                         }
                     },
@@ -433,6 +452,7 @@ impl Widget for Win {
                     SubscriptionsPage(self.model.app_stream.clone()) {
                         widget_name: &String::from(Page::Subscriptions),
                         child: {
+                            icon_name: Some("library-artists-symbolic"),
                             title: Some(&String::from(Page::Subscriptions))
                         }
                     }
