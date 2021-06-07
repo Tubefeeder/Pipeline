@@ -114,7 +114,7 @@ impl Widget for FilterPage {
                 },
                 gtk::Button {
                     clicked => FilterPageMsg::AddFilter,
-                    image: Some(&gtk::Image::from_icon_name(Some("go-next"), gtk::IconSize::LargeToolbar)),
+                    image: Some(&gtk::Image::from_icon_name(Some("go-next-symbolic"), gtk::IconSize::LargeToolbar)),
                 }
             },
 

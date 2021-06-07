@@ -115,7 +115,7 @@ impl Widget for FeedListItem {
 
         self.widgets
             .playing
-            .set_from_icon_name(Some("media-playback-start"), gtk::IconSize::LargeToolbar);
+            .set_from_icon_name(Some("media-playback-start-symbolic"), gtk::IconSize::LargeToolbar);
     }
 
     view! {
@@ -161,7 +161,7 @@ impl Widget for FeedListItem {
                 #[name="button_watch_later"]
                 gtk::Button {
                     clicked => FeedListItemMsg::WatchLater,
-                    image: Some(&gtk::Image::from_icon_name(Some("appointment-soon"), gtk::IconSize::LargeToolbar)),
+                    image: Some(&gtk::Image::from_icon_name(Some("appointment-new-symbolic"), gtk::IconSize::LargeToolbar)),
                 }
             }
         }

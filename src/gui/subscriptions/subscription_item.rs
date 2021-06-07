@@ -60,7 +60,7 @@ impl Widget for SubscriptionItem {
         gtk::ListBoxRow {
             gtk::Box {
                 gtk::Button {
-                    image: Some(&gtk::Image::from_icon_name(Some("list-remove"), gtk::IconSize::LargeToolbar)),
+                    image: Some(&gtk::Image::from_icon_name(Some("list-remove-symbolic"), gtk::IconSize::LargeToolbar)),
                     clicked => SubscriptionItemMsg::Remove,
                 },
                 gtk::Box {

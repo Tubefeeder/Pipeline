@@ -102,17 +102,17 @@ impl Widget for HeaderBar {
             title: Some(&self.model.title),
 
             gtk::Button {
-                image: Some(&gtk::Image::from_icon_name(Some("view-refresh"), gtk::IconSize::LargeToolbar)),
+                image: Some(&gtk::Image::from_icon_name(Some("view-refresh-symbolic"), gtk::IconSize::LargeToolbar)),
                 clicked => HeaderBarMsg::Reload,
                 visible: self.model.page == Page::Feed
             },
             gtk::Button {
-                image: Some(&gtk::Image::from_icon_name(Some("list-add"), gtk::IconSize::LargeToolbar)),
+                image: Some(&gtk::Image::from_icon_name(Some("list-add-symbolic"), gtk::IconSize::LargeToolbar)),
                 clicked => HeaderBarMsg::AddFilter,
                 visible: self.model.page == Page::Filters
             },
             gtk::Button {
-                image: Some(&gtk::Image::from_icon_name(Some("list-add"), gtk::IconSize::LargeToolbar)),
+                image: Some(&gtk::Image::from_icon_name(Some("list-add-symbolic"), gtk::IconSize::LargeToolbar)),
                 clicked => HeaderBarMsg::AddSubscription,
                 visible: self.model.page == Page::Subscriptions
             }
