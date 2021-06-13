@@ -7,3 +7,6 @@ AppImage/appimage-builder-cache
 AppImage/libapprun_hooks.so
 AppImage/excludelist
 AppImage/appdir-lint.sh
+Flatpak/.flatpak-builder
+Flatpak/build-dir
+Flatpak/repo
