@@ -19,8 +19,9 @@
 	"--socket=pulseaudio",
         "--device=dri",
         "--share=network",
-	"--filesystem=xdg-data:create",
-	"--filesystem=xdg-cache:create"
+	"--filesystem=xdg-data/tubefeeder:create:rw",
+	"--filesystem=xdg-cache/tubefeeder:create:rw",
+	"--filesystem=xdg-config/mpv:ro"
     ],
     "build-options": {
         "append-path": "/usr/lib/sdk/rust-stable/bin",
@@ -34,7 +35,7 @@
         }
     },
     "modules" : [
-	    "io.mpv.Mpv/io.mpv.Mpv.yml",
+        "io.mpv.Mpv/io.mpv.Mpv.yml",
         {
             "name" : "libhandy",
             "buildsystem" : "meson",
@@ -56,7 +57,7 @@
             "sources" : [
                 {
                     "type": "dir",
-                    "path": "../"
+                    "path": "../../"
                 }
             ]
         }

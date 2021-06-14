@@ -8,8 +8,8 @@ script:
   - mkdir -p AppDir/usr/share/metainfo
   - cp ../tubefeeder.desktop AppDir/de.schmidhuberj.tubefeeder.desktop
   - cp ../tubefeeder.png AppDir/usr/share/icons/16x16
-  - cp ../target/aarch64-unknown-linux-gnu/release/tubefeeder AppDir/usr/bin/
-  - cp de.schmidhuberj.tubefeeder.appdata.xml AppDir/usr/share/metainfo/ 
+  - cp ../../target/aarch64-unknown-linux-gnu/release/tubefeeder AppDir/usr/bin/
+  - cp ../de.schmidhuberj.tubefeeder.appdata.xml AppDir/usr/share/metainfo/ 
 
 AppDir:
   path: ./AppDir
