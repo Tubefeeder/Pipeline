@@ -7,3 +7,4 @@ AppImage/appimage-builder-cache
 AppImage/libapprun_hooks.so
 AppImage/excludelist
 AppImage/appdir-lint.sh
+resources.gresource

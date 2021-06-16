@@ -123,7 +123,7 @@ impl Widget for SubscriptionsPage {
                 },
                 gtk::Button {
                     clicked => SubscriptionsPageMsg::AddSubscription,
-                    image: Some(&gtk::Image::from_icon_name(Some("go-next"), gtk::IconSize::LargeToolbar)),
+                    image: Some(&gtk::Image::from_icon_name(Some("go-next-symbolic"), gtk::IconSize::LargeToolbar)),
                 }
             },
 

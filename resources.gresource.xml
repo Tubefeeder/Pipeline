@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/gnome/design/IconLibrary/">
+    <file preprocess="xml-stripblanks">data/icons/funnel-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">data/icons/library-artists-symbolic.svg</file>
+  </gresource>
+</gresources>
