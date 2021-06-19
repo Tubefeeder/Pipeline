@@ -1,5 +1,5 @@
 {
-    "app-id" : "de.schmidhuberj.Tubefeeder",
+    "app-id" : "de.schmidhuberj.tubefeeder",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "40",
     "sdk" : "org.gnome.Sdk",
@@ -59,7 +59,12 @@
                     "type": "dir",
                     "path": "../../"
                 }
-            ]
+            ],
+	    "post-install": [
+		    "install -D packaging/de.schmidhuberj.tubefeeder.appdata.xml /app/share/metainfo/de.schmidhuberj.tubefeeder.appdata.xml",
+		    "install -D packaging/tubefeeder.desktop /app/share/applications/de.schmidhuberj.tubefeeder.desktop",
+		    "install -D packaging/tubefeeder.png /app/share/icons/hicolor/512x512/apps/de.schmidhuberj.tubefeeder.png"
+	    ]
         }
     ]
 }
