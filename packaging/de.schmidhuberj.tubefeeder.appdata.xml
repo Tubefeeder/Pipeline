@@ -6,6 +6,10 @@
   <name>Tubefeeder</name>
   <summary>A Youtube-Client made for the Pinephone</summary>
   <launchable type="desktop-id">de.schmidhuberj.Tubefeeder.desktop</launchable>
+  <content_rating type="oars-1.1" />
+  <releases>
+	  <release version="v1.2.0" timestamp="2021-05-19"/>
+  </releases>
 
   <description>
     <p>
@@ -14,8 +18,8 @@
     a watch-later list.
     </p>
     <p>
-    This application uses mpv to play the videos. 
-    Make sure you have mpv installed.
+    Tubefeeder uses mpv to play the videos. 
+    This is already included in Flatpak, install it otherwise.
     </p>
   </description>
 
