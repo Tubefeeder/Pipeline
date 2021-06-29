@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Icon=tubefeeder
+Icon=de.schmidhuberj.tubefeeder
 Name=Tubefeeder
 StartupWMClass=Tubefeeder
-Exec=/home/{user}/.local/bin/tubefeeder
+Exec=/app/bin/tubefeeder
 Categories=Video;AudioVideo
