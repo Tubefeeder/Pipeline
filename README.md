@@ -21,6 +21,23 @@ A Youtube-Client made for the Pinephone
     <tr>
 </table>
 
+# Installation
+
+<table>
+  <tr>
+    <td>Flatpak</td>
+    <td>AppImage</td>
+  </tr>
+  <tr>
+    <td>
+      <a href='https://flathub.org/apps/details/de.schmidhuberj.tubefeeder'><img width='130' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+    </td>
+    <td>
+      <a href='https://github.com/Schmiddiii/Tubefeeder/releases'><img width='130' alt='Download AppImage' src='https://github.com/srevinsaju/get-appimage/raw/master/static/badges/get-appimage-branding-dark.png'/></a>
+    </td>
+  </tr>
+</table>
+
 # What it can do
 - Show the feed of your subscribed channels
 - Play the video with mpv when clicking the feed item
