@@ -4,12 +4,15 @@ version: 1
 script: 
   - rm -rf AppDir | true
   - mkdir -p AppDir/usr/bin
-  - mkdir -p AppDir/usr/share/icons/16x16
+  - mkdir -p AppDir/usr/share/icons/hicolor/512x512
   - mkdir -p AppDir/usr/share/metainfo
-  - cp ../tubefeeder.desktop AppDir/de.schmidhuberj.tubefeeder.desktop
-  - cp ../tubefeeder.png AppDir/usr/share/icons/16x16
+  - mkdir -p AppDir/usr/share/applications
+  - cp ../tubefeeder.desktop AppDir/usr/share/applications/de.schmidhuberj.tubefeeder.desktop
+  - cp ../tubefeeder.png AppDir/usr/share/icons/hicolor/512x512/tubefeeder.png
+  - cp ../tubefeeder.png AppDir/de.schmidhuberj.tubefeeder.png
   - cp ../../target/aarch64-unknown-linux-gnu/release/tubefeeder AppDir/usr/bin/
   - cp ../de.schmidhuberj.tubefeeder.appdata.xml AppDir/usr/share/metainfo/ 
+  - sed "/content_rating/d" -i AppDir/usr/share/metainfo/de.schmidhuberj.tubefeeder.appdata.xml
 
 AppDir:
   path: ./AppDir
