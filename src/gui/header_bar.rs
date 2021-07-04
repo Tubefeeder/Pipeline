@@ -100,6 +100,7 @@ impl Widget for HeaderBar {
         #[name="header_bar"]
         libhandy::HeaderBar {
             title: Some(&self.model.title),
+            show_close_button: true,
 
             gtk::Button {
                 image: Some(&gtk::Image::from_icon_name(Some("view-refresh-symbolic"), gtk::IconSize::LargeToolbar)),
