@@ -8,6 +8,11 @@
   <launchable type="desktop-id">de.schmidhuberj.tubefeeder.desktop</launchable>
   <content_rating type="oars-1.1"/>
   <releases>
+	  <release version="v1.2.2" date="2021-07-08">
+		  <description> 
+			  <p>Fixed too small window size, header bar not having a close button and not beeing draggable.</p>
+		  </description>
+	  </release>
 	  <release version="v1.2.1" date="2021-06-30">
 		  <description> 
 			  <p>Stylistic upgrades and flatpak packaging format</p>
@@ -26,6 +31,17 @@
     Tubefeeder uses mpv to play the videos. 
     This is already included in Flatpak, install it otherwise.
     </p>
+
+    <p>
+    Features:
+    </p>
+
+    <ul>
+    <li>Feed of your favorite videos.</li>
+    <li>Add videos to a watch-later list</li>
+    <li>Filter out unwanted videos.</li>
+    <li>Subscribe to a channel by name.</li>
+    </ul>
   </description>
 
   <screenshots>
