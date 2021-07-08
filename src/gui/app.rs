@@ -404,12 +404,15 @@ impl Widget for Win {
     }
 
     view! {
-        libhandy::Window {
-            #[name="view_switcher_box"]
-            gtk::Box {
+        #[name="window"]
+        gtk::Window {
+            titlebar: view! {
                 #[name="header_bar"]
                 HeaderBar(self.model.app_stream.clone()) {
-                },
+                }
+            },
+            #[name="view_switcher_box"]
+            gtk::Box {
 
                 gtk::Box {
                     orientation: Vertical,
