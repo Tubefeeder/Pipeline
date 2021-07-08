@@ -355,6 +355,8 @@ impl Widget for Win {
     }
 
     fn init_view(&mut self) {
+        self.widgets.window.resize(800, 500);
+
         // Build view switcher
         let view_switcher = ViewSwitcherBarBuilder::new()
             .stack(&self.widgets.application_stack)
