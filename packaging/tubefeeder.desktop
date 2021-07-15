@@ -5,3 +5,4 @@ Name=Tubefeeder
 StartupWMClass=Tubefeeder
 Exec=/app/bin/tubefeeder
 Categories=Video;AudioVideo
+X-Purism-FormFactor=Workstation;Mobile;
