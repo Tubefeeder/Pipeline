@@ -7,7 +7,14 @@
   <summary>A Youtube-Client made for the Pinephone</summary>
   <launchable type="desktop-id">de.schmidhuberj.tubefeeder.desktop</launchable>
   <content_rating type="oars-1.1"/>
+  <developer_name>Julian Schmidhuber</developer_name>
+
   <releases>
+	  <release version="v1.2.3" date="2021-07-08">
+		  <description> 
+			  <p>Made the application visible in phoshs "show only adaptive apps".</p>
+		  </description>
+	  </release>
 	  <release version="v1.2.2" date="2021-07-08">
 		  <description> 
 			  <p>Fixed too small window size, header bar not having a close button and not beeing draggable.</p>
@@ -64,9 +71,15 @@
   </screenshots>
 
   <url type="homepage">https://www.schmidhuberj.de/Tubefeeder/</url>
+  <url type="bugtracker">https://github.com/Schmiddiii/Tubefeeder/issues</url>
+  <url type="help">https://github.com/Schmiddiii/Tubefeeder/wiki</url>
 
   <provides>
     <binary>tubefeeder</binary>
   </provides>
+  <custom>
+    <value key="Purism::form_factor">workstation</value>
+    <value key="Purism::form_factor">mobile</value>
+  </custom>
 </component>
 
