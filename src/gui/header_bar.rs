@@ -23,7 +23,10 @@ use crate::gui::app::AppMsg;
 use std::convert::{From, Into};
 use std::str::FromStr;
 
-use gtk::{ButtonExt, WidgetExt};
+use gtk::{
+    AboutDialogBuilder, ButtonExt, DialogExt, GtkMenuItemExt, MenuButtonExt, MenuShellExt,
+    WidgetExt,
+};
 use libhandy::HeaderBarExt;
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
@@ -82,21 +85,24 @@ pub enum HeaderBarMsg {
     AddSubscription,
     AddFilter,
     Reload,
+    About,
 }
 
 pub struct HeaderBarModel {
     app_stream: StreamHandle<AppMsg>,
     page: Page,
     title: String,
+    relm: Relm<HeaderBar>,
 }
 
 #[widget]
 impl Widget for HeaderBar {
-    fn model(_relm: &Relm<Self>, app_stream: StreamHandle<AppMsg>) -> HeaderBarModel {
+    fn model(relm: &Relm<Self>, app_stream: StreamHandle<AppMsg>) -> HeaderBarModel {
         HeaderBarModel {
             app_stream,
             page: STARTING_PAGE,
             title: STARTING_PAGE.into(),
+            relm: relm.clone(),
         }
     }
 
@@ -108,12 +114,55 @@ impl Widget for HeaderBar {
                 self.model.app_stream.emit(AppMsg::ToggleAddSubscription)
             }
             HeaderBarMsg::AddFilter => self.model.app_stream.emit(AppMsg::ToggleAddFilter),
+            HeaderBarMsg::About => {
+                let about_dialog = AboutDialogBuilder::new()
+                    .authors(vec!["Julian Schmidhuber".to_string()])
+                    .comments("A Youtube-Client made for the Pinephone")
+                    .copyright(
+                        &include_str!("../../NOTICE")
+                            .to_string()
+                            .lines()
+                            .next()
+                            .unwrap_or_default(),
+                    )
+                    .license(include_str!("../../LICENSE"))
+                    .license_type(gtk::License::Gpl30)
+                    .logo_icon_name("icon")
+                    .program_name("Tubefeeder")
+                    .version("1.2.3")
+                    .website("https://www.schmidhuberj.de/Tubefeeder/")
+                    .build();
+                about_dialog.run();
+            }
         }
     }
 
     fn set_page(&mut self, page: Page) {
         self.model.page = page.clone();
         self.model.title = page.into();
+    }
+
+    fn init_view(&mut self) {
+        let menu_button = gtk::MenuButton::new();
+        menu_button.set_image(Some(&gtk::Image::from_icon_name(
+            Some("open-menu-symbolic"),
+            gtk::IconSize::LargeToolbar,
+        )));
+
+        let menu = gtk::Menu::new();
+        let about_item = gtk::MenuItem::with_label("About");
+        relm::connect!(
+            self.model.relm,
+            about_item,
+            connect_activate(_),
+            HeaderBarMsg::About
+        );
+        menu.append(&about_item);
+        menu.show_all();
+        menu_button.set_popup(Some(&menu));
+
+        self.widgets.header_bar.pack_end(&menu_button);
+        self.widgets.header_bar.show_all();
     }
 
     view! {
@@ -136,7 +185,7 @@ impl Widget for HeaderBar {
                 image: Some(&gtk::Image::from_icon_name(Some("list-add-symbolic"), gtk::IconSize::LargeToolbar)),
                 clicked => HeaderBarMsg::AddSubscription,
                 visible: self.model.page == Page::Subscriptions
-            }
+            },
         }
     }
 }
