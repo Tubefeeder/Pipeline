@@ -23,10 +23,7 @@ use crate::gui::app::AppMsg;
 use std::convert::{From, Into};
 use std::str::FromStr;
 
-use gtk::{
-    AboutDialogBuilder, ButtonExt, DialogExt, GtkMenuItemExt, MenuButtonExt, MenuShellExt,
-    WidgetExt,
-};
+use gtk::{AboutDialogBuilder, ButtonExt, GtkMenuItemExt, MenuButtonExt, MenuShellExt, WidgetExt};
 use libhandy::HeaderBarExt;
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
@@ -125,14 +122,13 @@ impl Widget for HeaderBar {
                             .next()
                             .unwrap_or_default(),
                     )
-                    .license(include_str!("../../LICENSE"))
                     .license_type(gtk::License::Gpl30)
                     .logo_icon_name("icon")
                     .program_name("Tubefeeder")
                     .version("1.2.3")
                     .website("https://www.schmidhuberj.de/Tubefeeder/")
                     .build();
-                about_dialog.run();
+                about_dialog.show();
             }
         }
     }
