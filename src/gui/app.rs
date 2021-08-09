@@ -1,3 +1,23 @@
+/*
+ * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ *
+ * This file is part of Tubefeeder.
+ *
+ * Tubefeeder is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Tubefeeder is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Tubefeeder.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
 use crate::errors::Error;
 use crate::filter::{EntryFilter, EntryFilterGroup};
 use crate::gui::error_label::{ErrorLabel, ErrorLabelMsg};
@@ -25,7 +45,7 @@ pub fn get_font_size() -> i32 {
     gtk::Settings::get_default()
         .unwrap()
         .get_property_gtk_font_name()
-        .unwrap_or_else(||" ".into())
+        .unwrap_or_else(|| " ".into())
         .to_string()
         .split(' ')
         .last()
@@ -42,6 +62,7 @@ pub fn init_icons() {
 
     let icon_theme = gtk::IconTheme::get_default().unwrap_or(gtk::IconTheme::new());
 
+    icon_theme.add_resource_path("/");
     icon_theme.add_resource_path("/org/gnome/design/IconLibrary/data/icons/");
 
     gio::resources_register(&resource);
@@ -83,7 +104,9 @@ pub struct AppModel {
 impl AppModel {
     fn reload_subscriptions(&mut self) -> Result<(), Error> {
         let subscription_res = ChannelGroup::get_from_path(&self.subscriptions_file);
-        self.subscriptions = subscription_res.clone().unwrap_or_else(|_|ChannelGroup::new());
+        self.subscriptions = subscription_res
+            .clone()
+            .unwrap_or_else(|_| ChannelGroup::new());
 
         if let Err(e) = subscription_res {
             Err(e)
@@ -94,7 +117,9 @@ impl AppModel {
 
     fn reload_filters(&mut self) -> Result<(), Error> {
         let filter_res = EntryFilterGroup::get_from_path(&self.filter_file);
-        self.filter = filter_res.clone().unwrap_or_else(|_| EntryFilterGroup::new());
+        self.filter = filter_res
+            .clone()
+            .unwrap_or_else(|_| EntryFilterGroup::new());
 
         if let Err(e) = filter_res {
             Err(e)
@@ -365,7 +390,6 @@ impl Widget for Win {
 
         self.widgets.view_switcher_box.add(&view_switcher);
         self.widgets.view_switcher_box.show_all();
-
 
         // Build header bar
         let header_bar_stream = self.components.header_bar.stream();
