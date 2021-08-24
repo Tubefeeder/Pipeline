@@ -21,7 +21,9 @@
 use crate::gui::app::AppMsg;
 use crate::gui::feed::feed_item::{FeedListItem, FeedListItemMsg};
 use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
-use crate::youtube_feed::{Entry, Feed};
+// use crate::youtube_feed::{Entry, Feed};
+
+use tf_join::AnyVideo;
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
@@ -29,28 +31,24 @@ use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
 pub struct FeedElementBuilder {
-    chunks: Vec<Vec<(Entry, StreamHandle<AppMsg>)>>,
+    chunks: Vec<Vec<(AnyVideo, StreamHandle<AppMsg>)>>,
 }
 
 impl FeedElementBuilder {
-    fn new(feed: Feed, app_stream: StreamHandle<AppMsg>) -> Self {
+    fn new(feed: Box<dyn Iterator<Item = AnyVideo>>, app_stream: StreamHandle<AppMsg>) -> Self {
         FeedElementBuilder {
             chunks: feed
-                .entries
+                .map(|v| (v.clone(), app_stream.clone()))
+                .collect::<Vec<(AnyVideo, StreamHandle<AppMsg>)>>()
                 .chunks(10)
-                .map(|slice| {
-                    slice
-                        .iter()
-                        .map(|c| (c.clone(), app_stream.clone()))
-                        .collect()
-                })
-                .collect::<Vec<Vec<(Entry, StreamHandle<AppMsg>)>>>(),
+                .map(|slice| Vec::from(slice))
+                .collect::<Vec<Vec<(AnyVideo, StreamHandle<AppMsg>)>>>(),
         }
     }
 }
 
 impl ListElementBuilder<FeedListItem> for FeedElementBuilder {
-    fn poll(&mut self) -> Vec<(Entry, StreamHandle<AppMsg>)> {
+    fn poll(&mut self) -> Vec<(AnyVideo, StreamHandle<AppMsg>)> {
         if !self.chunks.is_empty() {
             self.chunks.remove(0)
         } else {
@@ -69,7 +67,7 @@ impl ListElementBuilder<FeedListItem> for FeedElementBuilder {
 
 #[derive(Msg)]
 pub enum FeedPageMsg {
-    SetFeed(Feed),
+    SetFeed(Box<dyn Iterator<Item = AnyVideo>>),
 }
 
 pub struct FeedPageModel {

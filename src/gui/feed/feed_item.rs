@@ -20,14 +20,14 @@
 
 use crate::gui::app::AppMsg;
 use crate::gui::feed::date_label::DateLabel;
-use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
+// use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::gui::{get_font_size, FONT_RATIO};
-use crate::youtube_feed::Entry;
+// use crate::youtube_feed::Entry;
 
-use std::thread;
+use tf_join::AnyVideo;
 
 use gtk::prelude::*;
-use gtk::{Align, ImageExt, Justification, Orientation, PackType};
+use gtk::{ImageExt, Justification, Orientation, PackType};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
@@ -36,61 +36,63 @@ use relm_derive::{widget, Msg};
 pub enum FeedListItemMsg {
     SetImage,
     Clicked,
-    SetPlaying(bool),
+    _SetPlaying(bool),
     WatchLater,
 }
 
 pub struct FeedListItemModel {
-    app_stream: StreamHandle<AppMsg>,
-    entry: Entry,
+    _app_stream: StreamHandle<AppMsg>,
+    entry: AnyVideo,
     playing: bool,
-    relm: Relm<FeedListItem>,
+    _relm: Relm<FeedListItem>,
 }
 
 #[widget]
 impl Widget for FeedListItem {
     fn model(
-        relm: &Relm<Self>,
-        (entry, app_stream): (Entry, StreamHandle<AppMsg>),
+        _relm: &Relm<Self>,
+        (entry, _app_stream): (AnyVideo, StreamHandle<AppMsg>),
     ) -> FeedListItemModel {
         FeedListItemModel {
-            app_stream,
+            _app_stream,
             entry,
             playing: false,
-            relm: relm.clone(),
+            _relm: _relm.clone(),
         }
     }
 
     fn update(&mut self, event: FeedListItemMsg) {
         match event {
             FeedListItemMsg::SetImage => {
-                self.components.thumbnail.emit(ThumbnailMsg::SetImage);
+                // self.components.thumbnail.emit(ThumbnailMsg::SetImage);
             }
-            FeedListItemMsg::SetPlaying(playing) => {
-                self.model.playing = playing;
+            FeedListItemMsg::_SetPlaying(_playing) => {
+                // self.model.playing = playing;
             }
             FeedListItemMsg::Clicked => {
-                let result = self.model.entry.play();
+                // let result = self.model.entry.play();
 
-                if let Ok(mut child) = result {
-                    let stream = self.model.relm.stream().clone();
+                // if let Ok(mut child) = result {
+                //     let stream = self.model.relm.stream().clone();
 
-                    stream.emit(FeedListItemMsg::SetPlaying(true));
+                //     stream.emit(FeedListItemMsg::SetPlaying(true));
 
-                    let (_channel, sender) = relm::Channel::new(move |_| {
-                        stream.emit(FeedListItemMsg::SetPlaying(false));
-                    });
+                //     let (_channel, sender) = relm::Channel::new(move |_| {
+                //         stream.emit(FeedListItemMsg::SetPlaying(false));
+                //     });
 
-                    thread::spawn(move || {
-                        let _ = child.wait();
-                        sender.send(()).expect("Could not send message");
-                    });
-                }
+                //     thread::spawn(move || {
+                //         let _ = child.wait();
+                //         sender.send(()).expect("Could not send message");
+                //     });
+                // }
+
+                // TODO
             }
             FeedListItemMsg::WatchLater => {
-                self.model
-                    .app_stream
-                    .emit(AppMsg::ToggleWatchLater(self.model.entry.clone()));
+                // self.model
+                //     .app_stream
+                //     .emit(AppMsg::ToggleWatchLater(self.model.entry.clone()));
             }
         }
     }
@@ -124,18 +126,19 @@ impl Widget for FeedListItem {
         author_attr_list.insert(
             Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
         );
-        self.widgets
-            .label_author
-            .set_attributes(Some(&author_attr_list));
+        // self.widgets
+        //     .label_author
+        //     .set_attributes(Some(&author_attr_list));
 
         let date_attr_list = author_attr_list;
         self.widgets
             .label_date
             .set_attributes(Some(&date_attr_list));
 
-        self.widgets
-            .playing
-            .set_from_icon_name(Some("media-playback-start-symbolic"), gtk::IconSize::LargeToolbar);
+        self.widgets.playing.set_from_icon_name(
+            Some("media-playback-start-symbolic"),
+            gtk::IconSize::LargeToolbar,
+        );
     }
 
     view! {
@@ -150,8 +153,8 @@ impl Widget for FeedListItem {
                     visible: self.model.playing
                 },
 
-                #[name="thumbnail"]
-                Thumbnail(self.model.entry.media.thumbnail.clone()),
+                // #[name="thumbnail"]
+                // Thumbnail(self.model.entry.media.thumbnail.clone()),
 
                 #[name="box_info"]
                 gtk::Box {
@@ -160,23 +163,23 @@ impl Widget for FeedListItem {
 
                     #[name="label_title"]
                     gtk::Label {
-                        text: &self.model.entry.title,
+                        text: &self.model.entry.title(),
                         ellipsize: EllipsizeMode::End,
                         property_wrap: true,
                         property_wrap_mode: WrapMode::Word,
                         lines: 2,
                         justify: Justification::Left,
                     },
-                    #[name="label_author"]
-                    gtk::Label {
-                        text: &self.model.entry.author.name,
-                        ellipsize: EllipsizeMode::End,
-                        property_wrap: true,
-                        property_wrap_mode: WrapMode::Word,
-                        halign: Align::Start
-                    },
+                    // #[name="label_author"]
+                    // gtk::Label {
+                    //     text: &self.model.entry.subscription().name().unwrap_or("".to_owned()),
+                    //     ellipsize: EllipsizeMode::End,
+                    //     property_wrap: true,
+                    //     property_wrap_mode: WrapMode::Word,
+                    //     halign: Align::Start
+                    // },
                     #[name="label_date"]
-                    DateLabel(self.model.entry.published.clone()) {}
+                    DateLabel(self.model.entry.uploaded().clone()) {}
                 },
                 #[name="button_watch_later"]
                 gtk::Button {

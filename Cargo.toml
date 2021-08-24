@@ -15,14 +15,22 @@ glib = "0.10.3"
 pango = "0.9.0"
 relm = {git = "https://github.com/Schmiddiii/relm", branch = "panic-streamhandle"}
 relm-derive = "0.21.0"
-regex = "1.4.4"
-reqwest = {version = "0.11.1", features = ["rustls-tls", "blocking"], default-features = false}
+# regex = "1.4.4"
+# reqwest = {version = "0.11.1", features = ["rustls-tls", "blocking"], default-features = false}
 tokio = {version = "1.2.0", features = ["full"]}
-quick-xml = {version = "0.21", features = ["serialize"]}
-serde = {version = "1.0", features = ["derive"]}
+# quick-xml = {version = "0.21", features = ["serialize"]}
+# serde = {version = "1.0", features = ["derive"]}
 chrono = {version = "0.4.19", features = ["serde"]}
 libhandy = "0.7.1"
-rayon = "1.5.0"
+# rayon = "1.5.0"
 futures = "0.3.13"
 
-file-minidb = {git = "https://github.com/Schmiddiii/file-minidb.git"}
+# file-minidb = {git = "https://github.com/Schmiddiii/file-minidb.git"}
+tf_core = { package = "tubefeeder-extractor-core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
+tf_yt = { package = "tubefeeder-extractor-youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
+tf_join = { package = "tubefeeder-extractor-join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
+
+[patch."https://github.com/Tubefeeder/tubefeeder-extractor.git"]
+tf_core = { package = "tubefeeder-extractor-core", path = "../tubefeeder-extractor/tubefeeder-extractor-core" }
+tf_yt = { package = "tubefeeder-extractor-youtube", path = "../tubefeeder-extractor/tubefeeder-extractor-youtube" }
+tf_join = { package = "tubefeeder-extractor-join", path = "../tubefeeder-extractor/tubefeeder-extractor-join" }

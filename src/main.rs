@@ -18,17 +18,28 @@
  *
  */
 
-mod errors;
-mod filter;
+// mod errors;
+// mod filter;
 mod gui;
-mod subscriptions;
-mod youtube_feed;
+// mod subscriptions;
+// mod youtube_feed;
 
 use crate::gui::Win;
 
 use relm::Widget;
 
+const SUBSCRIPTION_IDS: &'static [&'static str] = &[
+    "UCld68syR8Wi-GY_n4CaoJGA", // Brodie Robertson
+    "UCVls1GmFKf6WlTraIb_IaJg", // DistroTube
+];
+
 #[tokio::main]
 async fn main() {
-    Win::run(()).unwrap();
+    let joiner = tf_join::Joiner::new();
+
+    SUBSCRIPTION_IDS
+        .iter()
+        .map(|id| tf_yt::YTSubscription::new(id))
+        .for_each(|sub| joiner.subscribe(sub.into()));
+    Win::run(joiner).unwrap();
 }

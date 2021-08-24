@@ -70,7 +70,8 @@ impl FromStr for Page {
 impl From<Page> for String {
     fn from(page: Page) -> Self {
         match page {
-            Page::WatchLater => "Watch Later".to_string(),
+            Page::WatchLater => "Watch Later (NOT WORKING)".to_string(),
+            Page::Filters => "Filters (NOT WORKING)".to_string(),
             _ => format!("{:?}", page),
         }
     }
@@ -108,9 +109,9 @@ impl Widget for HeaderBar {
             HeaderBarMsg::SetPage(page) => self.set_page(page),
             HeaderBarMsg::Reload => self.model.app_stream.emit(AppMsg::Reload),
             HeaderBarMsg::AddSubscription => {
-                self.model.app_stream.emit(AppMsg::ToggleAddSubscription)
+                // self.model.app_stream.emit(AppMsg::ToggleAddSubscription)
             }
-            HeaderBarMsg::AddFilter => self.model.app_stream.emit(AppMsg::ToggleAddFilter),
+            HeaderBarMsg::AddFilter => {} //self.model.app_stream.emit(AppMsg::ToggleAddFilter),
             HeaderBarMsg::About => {
                 let about_dialog = AboutDialogBuilder::new()
                     .authors(vec!["Julian Schmidhuber".to_string()])
