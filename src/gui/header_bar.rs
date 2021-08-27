@@ -23,8 +23,9 @@ use crate::gui::app::AppMsg;
 use std::convert::{From, Into};
 use std::str::FromStr;
 
-use gtk::{AboutDialogBuilder, ButtonExt, GtkMenuItemExt, MenuButtonExt, MenuShellExt, WidgetExt};
-use libhandy::HeaderBarExt;
+use gtk::prelude::*;
+use gtk::AboutDialogBuilder;
+use libhandy::traits::HeaderBarExt;
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 

@@ -19,7 +19,8 @@
  */
 
 use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
-use gtk::{Align, LabelExt, WidgetExt};
+use gtk::prelude::*;
+use gtk::Align;
 use pango::{EllipsizeMode, WrapMode};
 use relm::{Relm, Widget};
 use relm_derive::widget;
@@ -39,8 +40,8 @@ impl Widget for DateLabel {
         gtk::Label {
             text: &self.model,
             ellipsize: EllipsizeMode::End,
-            property_wrap: true,
-            property_wrap_mode: WrapMode::Word,
+            wrap: true,
+            wrap_mode: WrapMode::Word,
             halign: Align::Start
         }
     }

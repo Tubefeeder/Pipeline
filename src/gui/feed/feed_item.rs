@@ -20,14 +20,13 @@
 
 use crate::gui::app::AppMsg;
 use crate::gui::feed::date_label::DateLabel;
-// use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
+use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::gui::{get_font_size, FONT_RATIO};
-// use crate::youtube_feed::Entry;
 
 use tf_join::AnyVideo;
 
 use gtk::prelude::*;
-use gtk::{ImageExt, Justification, Orientation, PackType};
+use gtk::{Align, Justification, Orientation, PackType};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
@@ -64,7 +63,7 @@ impl Widget for FeedListItem {
     fn update(&mut self, event: FeedListItemMsg) {
         match event {
             FeedListItemMsg::SetImage => {
-                // self.components.thumbnail.emit(ThumbnailMsg::SetImage);
+                self.components.thumbnail.emit(ThumbnailMsg::SetImage);
             }
             FeedListItemMsg::_SetPlaying(_playing) => {
                 // self.model.playing = playing;
@@ -117,18 +116,18 @@ impl Widget for FeedListItem {
         let font_size = get_font_size();
 
         let title_attr_list = AttrList::new();
-        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
+        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE));
         self.widgets
             .label_title
             .set_attributes(Some(&title_attr_list));
 
         let author_attr_list = AttrList::new();
-        author_attr_list.insert(
-            Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
-        );
-        // self.widgets
-        //     .label_author
-        //     .set_attributes(Some(&author_attr_list));
+        author_attr_list.insert(Attribute::new_size(
+            (FONT_RATIO * (font_size * pango::SCALE) as f32) as i32,
+        ));
+        self.widgets
+            .label_author
+            .set_attributes(Some(&author_attr_list));
 
         let date_attr_list = author_attr_list;
         self.widgets
@@ -153,8 +152,8 @@ impl Widget for FeedListItem {
                     visible: self.model.playing
                 },
 
-                // #[name="thumbnail"]
-                // Thumbnail(self.model.entry.media.thumbnail.clone()),
+                #[name="thumbnail"]
+                Thumbnail(self.model.entry.clone()),
 
                 #[name="box_info"]
                 gtk::Box {
@@ -165,19 +164,19 @@ impl Widget for FeedListItem {
                     gtk::Label {
                         text: &self.model.entry.title(),
                         ellipsize: EllipsizeMode::End,
-                        property_wrap: true,
-                        property_wrap_mode: WrapMode::Word,
+                        wrap: true,
+                        wrap_mode: WrapMode::Word,
                         lines: 2,
                         justify: Justification::Left,
                     },
-                    // #[name="label_author"]
-                    // gtk::Label {
-                    //     text: &self.model.entry.subscription().name().unwrap_or("".to_owned()),
-                    //     ellipsize: EllipsizeMode::End,
-                    //     property_wrap: true,
-                    //     property_wrap_mode: WrapMode::Word,
-                    //     halign: Align::Start
-                    // },
+                    #[name="label_author"]
+                    gtk::Label {
+                        text: &self.model.entry.subscription().to_string(),
+                        ellipsize: EllipsizeMode::End,
+                        wrap: true,
+                        wrap_mode: WrapMode::Word,
+                        halign: Align::Start
+                    },
                     #[name="label_date"]
                     DateLabel(self.model.entry.uploaded().clone()) {}
                 },

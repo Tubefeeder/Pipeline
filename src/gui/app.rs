@@ -37,6 +37,7 @@ use std::sync::{Arc, Mutex};
 
 use gtk::prelude::*;
 use gtk::{Inhibit, Orientation::Vertical};
+use gtk::traits::SettingsExt;
 use libhandy::ViewSwitcherBarBuilder;
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
@@ -45,9 +46,9 @@ use relm_derive::{widget, Msg};
 pub const FONT_RATIO: f32 = 2.0 / 3.0;
 
 pub fn get_font_size() -> i32 {
-    gtk::Settings::get_default()
+    gtk::Settings::default()
         .unwrap()
-        .get_property_gtk_font_name()
+        .gtk_font_name()
         .unwrap_or_else(|| " ".into())
         .to_string()
         .split(' ')
@@ -63,7 +64,7 @@ pub fn init_icons() {
     let gbytes = glib::Bytes::from_static(res_bytes.as_ref());
     let resource = gio::Resource::from_data(&gbytes).unwrap();
 
-    let icon_theme = gtk::IconTheme::get_default().unwrap_or(gtk::IconTheme::new());
+    let icon_theme = gtk::IconTheme::default().unwrap_or(gtk::IconTheme::new());
 
     icon_theme.add_resource_path("/");
     icon_theme.add_resource_path("/org/gnome/design/IconLibrary/data/icons/");
@@ -148,7 +149,7 @@ impl Widget for Win {
         init_icons();
 
         let mut user_cache_dir =
-            glib::get_user_cache_dir().expect("could not get user cache directory");
+            glib::user_cache_dir();
         user_cache_dir.push("tubefeeder");
 
         if !user_cache_dir.exists() {
@@ -156,7 +157,7 @@ impl Widget for Win {
         }
 
         let mut user_data_dir =
-            glib::get_user_data_dir().expect("could not get user data directory");
+            glib::user_data_dir();
         user_data_dir.push("tubefeeder");
 
         if !user_data_dir.exists() {
@@ -325,7 +326,7 @@ impl Widget for Win {
                 gtk::main_quit();
 
                 let mut user_cache_dir =
-                    glib::get_user_cache_dir().expect("could not get user cache directory");
+                    glib::user_cache_dir();
                 user_cache_dir.push("tubefeeder");
 
                 if user_cache_dir.exists() {
@@ -400,9 +401,9 @@ impl Widget for Win {
 
         self.widgets
             .application_stack
-            .connect_property_visible_child_notify(move |stack| {
-                let child = stack.get_visible_child().unwrap();
-                let title = child.get_widget_name();
+            .connect_visible_child_notify(move |stack| {
+                let child = stack.visible_child().unwrap();
+                let title = child.widget_name();
                 header_bar_stream.emit(HeaderBarMsg::SetPage(Page::from_str(&title).unwrap()));
             });
 
@@ -450,7 +451,7 @@ impl Widget for Win {
                     #[name="loading_spinner"]
                     gtk::Spinner {
                         visible: self.model.loading,
-                        property_active: true
+                        active: true
                     }
                 },
                 orientation: Vertical,

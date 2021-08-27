@@ -35,6 +35,7 @@ const SUBSCRIPTION_IDS: &'static [&'static str] = &[
 
 #[tokio::main]
 async fn main() {
+    env_logger::init();
     let joiner = tf_join::Joiner::new();
 
     SUBSCRIPTION_IDS

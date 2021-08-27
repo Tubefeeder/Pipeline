@@ -8,22 +8,24 @@ edition = "2018"
 
 [dependencies]
 bytes = "1.0.1"
-gio = "0.9.0"
-gtk = {version = "0.9.0", features = ["v3_16"]}
-gdk-pixbuf = "0.9.0"
-glib = "0.10.3"
-pango = "0.9.0"
-relm = {git = "https://github.com/Schmiddiii/relm", branch = "panic-streamhandle"}
-relm-derive = "0.21.0"
+gio = "0.14.0"
+gtk = {version = "0.14.0"}
+gdk-pixbuf = "0.14.0"
+glib = "0.14.4"
+pango = "0.14.3"
+relm = "0.22.0"
+relm-derive = "0.22.0"
 # regex = "1.4.4"
 # reqwest = {version = "0.11.1", features = ["rustls-tls", "blocking"], default-features = false}
 tokio = {version = "1.2.0", features = ["full"]}
 # quick-xml = {version = "0.21", features = ["serialize"]}
 # serde = {version = "1.0", features = ["derive"]}
 chrono = {version = "0.4.19", features = ["serde"]}
-libhandy = "0.7.1"
+libhandy = "0.8.0"
 # rayon = "1.5.0"
 futures = "0.3.13"
+
+env_logger = "0.9.0"
 
 # file-minidb = {git = "https://github.com/Schmiddiii/file-minidb.git"}
 tf_core = { package = "tubefeeder-extractor-core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
