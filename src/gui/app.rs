@@ -36,8 +36,8 @@ use std::str::FromStr;
 use std::sync::{Arc, Mutex};
 
 use gtk::prelude::*;
-use gtk::{Inhibit, Orientation::Vertical};
 use gtk::traits::SettingsExt;
+use gtk::{Inhibit, Orientation::Vertical};
 use libhandy::ViewSwitcherBarBuilder;
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
@@ -64,7 +64,7 @@ pub fn init_icons() {
     let gbytes = glib::Bytes::from_static(res_bytes.as_ref());
     let resource = gio::Resource::from_data(&gbytes).unwrap();
 
-    let icon_theme = gtk::IconTheme::default().unwrap_or(gtk::IconTheme::new());
+    let icon_theme = gtk::IconTheme::default().unwrap_or_default();
 
     icon_theme.add_resource_path("/");
     icon_theme.add_resource_path("/org/gnome/design/IconLibrary/data/icons/");
@@ -148,16 +148,14 @@ impl Widget for Win {
     fn model(relm: &Relm<Self>, joiner: Joiner) -> AppModel {
         init_icons();
 
-        let mut user_cache_dir =
-            glib::user_cache_dir();
+        let mut user_cache_dir = glib::user_cache_dir();
         user_cache_dir.push("tubefeeder");
 
         if !user_cache_dir.exists() {
             std::fs::create_dir_all(user_cache_dir).expect("could not create user cache dir");
         }
 
-        let mut user_data_dir =
-            glib::user_data_dir();
+        let mut user_data_dir = glib::user_data_dir();
         user_data_dir.push("tubefeeder");
 
         if !user_data_dir.exists() {
@@ -325,8 +323,7 @@ impl Widget for Win {
             AppMsg::Quit => {
                 gtk::main_quit();
 
-                let mut user_cache_dir =
-                    glib::user_cache_dir();
+                let mut user_cache_dir = glib::user_cache_dir();
                 user_cache_dir.push("tubefeeder");
 
                 if user_cache_dir.exists() {
@@ -337,7 +334,6 @@ impl Widget for Win {
     }
 
     fn reload(&mut self) {
-        println!("Reloading");
         let loading_spinner = self.widgets.loading_spinner.clone();
         loading_spinner.set_visible(true);
 

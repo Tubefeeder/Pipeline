@@ -25,6 +25,7 @@ libhandy = "0.8.0"
 # rayon = "1.5.0"
 futures = "0.3.13"
 
+log = "0.4.14"
 env_logger = "0.9.0"
 
 # file-minidb = {git = "https://github.com/Schmiddiii/file-minidb.git"}
@@ -32,7 +33,7 @@ tf_core = { package = "tubefeeder-extractor-core", git = "https://github.com/Tub
 tf_yt = { package = "tubefeeder-extractor-youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
 tf_join = { package = "tubefeeder-extractor-join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
 
-[patch."https://github.com/Tubefeeder/tubefeeder-extractor.git"]
-tf_core = { package = "tubefeeder-extractor-core", path = "../tubefeeder-extractor/tubefeeder-extractor-core" }
-tf_yt = { package = "tubefeeder-extractor-youtube", path = "../tubefeeder-extractor/tubefeeder-extractor-youtube" }
-tf_join = { package = "tubefeeder-extractor-join", path = "../tubefeeder-extractor/tubefeeder-extractor-join" }
+# [patch."https://github.com/Tubefeeder/tubefeeder-extractor.git"]
+# tf_core = { package = "tubefeeder-extractor-core", path = "../tubefeeder-extractor/tubefeeder-extractor-core" }
+# tf_yt = { package = "tubefeeder-extractor-youtube", path = "../tubefeeder-extractor/tubefeeder-extractor-youtube" }
+# tf_join = { package = "tubefeeder-extractor-join", path = "../tubefeeder-extractor/tubefeeder-extractor-join" }

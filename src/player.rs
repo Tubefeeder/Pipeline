@@ -15,33 +15,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Tubefeeder.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 
-// mod errors;
-// mod filter;
-mod gui;
-mod player;
-// mod subscriptions;
-// mod youtube_feed;
+use std::{
+    process::{Command, Stdio},
+    thread,
+};
 
-use crate::gui::Win;
+use tf_join::AnyVideo;
 
-use relm::Widget;
-
-const SUBSCRIPTION_IDS: &[&str] = &[
-    "UCld68syR8Wi-GY_n4CaoJGA", // Brodie Robertson
-    "UCVls1GmFKf6WlTraIb_IaJg", // DistroTube
-];
-
-#[tokio::main]
-async fn main() {
-    env_logger::init();
-    let joiner = tf_join::Joiner::new();
-
-    SUBSCRIPTION_IDS
-        .iter()
-        .map(|id| tf_yt::YTSubscription::new(id))
-        .for_each(|sub| joiner.subscribe(sub.into()));
-    Win::run(joiner).unwrap();
+pub fn play(video: AnyVideo) {
+    thread::spawn(move || {
+        log::debug!("Playing video with title: {}", video.title());
+        video.play();
+        let _ = Command::new("mpv")
+            .arg(video.url())
+            .stdout(Stdio::null())
+            .stdin(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .unwrap()
+            .wait();
+        log::debug!("Stopped video with title: {}", video.title());
+        video.stop();
+    });
 }

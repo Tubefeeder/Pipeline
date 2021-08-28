@@ -18,24 +18,28 @@
  *
  */
 
+use std::sync::{Arc, Mutex};
+
 use crate::gui::app::AppMsg;
 use crate::gui::feed::date_label::DateLabel;
 use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::gui::{get_font_size, FONT_RATIO};
+use crate::player::play;
 
+use tf_core::{Observable, Observer, VideoEvent};
 use tf_join::AnyVideo;
 
 use gtk::prelude::*;
 use gtk::{Align, Justification, Orientation, PackType};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
-use relm::{Relm, StreamHandle, Widget};
+use relm::{Channel, Relm, Sender, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
 #[derive(Msg)]
 pub enum FeedListItemMsg {
     SetImage,
     Clicked,
-    _SetPlaying(bool),
+    SetPlaying(bool),
     WatchLater,
 }
 
@@ -43,20 +47,28 @@ pub struct FeedListItemModel {
     _app_stream: StreamHandle<AppMsg>,
     entry: AnyVideo,
     playing: bool,
-    _relm: Relm<FeedListItem>,
+    relm: Relm<FeedListItem>,
+    observer: Arc<Mutex<Box<dyn Observer<VideoEvent> + Send>>>,
+    _channel: Channel<FeedListItemMsg>,
 }
 
 #[widget]
 impl Widget for FeedListItem {
     fn model(
-        _relm: &Relm<Self>,
+        relm: &Relm<Self>,
         (entry, _app_stream): (AnyVideo, StreamHandle<AppMsg>),
     ) -> FeedListItemModel {
+        let relm_clone = relm.clone();
+        let (_channel, sender) = Channel::new(move |msg| {
+            relm_clone.stream().emit(msg);
+        });
         FeedListItemModel {
             _app_stream,
             entry,
             playing: false,
-            _relm: _relm.clone(),
+            relm: relm.clone(),
+            observer: Arc::new(Mutex::new(Box::new(FeedListItemObserver { sender }))),
+            _channel,
         }
     }
 
@@ -65,10 +77,11 @@ impl Widget for FeedListItem {
             FeedListItemMsg::SetImage => {
                 self.components.thumbnail.emit(ThumbnailMsg::SetImage);
             }
-            FeedListItemMsg::_SetPlaying(_playing) => {
-                // self.model.playing = playing;
+            FeedListItemMsg::SetPlaying(playing) => {
+                self.model.playing = playing;
             }
             FeedListItemMsg::Clicked => {
+                play(self.model.entry.clone());
                 // let result = self.model.entry.play();
 
                 // if let Ok(mut child) = result {
@@ -97,6 +110,9 @@ impl Widget for FeedListItem {
     }
 
     fn init_view(&mut self) {
+        self.model
+            .entry
+            .attach(Arc::downgrade(&self.model.observer));
         self.widgets.box_content.set_child_packing(
             &self.widgets.button_watch_later,
             false,
@@ -138,6 +154,11 @@ impl Widget for FeedListItem {
             Some("media-playback-start-symbolic"),
             gtk::IconSize::LargeToolbar,
         );
+
+        self.model
+            .relm
+            .stream()
+            .emit(FeedListItemMsg::SetPlaying(self.model.entry.playing()));
     }
 
     view! {
@@ -185,6 +206,23 @@ impl Widget for FeedListItem {
                     clicked => FeedListItemMsg::WatchLater,
                     image: Some(&gtk::Image::from_icon_name(Some("appointment-new-symbolic"), gtk::IconSize::LargeToolbar)),
                 }
+            }
+        }
+    }
+}
+
+pub struct FeedListItemObserver {
+    sender: Sender<FeedListItemMsg>,
+}
+
+impl Observer<VideoEvent> for FeedListItemObserver {
+    fn notify(&mut self, message: VideoEvent) {
+        match message {
+            VideoEvent::Play => {
+                let _ = self.sender.send(FeedListItemMsg::SetPlaying(true));
+            }
+            VideoEvent::Stop => {
+                let _ = self.sender.send(FeedListItemMsg::SetPlaying(false));
             }
         }
     }

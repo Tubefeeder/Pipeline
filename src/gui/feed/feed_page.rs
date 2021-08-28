@@ -38,10 +38,10 @@ impl FeedElementBuilder {
     fn new(feed: Box<dyn Iterator<Item = AnyVideo>>, app_stream: StreamHandle<AppMsg>) -> Self {
         FeedElementBuilder {
             chunks: feed
-                .map(|v| (v.clone(), app_stream.clone()))
+                .map(|v| (v, app_stream.clone()))
                 .collect::<Vec<(AnyVideo, StreamHandle<AppMsg>)>>()
                 .chunks(10)
-                .map(|slice| Vec::from(slice))
+                .map(Vec::from)
                 .collect::<Vec<Vec<(AnyVideo, StreamHandle<AppMsg>)>>>(),
         }
     }

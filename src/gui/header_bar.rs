@@ -118,7 +118,7 @@ impl Widget for HeaderBar {
                     .authors(vec!["Julian Schmidhuber".to_string()])
                     .comments("A Youtube-Client made for the Pinephone")
                     .copyright(
-                        &include_str!("../../NOTICE")
+                        include_str!("../../NOTICE")
                             .to_string()
                             .lines()
                             .next()

@@ -71,7 +71,7 @@ impl Widget for Thumbnail {
 
         let (_channel, sender) = Channel::new(move |path| {
             stream.emit(ThumbnailMsg::SetImagePixbuf(
-                Pixbuf::from_file(path).unwrap_or(default_pixbuf()),
+                Pixbuf::from_file(path).unwrap_or_else(|_| default_pixbuf()),
             ));
         });
 
