@@ -7,7 +7,6 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bytes = "1.0.1"
 gio = "0.14.0"
 gtk = {version = "0.14.0"}
 gdk-pixbuf = "0.14.0"
@@ -15,25 +14,22 @@ glib = "0.14.4"
 pango = "0.14.3"
 relm = "0.22.0"
 relm-derive = "0.22.0"
-# regex = "1.4.4"
-# reqwest = {version = "0.11.1", features = ["rustls-tls", "blocking"], default-features = false}
-tokio = {version = "1.2.0", features = ["full"]}
-# quick-xml = {version = "0.21", features = ["serialize"]}
-# serde = {version = "1.0", features = ["derive"]}
-chrono = {version = "0.4.19", features = ["serde"]}
 libhandy = "0.8.0"
-# rayon = "1.5.0"
+
+tokio = {version = "1.2.0", features = ["full"]}
 futures = "0.3.13"
+
+chrono = {version = "0.4.19"}
+csv = "1.1.6"
 
 log = "0.4.14"
 env_logger = "0.9.0"
 
-# file-minidb = {git = "https://github.com/Schmiddiii/file-minidb.git"}
 tf_core = { package = "tubefeeder-extractor-core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
 tf_yt = { package = "tubefeeder-extractor-youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
 tf_join = { package = "tubefeeder-extractor-join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
 
-# [patch."https://github.com/Tubefeeder/tubefeeder-extractor.git"]
-# tf_core = { package = "tubefeeder-extractor-core", path = "../tubefeeder-extractor/tubefeeder-extractor-core" }
-# tf_yt = { package = "tubefeeder-extractor-youtube", path = "../tubefeeder-extractor/tubefeeder-extractor-youtube" }
-# tf_join = { package = "tubefeeder-extractor-join", path = "../tubefeeder-extractor/tubefeeder-extractor-join" }
+[patch."https://github.com/Tubefeeder/tubefeeder-extractor.git"]
+tf_core = { package = "tubefeeder-extractor-core", path = "../tubefeeder-extractor/tubefeeder-extractor-core" }
+tf_yt = { package = "tubefeeder-extractor-youtube", path = "../tubefeeder-extractor/tubefeeder-extractor-youtube" }
+tf_join = { package = "tubefeeder-extractor-join", path = "../tubefeeder-extractor/tubefeeder-extractor-join" }

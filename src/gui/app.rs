@@ -24,6 +24,7 @@
 use crate::gui::feed::{FeedPage, FeedPageMsg};
 // use crate::gui::filter::{FilterPage, FilterPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
+use crate::subscription_file_manager::SubscriptionFileManager;
 // use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
 // use crate::subscriptions::{Channel, ChannelGroup};
 // use crate::youtube_feed::{Entry, Feed};
@@ -96,9 +97,9 @@ pub struct AppModel {
 
     _subscriptions_file: PathBuf,
     // subscriptions: ChannelGroup,
-    _filter_file: PathBuf,
+    // _filter_file: PathBuf,
     // filter: EntryFilterGroup,
-    _watch_later_file: PathBuf,
+    // _watch_later_file: PathBuf,
     // watch_later: Feed,
     loading: bool,
     // startup_err: Option<Error>,
@@ -163,21 +164,24 @@ impl Widget for Win {
         }
 
         let mut subscriptions_file_path = user_data_dir.clone();
-        subscriptions_file_path.push("subscriptions.db");
+        subscriptions_file_path.push("subscriptions.csv");
 
-        let mut filter_file_path = user_data_dir.clone();
-        filter_file_path.push("filters.db");
+        let _subscription_manager =
+            SubscriptionFileManager::new(&subscriptions_file_path, &joiner.subscription_list());
 
-        let mut watch_later_file_path = user_data_dir;
-        watch_later_file_path.push("watch_later.db");
+        // let mut filter_file_path = user_data_dir.clone();
+        // filter_file_path.push("filters.db");
+
+        // let mut watch_later_file_path = user_data_dir;
+        // watch_later_file_path.push("watch_later.db");
 
         let model = AppModel {
             app_stream: relm.stream().clone(),
             _subscriptions_file: subscriptions_file_path,
             // subscriptions: ChannelGroup::new(),
-            _filter_file: filter_file_path,
+            // _filter_file: filter_file_path,
             // filter: EntryFilterGroup::new(),
-            _watch_later_file: watch_later_file_path,
+            // _watch_later_file: watch_later_file_path,
             // watch_later: Feed::empty(),
             loading: false,
             // startup_err: None,

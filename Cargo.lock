@@ -82,6 +82,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
+name = "bstr"
+version = "0.2.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90682c8d613ad3373e66de8c6411e0ae2ab2571e879d2efbf73558cc66f21279"
+dependencies = [
+ "lazy_static",
+ "memchr",
+ "regex-automata",
+ "serde",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -150,6 +162,28 @@ dependencies = [
  "serde",
  "time",
  "winapi",
+]
+
+[[package]]
+name = "csv"
+version = "1.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "22813a6dc45b335f9bade10bf7271dc477e81113e89eb251a0bc2a8a81c536e1"
+dependencies = [
+ "bstr",
+ "csv-core",
+ "itoa",
+ "ryu",
+ "serde",
+]
+
+[[package]]
+name = "csv-core"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b2466559f260f48ad25fe6317b3c8dac77b5bdb5763ac7d9d6103530663bc90"
+dependencies = [
+ "memchr",
 ]
 
 [[package]]
@@ -1024,6 +1058,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "regex-automata"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c230d73fb8d8c1b9c0b3135c5142a8acee3a0558fb8db5cf1cb65f8d7862132"
+
+[[package]]
 name = "regex-syntax"
 version = "0.6.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1452,8 +1492,8 @@ checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
 name = "tubefeeder"
 version = "1.2.3"
 dependencies = [
- "bytes",
  "chrono",
+ "csv",
  "env_logger",
  "futures",
  "gdk-pixbuf",
@@ -1474,7 +1514,6 @@ dependencies = [
 [[package]]
 name = "tubefeeder-extractor-core"
 version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#ef45d52e096a9bce096fcebd3bbef2255e9b2f1b"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1490,7 +1529,6 @@ dependencies = [
 [[package]]
 name = "tubefeeder-extractor-join"
 version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#ef45d52e096a9bce096fcebd3bbef2255e9b2f1b"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1500,26 +1538,12 @@ dependencies = [
  "reqwest",
  "tokio",
  "tubefeeder-extractor-core",
- "tubefeeder-extractor-test",
  "tubefeeder-extractor-youtube",
-]
-
-[[package]]
-name = "tubefeeder-extractor-test"
-version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#ef45d52e096a9bce096fcebd3bbef2255e9b2f1b"
-dependencies = [
- "async-trait",
- "chrono",
- "reqwest",
- "tokio",
- "tubefeeder-extractor-core",
 ]
 
 [[package]]
 name = "tubefeeder-extractor-youtube"
 version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#ef45d52e096a9bce096fcebd3bbef2255e9b2f1b"
 dependencies = [
  "async-trait",
  "chrono",

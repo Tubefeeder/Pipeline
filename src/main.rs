@@ -22,6 +22,7 @@
 // mod filter;
 mod gui;
 mod player;
+mod subscription_file_manager;
 // mod subscriptions;
 // mod youtube_feed;
 
@@ -29,19 +30,10 @@ use crate::gui::Win;
 
 use relm::Widget;
 
-const SUBSCRIPTION_IDS: &[&str] = &[
-    "UCld68syR8Wi-GY_n4CaoJGA", // Brodie Robertson
-    "UCVls1GmFKf6WlTraIb_IaJg", // DistroTube
-];
-
 #[tokio::main]
 async fn main() {
     env_logger::init();
     let joiner = tf_join::Joiner::new();
 
-    SUBSCRIPTION_IDS
-        .iter()
-        .map(|id| tf_yt::YTSubscription::new(id))
-        .for_each(|sub| joiner.subscribe(sub.into()));
     Win::run(joiner).unwrap();
 }
