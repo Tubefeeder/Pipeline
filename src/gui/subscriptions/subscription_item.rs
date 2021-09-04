@@ -18,16 +18,15 @@
  *
  */
 
-use crate::gui::app::AppMsg;
-use crate::gui::{get_font_size, FONT_RATIO};
-use crate::subscriptions::Channel;
+use crate::gui::get_font_size;
 
 use gtk::prelude::*;
 use gtk::Align;
 use gtk::Orientation::Vertical;
 use pango::{AttrList, Attribute, EllipsizeMode};
-use relm::{Relm, StreamHandle, Widget};
+use relm::{Relm, Widget};
 use relm_derive::{widget, Msg};
+use tf_join::AnySubscription;
 
 #[derive(Msg)]
 pub enum SubscriptionItemMsg {
@@ -35,28 +34,21 @@ pub enum SubscriptionItemMsg {
 }
 
 pub struct SubscriptionsItemModel {
-    channel: Channel,
-    app_stream: StreamHandle<AppMsg>,
+    channel: AnySubscription,
 }
 
 #[widget]
 impl Widget for SubscriptionItem {
-    fn model(
-        _: &Relm<Self>,
-        (channel, app_stream): (Channel, StreamHandle<AppMsg>),
-    ) -> SubscriptionsItemModel {
-        SubscriptionsItemModel {
-            channel,
-            app_stream,
-        }
+    fn model(_: &Relm<Self>, channel: AnySubscription) -> SubscriptionsItemModel {
+        SubscriptionsItemModel { channel }
     }
 
     fn update(&mut self, event: SubscriptionItemMsg) {
         match event {
             SubscriptionItemMsg::Remove => {
-                self.model
-                    .app_stream
-                    .emit(AppMsg::RemoveSubscription(self.model.channel.clone()));
+                // self.model
+                //     .app_stream
+                //     .emit(AppMsg::RemoveSubscription(self.model.channel.clone()));
             }
         }
     }
@@ -64,16 +56,10 @@ impl Widget for SubscriptionItem {
     fn init_view(&mut self) {
         let font_size = get_font_size();
         let name_attr_list = AttrList::new();
-        name_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
+        name_attr_list.insert(Attribute::new_size(font_size * pango::SCALE));
         self.widgets
             .label_name
             .set_attributes(Some(&name_attr_list));
-
-        let id_attr_list = AttrList::new();
-        id_attr_list.insert(
-            Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
-        );
-        self.widgets.label_id.set_attributes(Some(&id_attr_list));
     }
 
     view! {
@@ -87,13 +73,7 @@ impl Widget for SubscriptionItem {
                     orientation: Vertical,
                     #[name="label_name"]
                     gtk::Label {
-                        text: &self.model.channel.get_name().unwrap_or("".to_string()),
-                        ellipsize: EllipsizeMode::End,
-                        halign: Align::Start
-                    },
-                    #[name="label_id"]
-                    gtk::Label {
-                        text: &self.model.channel.get_id(),
+                        text: &self.model.channel.to_string(),
                         ellipsize: EllipsizeMode::End,
                         halign: Align::Start
                     },

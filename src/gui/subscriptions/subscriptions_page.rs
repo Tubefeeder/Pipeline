@@ -18,128 +18,101 @@
  *
  */
 
-use crate::errors::Error;
-use crate::gui::app::AppMsg;
-use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
 use crate::gui::subscriptions::subscription_item::SubscriptionItem;
-use crate::subscriptions::{Channel, ChannelGroup};
 
-use std::thread;
+use std::sync::{Arc, Mutex};
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
-use relm::{Relm, StreamHandle, Widget};
+use relm::{Channel, ContainerWidget, Relm, Sender, Widget};
 use relm_derive::{widget, Msg};
-
-pub struct SubscriptionElementBuilder {
-    chunks: Vec<Vec<(Channel, StreamHandle<AppMsg>)>>,
-}
-
-impl SubscriptionElementBuilder {
-    fn new(group: ChannelGroup, app_stream: StreamHandle<AppMsg>) -> Self {
-        SubscriptionElementBuilder {
-            chunks: group
-                .channels
-                .chunks(20)
-                .map(|slice| {
-                    slice
-                        .iter()
-                        .map(|c| (c.clone(), app_stream.clone()))
-                        .collect()
-                })
-                .collect::<Vec<Vec<(Channel, StreamHandle<AppMsg>)>>>(),
-        }
-    }
-}
-
-impl ListElementBuilder<SubscriptionItem> for SubscriptionElementBuilder {
-    fn poll(&mut self) -> Vec<(Channel, StreamHandle<AppMsg>)> {
-        if !self.chunks.is_empty() {
-            self.chunks.remove(0)
-        } else {
-            vec![]
-        }
-    }
-}
+use tf_core::{Observable, Observer};
+use tf_join::{AnySubscription, AnySubscriptionList, SubscriptionEvent};
+use tf_yt::YTSubscription;
 
 #[derive(Msg)]
 pub enum SubscriptionsPageMsg {
-    SetSubscriptions(ChannelGroup),
     ToggleAddSubscription,
     AddSubscription,
+    NewSubscription(AnySubscription),
 }
 
 pub struct SubscriptionsPageModel {
     relm: Relm<SubscriptionsPage>,
-    app_stream: StreamHandle<AppMsg>,
     add_subscription_visible: bool,
+    subscription_list: AnySubscriptionList,
+    _subscription_observer: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
 }
 
 #[widget]
 impl Widget for SubscriptionsPage {
-    fn model(relm: &Relm<Self>, app_stream: StreamHandle<AppMsg>) -> SubscriptionsPageModel {
+    fn model(relm: &Relm<Self>, subscription_list: AnySubscriptionList) -> SubscriptionsPageModel {
+        let relm_clone = relm.clone();
+        let (_channel, sender) = Channel::new(move |msg| relm_clone.stream().emit(msg));
+
+        let observer = Arc::new(Mutex::new(Box::new(SubscriptionsPageObserver { sender })
+            as Box<dyn Observer<SubscriptionEvent> + Send>));
+
+        let mut subscription_list_clone = subscription_list.clone();
+        subscription_list_clone
+            .iter()
+            .for_each(|s| relm.stream().emit(SubscriptionsPageMsg::NewSubscription(s)));
+        subscription_list_clone.attach(Arc::downgrade(&observer));
+
         SubscriptionsPageModel {
             relm: relm.clone(),
-            app_stream,
             add_subscription_visible: false,
+            subscription_list: subscription_list_clone,
+            _subscription_observer: observer,
         }
     }
 
     fn update(&mut self, event: SubscriptionsPageMsg) {
         match event {
-            SubscriptionsPageMsg::SetSubscriptions(channels) => {
-                self.components
-                    .subscription_list
-                    .emit(LazyListMsg::SetListElementBuilder(Box::new(
-                        SubscriptionElementBuilder::new(channels, self.model.app_stream.clone()),
-                    )));
-            }
             SubscriptionsPageMsg::ToggleAddSubscription => {
                 self.model.add_subscription_visible = !self.model.add_subscription_visible;
             }
             SubscriptionsPageMsg::AddSubscription => self.add_subscription(),
+            SubscriptionsPageMsg::NewSubscription(sub) => self.new_subscription(sub),
         }
     }
 
     fn add_subscription(&mut self) {
-        let channel_name = self.widgets.channel_name_entry.get_text();
+        let channel_id = self.widgets.channel_id_entry.text();
 
-        self.widgets.channel_name_entry.set_text("");
+        self.widgets.channel_id_entry.set_text("");
         self.model
             .relm
             .stream()
             .emit(SubscriptionsPageMsg::ToggleAddSubscription);
 
-        let app_stream = self.model.app_stream.clone();
+        self.model
+            .subscription_list
+            .add(YTSubscription::new(&channel_id).into());
+    }
 
-        let (_channel, sender) =
-            relm::Channel::new(
-                move |new_channel: Result<Channel, Error>| match new_channel {
-                    Ok(channel) => {
-                        app_stream.emit(AppMsg::AddSubscription(channel));
-                    }
-                    Err(e) => {
-                        app_stream.emit(AppMsg::Error(e));
-                    }
-                },
-            );
+    fn new_subscription(&mut self, sub: AnySubscription) {
+        // TODO: Check for duplicates, sort.
+        let _ = self
+            .widgets
+            .subscription_list
+            .add_widget::<SubscriptionItem>(sub);
+    }
 
-        thread::spawn(move || {
-            sender
-                .send(Channel::from_id_or_name(&channel_name))
-                .expect("Could not send channel");
-        });
+    fn init_view(&mut self) {
+        self.widgets.channel_entry_box.hide();
     }
 
     view! {
         gtk::Box {
             orientation: Vertical,
 
+            #[name="channel_entry_box"]
             gtk::Box {
                 visible: self.model.add_subscription_visible,
-                #[name="channel_name_entry"]
+                #[name="channel_id_entry"]
                 gtk::Entry {
-                    placeholder_text: Some("Channel Name or ID")
+                    placeholder_text: Some("Channel ID")
                 },
                 gtk::Button {
                     clicked => SubscriptionsPageMsg::AddSubscription,
@@ -147,8 +120,33 @@ impl Widget for SubscriptionsPage {
                 }
             },
 
-            #[name="subscription_list"]
-            LazyList<SubscriptionItem>
+            gtk::ScrolledWindow {
+                hexpand: true,
+                vexpand: true,
+                gtk::Viewport {
+                    #[name="subscription_list"]
+                    gtk::ListBox {
+                        selection_mode: gtk::SelectionMode::None
+
+                    }
+                }
+            }
+        }
+    }
+}
+pub struct SubscriptionsPageObserver {
+    sender: Sender<SubscriptionsPageMsg>,
+}
+
+impl Observer<SubscriptionEvent> for SubscriptionsPageObserver {
+    fn notify(&mut self, message: SubscriptionEvent) {
+        match message {
+            SubscriptionEvent::Add(sub) => {
+                let _ = self.sender.send(SubscriptionsPageMsg::NewSubscription(sub));
+            }
+            SubscriptionEvent::_Remove(_sub) => {
+                todo!();
+            }
         }
     }
 }

@@ -82,24 +82,6 @@ impl Widget for FeedListItem {
             }
             FeedListItemMsg::Clicked => {
                 play(self.model.entry.clone());
-                // let result = self.model.entry.play();
-
-                // if let Ok(mut child) = result {
-                //     let stream = self.model.relm.stream().clone();
-
-                //     stream.emit(FeedListItemMsg::SetPlaying(true));
-
-                //     let (_channel, sender) = relm::Channel::new(move |_| {
-                //         stream.emit(FeedListItemMsg::SetPlaying(false));
-                //     });
-
-                //     thread::spawn(move || {
-                //         let _ = child.wait();
-                //         sender.send(()).expect("Could not send message");
-                //     });
-                // }
-
-                // TODO
             }
             FeedListItemMsg::WatchLater => {
                 // self.model
