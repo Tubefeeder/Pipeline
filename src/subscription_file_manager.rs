@@ -109,8 +109,57 @@ impl Observer<SubscriptionEvent> for SubscriptionFileManager {
                     log::error!("Error writing to file {:?}", self.path)
                 }
             }
-            SubscriptionEvent::_Remove(_sub) => {
-                todo!()
+            SubscriptionEvent::Remove(sub) => {
+                let new_record: StringRecord = Vec::<String>::from(sub).into();
+
+                let csv_reader_res = ReaderBuilder::new()
+                    .has_headers(false)
+                    .flexible(true)
+                    .from_path(&self.path);
+
+                if let Err(_e) = csv_reader_res {
+                    log::error!("Error writing to file {:?}", self.path);
+                    return;
+                }
+
+                let csv_reader = csv_reader_res.unwrap();
+
+                let records_read = csv_reader.into_records();
+
+                let records: Vec<StringRecord> = records_read
+                    .filter(|s| s.is_ok())
+                    .map(|s| s.unwrap())
+                    .filter(|s| &new_record != s)
+                    .collect();
+
+                // log::debug!(
+                //     "Records {:?}",
+                //     records
+                //         .clone()
+                //         .collect::<Vec<Result<StringRecord, csv::Error>>>()
+                // );
+
+                // Write new subscription.
+                let csv_writer_res = WriterBuilder::new()
+                    .has_headers(false)
+                    .flexible(true)
+                    .from_path(&self.path);
+
+                if let Err(_e) = csv_writer_res {
+                    log::error!("Error writing to file {:?}", self.path);
+                    return;
+                }
+
+                let mut csv_writer = csv_writer_res.unwrap();
+
+                for record in records {
+                    if let Err(_e) = csv_writer.write_record(&record) {
+                        log::error!("Error writing to file {:?}", self.path)
+                    }
+                }
+                if let Err(_e) = csv_writer.flush() {
+                    log::error!("Error writing to file {:?}", self.path)
+                }
             }
         }
     }

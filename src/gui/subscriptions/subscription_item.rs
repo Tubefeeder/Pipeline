@@ -27,6 +27,7 @@ use pango::{AttrList, Attribute, EllipsizeMode};
 use relm::{Relm, Widget};
 use relm_derive::{widget, Msg};
 use tf_join::AnySubscription;
+use tf_join::AnySubscriptionList;
 
 #[derive(Msg)]
 pub enum SubscriptionItemMsg {
@@ -34,21 +35,28 @@ pub enum SubscriptionItemMsg {
 }
 
 pub struct SubscriptionsItemModel {
-    channel: AnySubscription,
+    subscription: AnySubscription,
+    subscription_list: AnySubscriptionList,
 }
 
 #[widget]
 impl Widget for SubscriptionItem {
-    fn model(_: &Relm<Self>, channel: AnySubscription) -> SubscriptionsItemModel {
-        SubscriptionsItemModel { channel }
+    fn model(
+        _: &Relm<Self>,
+        (subscription, subscription_list): (AnySubscription, AnySubscriptionList),
+    ) -> SubscriptionsItemModel {
+        SubscriptionsItemModel {
+            subscription,
+            subscription_list,
+        }
     }
 
     fn update(&mut self, event: SubscriptionItemMsg) {
         match event {
             SubscriptionItemMsg::Remove => {
-                // self.model
-                //     .app_stream
-                //     .emit(AppMsg::RemoveSubscription(self.model.channel.clone()));
+                self.model
+                    .subscription_list
+                    .remove(self.model.subscription.clone());
             }
         }
     }
@@ -73,7 +81,7 @@ impl Widget for SubscriptionItem {
                     orientation: Vertical,
                     #[name="label_name"]
                     gtk::Label {
-                        text: &self.model.channel.to_string(),
+                        text: &self.model.subscription.to_string(),
                         ellipsize: EllipsizeMode::End,
                         halign: Align::Start
                     },

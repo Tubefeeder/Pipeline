@@ -35,6 +35,7 @@ pub enum SubscriptionsPageMsg {
     ToggleAddSubscription,
     AddSubscription,
     NewSubscription(AnySubscription),
+    RemoveSubscription(AnySubscription),
 }
 
 pub struct SubscriptionsPageModel {
@@ -42,6 +43,7 @@ pub struct SubscriptionsPageModel {
     add_subscription_visible: bool,
     subscription_list: AnySubscriptionList,
     _subscription_observer: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
+    subscription_order: Vec<(AnySubscription, relm::Component<SubscriptionItem>)>,
 }
 
 #[widget]
@@ -64,6 +66,7 @@ impl Widget for SubscriptionsPage {
             add_subscription_visible: false,
             subscription_list: subscription_list_clone,
             _subscription_observer: observer,
+            subscription_order: vec![],
         }
     }
 
@@ -74,6 +77,7 @@ impl Widget for SubscriptionsPage {
             }
             SubscriptionsPageMsg::AddSubscription => self.add_subscription(),
             SubscriptionsPageMsg::NewSubscription(sub) => self.new_subscription(sub),
+            SubscriptionsPageMsg::RemoveSubscription(sub) => self.remove_subscription(sub),
         }
     }
 
@@ -92,11 +96,31 @@ impl Widget for SubscriptionsPage {
     }
 
     fn new_subscription(&mut self, sub: AnySubscription) {
-        // TODO: Check for duplicates, sort.
-        let _ = self
+        let sub_item = self
             .widgets
             .subscription_list
-            .add_widget::<SubscriptionItem>(sub);
+            .add_widget::<SubscriptionItem>((sub.clone(), self.model.subscription_list.clone()));
+
+        let index_res = self
+            .model
+            .subscription_order
+            .binary_search_by(|(s, _i)| sub.cmp(s));
+
+        if let Err(index) = index_res {
+            self.model.subscription_order.insert(index, (sub, sub_item));
+        }
+    }
+
+    fn remove_subscription(&mut self, sub: AnySubscription) {
+        let index_res = self
+            .model
+            .subscription_order
+            .binary_search_by(|(s, _i)| sub.cmp(s));
+
+        if let Ok(index) = index_res {
+            let (_sub, sub_item) = self.model.subscription_order.remove(index);
+            self.widgets.subscription_list.remove(sub_item.widget());
+        }
     }
 
     fn init_view(&mut self) {
@@ -144,8 +168,10 @@ impl Observer<SubscriptionEvent> for SubscriptionsPageObserver {
             SubscriptionEvent::Add(sub) => {
                 let _ = self.sender.send(SubscriptionsPageMsg::NewSubscription(sub));
             }
-            SubscriptionEvent::_Remove(_sub) => {
-                todo!();
+            SubscriptionEvent::Remove(sub) => {
+                let _ = self
+                    .sender
+                    .send(SubscriptionsPageMsg::RemoveSubscription(sub));
             }
         }
     }
