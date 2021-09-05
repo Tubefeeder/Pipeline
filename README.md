@@ -53,3 +53,9 @@ Tell me what features you want to be included by opening an [issue](https://gith
 
 # Wiki
 Please also take a look at the projects wiki if you have any problems (e.g. MPV being slow) or don't know how to do something (e.g. subscribing to a channel)
+
+# Donating
+
+If you like this project and have some spare monero left, consider donating to my monero address:
+
+Monero: 84ZT9ndaucxVgXWd5txDsi8y9zMYEy8e85BPzWKCveFNJK5AoxYVsTn1TtbQAhCx8y9a2ytpq8yqeRi24gYZkpvxCgm9J5X
