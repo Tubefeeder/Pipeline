@@ -17,120 +17,145 @@
  * along with Tubefeeder.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
-use crate::filter::{EntryFilter, EntryFilterGroup};
-use crate::gui::app::AppMsg;
 use crate::gui::filter::filter_item::FilterItem;
-use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
+
+use std::sync::{Arc, Mutex};
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
-use relm::{Relm, StreamHandle, Widget};
+use regex::Regex;
+use relm::{Channel, ContainerWidget, Relm, Sender, Widget};
 use relm_derive::{widget, Msg};
-
-pub struct FilterElementBuilder {
-    chunks: Vec<Vec<(EntryFilter, StreamHandle<AppMsg>)>>,
-}
-
-impl FilterElementBuilder {
-    fn new(group: EntryFilterGroup, app_stream: StreamHandle<AppMsg>) -> Self {
-        FilterElementBuilder {
-            chunks: group
-                .get_filters()
-                .chunks(20)
-                .map(|slice| {
-                    slice
-                        .iter()
-                        .map(|c| (c.clone(), app_stream.clone()))
-                        .collect()
-                })
-                .collect::<Vec<Vec<(EntryFilter, StreamHandle<AppMsg>)>>>(),
-        }
-    }
-}
-
-impl ListElementBuilder<FilterItem> for FilterElementBuilder {
-    fn poll(&mut self) -> Vec<(EntryFilter, StreamHandle<AppMsg>)> {
-        if !self.chunks.is_empty() {
-            self.chunks.remove(0)
-        } else {
-            vec![]
-        }
-    }
-}
+use tf_core::{Observable, Observer};
+use tf_filter::{FilterEvent, FilterGroup};
+use tf_join::{AnyVideoFilter, Platform};
 
 #[derive(Msg)]
 pub enum FilterPageMsg {
-    SetFilters(EntryFilterGroup),
     ToggleAddFilter,
     AddFilter,
+    NewFilter(AnyVideoFilter),
+    RemoveFilter(AnyVideoFilter),
 }
 
 pub struct FilterPageModel {
     relm: Relm<FilterPage>,
-    app_stream: StreamHandle<AppMsg>,
     add_filter_visible: bool,
+    filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
+    _filters_observer: Arc<Mutex<Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>>>,
 }
 
 #[widget]
 impl Widget for FilterPage {
-    fn model(relm: &Relm<Self>, app_stream: StreamHandle<AppMsg>) -> FilterPageModel {
+    fn model(
+        relm: &Relm<Self>,
+        filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
+    ) -> FilterPageModel {
+        let relm_clone = relm.clone();
+        let (_channel, sender) = Channel::new(move |msg| relm_clone.stream().emit(msg));
+
+        let observer = Arc::new(Mutex::new(Box::new(FilterPageObserver { sender })
+            as Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>));
+
+        let filters_clone = filters.clone();
+        filters_clone
+            .lock()
+            .unwrap()
+            .iter()
+            .for_each(|s| relm.stream().emit(FilterPageMsg::NewFilter(s.clone())));
+        filters_clone
+            .lock()
+            .unwrap()
+            .attach(Arc::downgrade(&observer));
+
         FilterPageModel {
             relm: relm.clone(),
-            app_stream,
             add_filter_visible: false,
+            filters: filters_clone,
+            _filters_observer: observer,
         }
     }
 
     fn update(&mut self, event: FilterPageMsg) {
         match event {
-            FilterPageMsg::SetFilters(filter_group) => {
-                self.components
-                    .filter_list
-                    .emit(LazyListMsg::SetListElementBuilder(Box::new(
-                        FilterElementBuilder::new(filter_group, self.model.app_stream.clone()),
-                    )));
-            }
             FilterPageMsg::ToggleAddFilter => {
                 self.model.add_filter_visible = !self.model.add_filter_visible;
             }
-            FilterPageMsg::AddFilter => {
-                let filter_title = &self.widgets.filter_title_entry.get_text();
-                let filter_channel = &self.widgets.filter_channel_entry.get_text();
-
-                self.widgets.filter_title_entry.set_text("");
-                self.widgets.filter_channel_entry.set_text("");
-                self.model
-                    .relm
-                    .stream()
-                    .emit(FilterPageMsg::ToggleAddFilter);
-
-                let new_filter = EntryFilter::new(filter_title, filter_channel);
-
-                if let Ok(filter) = new_filter {
-                    self.model.app_stream.emit(AppMsg::AddFilter(filter));
-                } else {
-                    self.model
-                        .app_stream
-                        .emit(AppMsg::Error(new_filter.err().unwrap()));
-                }
-            }
+            FilterPageMsg::AddFilter => self.add_filter(),
+            FilterPageMsg::NewFilter(sub) => self.new_filter(sub),
+            FilterPageMsg::RemoveFilter(sub) => self.remove_filter(sub),
         }
+    }
+
+    fn add_filter(&mut self) {
+        let title = self.widgets.title_entry.text();
+        let subscription = self.widgets.subscription_entry.text();
+
+        let title_opt = if title.is_empty() { None } else { Some(title) };
+        let subscription_opt = if subscription.is_empty() {
+            None
+        } else {
+            Some(subscription)
+        };
+
+        let title_regex = title_opt.map(|s| Regex::new(&s));
+        let subscription_regex = subscription_opt.map(|s| Regex::new(&s));
+
+        if let Some(Err(_)) = title_regex {
+            // TODO: Error Handling
+            return;
+        }
+        if let Some(Err(_)) = subscription_regex {
+            // TODO: Error Handling
+            return;
+        }
+
+        self.widgets.title_entry.set_text("");
+        self.widgets.subscription_entry.set_text("");
+        self.model
+            .relm
+            .stream()
+            .emit(FilterPageMsg::ToggleAddFilter);
+
+        self.model.filters.lock().unwrap().add(
+            AnyVideoFilter::new(
+                Some(Platform::Youtube),
+                title_regex.map(|r| r.unwrap()),
+                subscription_regex.map(|r| r.unwrap()),
+            )
+            .into(),
+        );
+    }
+
+    fn new_filter(&mut self, filter: AnyVideoFilter) {
+        let _filter_item = self
+            .widgets
+            .filter_list
+            .add_widget::<FilterItem>((filter.clone(), self.model.filters.clone()));
+    }
+
+    fn remove_filter(&mut self, _sub: AnyVideoFilter) {
+        todo!()
+    }
+
+    fn init_view(&mut self) {
+        self.widgets.filter_entry_box.hide();
     }
 
     view! {
         gtk::Box {
             orientation: Vertical,
 
+            #[name="filter_entry_box"]
             gtk::Box {
                 visible: self.model.add_filter_visible,
-                #[name="filter_title_entry"]
+                #[name="title_entry"]
                 gtk::Entry {
                     placeholder_text: Some("Title")
                 },
-                #[name="filter_channel_entry"]
+                #[name="subscription_entry"]
                 gtk::Entry {
-                    placeholder_text: Some("Channel")
+                    placeholder_text: Some("Channel name")
                 },
                 gtk::Button {
                     clicked => FilterPageMsg::AddFilter,
@@ -138,8 +163,33 @@ impl Widget for FilterPage {
                 }
             },
 
-            #[name="filter_list"]
-            LazyList<FilterItem>
+            gtk::ScrolledWindow {
+                hexpand: true,
+                vexpand: true,
+                gtk::Viewport {
+                    #[name="filter_list"]
+                    gtk::ListBox {
+                        selection_mode: gtk::SelectionMode::None
+
+                    }
+                }
+            }
+        }
+    }
+}
+pub struct FilterPageObserver {
+    sender: Sender<FilterPageMsg>,
+}
+
+impl Observer<FilterEvent<AnyVideoFilter>> for FilterPageObserver {
+    fn notify(&mut self, message: FilterEvent<AnyVideoFilter>) {
+        match message {
+            FilterEvent::Add(filter) => {
+                let _ = self.sender.send(FilterPageMsg::NewFilter(filter));
+            }
+            FilterEvent::Remove(filter) => {
+                let _ = self.sender.send(FilterPageMsg::RemoveFilter(filter));
+            }
         }
     }
 }

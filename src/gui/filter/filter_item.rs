@@ -18,16 +18,19 @@
  *
  */
 
-use crate::filter::EntryFilter;
-use crate::gui::app::AppMsg;
+use std::sync::Arc;
+use std::sync::Mutex;
+
 use crate::gui::{get_font_size, FONT_RATIO};
 
 use gtk::prelude::*;
 use gtk::Align;
 use gtk::Orientation::Vertical;
 use pango::{AttrList, Attribute, EllipsizeMode};
-use relm::{Relm, StreamHandle, Widget};
+use relm::{Relm, Widget};
 use relm_derive::{widget, Msg};
+use tf_filter::FilterGroup;
+use tf_join::AnyVideoFilter;
 
 #[derive(Msg)]
 pub enum FilterItemMsg {
@@ -35,25 +38,23 @@ pub enum FilterItemMsg {
 }
 
 pub struct FilterItemModel {
-    filter: EntryFilter,
-    app_stream: StreamHandle<AppMsg>,
+    filter: AnyVideoFilter,
+    _filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
 }
 
 #[widget]
 impl Widget for FilterItem {
     fn model(
         _: &Relm<Self>,
-        (filter, app_stream): (EntryFilter, StreamHandle<AppMsg>),
+        (filter, _filters): (AnyVideoFilter, Arc<Mutex<FilterGroup<AnyVideoFilter>>>),
     ) -> FilterItemModel {
-        FilterItemModel { filter, app_stream }
+        FilterItemModel { filter, _filters }
     }
 
     fn update(&mut self, event: FilterItemMsg) {
         match event {
             FilterItemMsg::Remove => {
-                self.model
-                    .app_stream
-                    .emit(AppMsg::RemoveFilter(self.model.filter.clone()));
+                todo!()
             }
         }
     }
@@ -61,15 +62,15 @@ impl Widget for FilterItem {
     fn init_view(&mut self) {
         let font_size = get_font_size();
         let title_attr_list = AttrList::new();
-        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
+        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE));
         self.widgets
             .label_title
             .set_attributes(Some(&title_attr_list));
 
         let channel_attr_list = AttrList::new();
-        channel_attr_list.insert(
-            Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
-        );
+        channel_attr_list.insert(Attribute::new_size(
+            (FONT_RATIO * (font_size * pango::SCALE) as f32) as i32,
+        ));
         self.widgets
             .label_channel
             .set_attributes(Some(&channel_attr_list));
@@ -86,13 +87,13 @@ impl Widget for FilterItem {
                     orientation: Vertical,
                     #[name="label_title"]
                     gtk::Label {
-                        text: &self.model.filter.get_title_filter_string(),
+                        text: &self.model.filter.title_str().unwrap_or("".to_string()),
                         ellipsize: EllipsizeMode::End,
                         halign: Align::Start
                     },
                     #[name="label_channel"]
                     gtk::Label {
-                        text: &self.model.filter.get_channel_filter_string(),
+                        text: &self.model.filter.subscription_str().unwrap_or("".to_string()),
                         ellipsize: EllipsizeMode::End,
                         halign: Align::Start
                     },

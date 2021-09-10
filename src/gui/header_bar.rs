@@ -111,7 +111,7 @@ impl Widget for HeaderBar {
             HeaderBarMsg::AddSubscription => {
                 self.model.app_stream.emit(AppMsg::ToggleAddSubscription)
             }
-            HeaderBarMsg::AddFilter => {} //self.model.app_stream.emit(AppMsg::ToggleAddFilter),
+            HeaderBarMsg::AddFilter => self.model.app_stream.emit(AppMsg::ToggleAddFilter),
             HeaderBarMsg::About => {
                 let about_dialog = AboutDialogBuilder::new()
                     .authors(vec!["Julian Schmidhuber".to_string()])

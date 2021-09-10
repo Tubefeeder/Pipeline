@@ -1503,6 +1503,7 @@ dependencies = [
  "libhandy",
  "log",
  "pango",
+ "regex",
  "relm",
  "relm-derive",
  "tokio",
@@ -1530,6 +1531,10 @@ dependencies = [
 [[package]]
 name = "tubefeeder-extractor-filter"
 version = "0.0.0"
+dependencies = [
+ "log",
+ "tubefeeder-extractor-core",
+]
 
 [[package]]
 name = "tubefeeder-extractor-join"

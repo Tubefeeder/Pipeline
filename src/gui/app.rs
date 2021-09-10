@@ -20,12 +20,14 @@
 
 use crate::filter_file_manager::FilterFileManager;
 use crate::gui::feed::{FeedPage, FeedPageMsg};
+use crate::gui::filter::{FilterPage, FilterPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
 use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
 use crate::subscription_file_manager::SubscriptionFileManager;
 
 use tf_core::{ErrorStore, Generator, Observable, Observer};
-use tf_join::{AnySubscriptionList, AnyVideo, Joiner, SubscriptionEvent};
+use tf_filter::{FilterEvent, FilterGroup};
+use tf_join::{AnySubscriptionList, AnyVideo, AnyVideoFilter, Joiner, SubscriptionEvent};
 
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
@@ -72,6 +74,7 @@ pub enum AppMsg {
     Loading(bool),
     Reload,
     ToggleAddSubscription,
+    ToggleAddFilter,
     Quit,
 }
 
@@ -81,8 +84,9 @@ pub struct AppModel {
     app_stream: StreamHandle<AppMsg>,
 
     _subscription_file_manager: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
-    _filter_file_manager: FilterFileManager,
+    _filter_file_manager: Arc<Mutex<Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>>>,
     subscription_list: AnySubscriptionList,
+    filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
     loading: bool,
 }
 
@@ -150,21 +154,25 @@ impl Widget for Win {
             )) as Box<dyn Observer<SubscriptionEvent> + Send>,
         ));
 
-        let _filter_file_manager = FilterFileManager::new(&filter_file_path, filters);
+        let _filter_file_manager = Arc::new(Mutex::new(Box::new(FilterFileManager::new(
+            &filter_file_path,
+            filters.clone(),
+        ))
+            as Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>));
 
         subscription_list.attach(Arc::downgrade(&_subscription_file_manager));
 
-        // let mut filter_file_path = user_data_dir.clone();
-        // filter_file_path.push("filters.db");
-
-        // let mut watch_later_file_path = user_data_dir;
-        // watch_later_file_path.push("watch_later.db");
+        filters
+            .lock()
+            .unwrap()
+            .attach(Arc::downgrade(&_filter_file_manager));
 
         let model = AppModel {
             app_stream: relm.stream().clone(),
             _subscription_file_manager,
             _filter_file_manager,
             subscription_list,
+            filters,
             loading: false,
             joiner,
             errors: Arc::new(Mutex::new(ErrorStore::new())),
@@ -185,6 +193,11 @@ impl Widget for Win {
                 self.components
                     .subscriptions_page
                     .emit(SubscriptionsPageMsg::ToggleAddSubscription);
+            }
+            AppMsg::ToggleAddFilter => {
+                self.components
+                    .filter_page
+                    .emit(FilterPageMsg::ToggleAddFilter);
             }
             AppMsg::Quit => {
                 gtk::main_quit();
@@ -260,14 +273,14 @@ impl Widget for Win {
                     //         title: Some(&String::from(Page::WatchLater))
                     //     }
                     // },
-                    // #[name="filter_page"]
-                    // FilterPage(self.model.app_stream.clone()) {
-                    //     widget_name: &String::from(Page::Filters),
-                    //     child: {
-                    //         icon_name: Some("funnel-symbolic"),
-                    //         title: Some(&String::from(Page::Filters))
-                    //     }
-                    // },
+                    #[name="filter_page"]
+                    FilterPage(self.model.filters.clone()) {
+                        widget_name: &String::from(Page::Filters),
+                        child: {
+                            icon_name: Some("funnel-symbolic"),
+                            title: Some(&String::from(Page::Filters))
+                        }
+                    },
                     #[name="subscriptions_page"]
                     SubscriptionsPage(self.model.subscription_list.clone()) {
                         widget_name: &String::from(Page::Subscriptions),

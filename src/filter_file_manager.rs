@@ -5,18 +5,19 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use csv::ReaderBuilder;
+use csv::{ReaderBuilder, StringRecord, WriterBuilder};
 
-use tf_filter::FilterGroup;
-use tf_join::{AnyVideo, AnyVideoFilter};
+use tf_core::Observer;
+use tf_filter::{FilterEvent, FilterGroup};
+use tf_join::AnyVideoFilter;
 
 pub(crate) struct FilterFileManager {
-    filters: Arc<Mutex<FilterGroup<AnyVideo>>>,
+    filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
     path: PathBuf,
 }
 
 impl FilterFileManager {
-    pub fn new(path: &PathBuf, filters: Arc<Mutex<FilterGroup<AnyVideo>>>) -> Self {
+    pub fn new(path: &PathBuf, filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>) -> Self {
         let manager = Self {
             filters: filters.clone(),
             path: path.clone(),
@@ -58,6 +59,64 @@ impl FilterFileManager {
                 }
             } else {
                 log::error!("Error parsing subscription csv");
+            }
+        }
+    }
+}
+
+impl Observer<FilterEvent<AnyVideoFilter>> for FilterFileManager {
+    fn notify(&mut self, message: FilterEvent<AnyVideoFilter>) {
+        match message {
+            FilterEvent::Add(filter) => {
+                let new_record: StringRecord = Vec::<String>::from(filter).into();
+
+                let file_res = OpenOptions::new()
+                    .read(true)
+                    .append(true)
+                    .create(true)
+                    .open(&self.path);
+
+                // TODO: Error handling
+                if file_res.is_err() {
+                    log::debug!("A error opening the file occured");
+                    return;
+                }
+
+                let file = file_res.unwrap();
+                let file_clone = file.try_clone().unwrap();
+
+                let csv_reader = ReaderBuilder::new()
+                    .has_headers(false)
+                    .flexible(true)
+                    .from_reader(file);
+
+                let records = csv_reader.into_records();
+
+                for record_res in records {
+                    if let Ok(record) = record_res {
+                        if new_record == record {
+                            log::debug!("Filter already in filter file");
+                            return;
+                        }
+                    } else {
+                        log::error!("Error parsing filter csv");
+                    }
+                }
+
+                // Insert filter otherwise.
+                let mut csv_writer = WriterBuilder::new()
+                    .has_headers(false)
+                    .flexible(true)
+                    .from_writer(file_clone);
+                if let Err(_e) = csv_writer.write_record(&new_record) {
+                    log::error!("Error writing to file {:?}", self.path)
+                }
+                if let Err(_e) = csv_writer.flush() {
+                    log::error!("Error writing to file {:?}", self.path)
+                }
+            }
+            FilterEvent::Remove(_sub) => {
+                todo!()
             }
         }
     }
