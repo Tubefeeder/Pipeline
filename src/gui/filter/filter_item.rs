@@ -39,23 +39,26 @@ pub enum FilterItemMsg {
 
 pub struct FilterItemModel {
     filter: AnyVideoFilter,
-    _filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
+    filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
 }
 
 #[widget]
 impl Widget for FilterItem {
     fn model(
         _: &Relm<Self>,
-        (filter, _filters): (AnyVideoFilter, Arc<Mutex<FilterGroup<AnyVideoFilter>>>),
+        (filter, filters): (AnyVideoFilter, Arc<Mutex<FilterGroup<AnyVideoFilter>>>),
     ) -> FilterItemModel {
-        FilterItemModel { filter, _filters }
+        FilterItemModel { filter, filters }
     }
 
     fn update(&mut self, event: FilterItemMsg) {
         match event {
-            FilterItemMsg::Remove => {
-                todo!()
-            }
+            FilterItemMsg::Remove => self
+                .model
+                .filters
+                .lock()
+                .unwrap()
+                .remove(&self.model.filter),
         }
     }
 

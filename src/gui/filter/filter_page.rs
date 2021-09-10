@@ -19,7 +19,10 @@
  */
 use crate::gui::filter::filter_item::FilterItem;
 
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
@@ -43,6 +46,7 @@ pub struct FilterPageModel {
     add_filter_visible: bool,
     filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
     _filters_observer: Arc<Mutex<Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>>>,
+    filter_items: HashMap<AnyVideoFilter, relm::Component<FilterItem>>,
 }
 
 #[widget]
@@ -73,6 +77,7 @@ impl Widget for FilterPage {
             add_filter_visible: false,
             filters: filters_clone,
             _filters_observer: observer,
+            filter_items: HashMap::new(),
         }
     }
 
@@ -128,14 +133,20 @@ impl Widget for FilterPage {
     }
 
     fn new_filter(&mut self, filter: AnyVideoFilter) {
-        let _filter_item = self
-            .widgets
-            .filter_list
-            .add_widget::<FilterItem>((filter.clone(), self.model.filters.clone()));
+        if self.model.filter_items.get(&filter).is_none() {
+            let filter_item = self
+                .widgets
+                .filter_list
+                .add_widget::<FilterItem>((filter.clone(), self.model.filters.clone()));
+            self.model.filter_items.insert(filter, filter_item);
+        }
     }
 
-    fn remove_filter(&mut self, _sub: AnyVideoFilter) {
-        todo!()
+    fn remove_filter(&mut self, filter: AnyVideoFilter) {
+        if let Some(filter_item) = self.model.filter_items.get(&filter) {
+            self.widgets.filter_list.remove(filter_item.widget());
+            self.model.filter_items.remove(&filter);
+        }
     }
 
     fn init_view(&mut self) {
