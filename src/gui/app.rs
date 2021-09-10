@@ -18,6 +18,7 @@
  *
  */
 
+use crate::filter_file_manager::FilterFileManager;
 use crate::gui::feed::{FeedPage, FeedPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
 use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
@@ -80,6 +81,7 @@ pub struct AppModel {
     app_stream: StreamHandle<AppMsg>,
 
     _subscription_file_manager: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
+    _filter_file_manager: FilterFileManager,
     subscription_list: AnySubscriptionList,
     loading: bool,
 }
@@ -135,7 +137,11 @@ impl Widget for Win {
         let mut subscriptions_file_path = user_data_dir.clone();
         subscriptions_file_path.push("subscriptions.csv");
 
+        let mut filter_file_path = user_data_dir.clone();
+        filter_file_path.push("filters.csv");
+
         let mut subscription_list = joiner.subscription_list();
+        let filters = joiner.filters();
 
         let _subscription_file_manager = Arc::new(Mutex::new(
             Box::new(SubscriptionFileManager::new(
@@ -143,6 +149,8 @@ impl Widget for Win {
                 &subscription_list,
             )) as Box<dyn Observer<SubscriptionEvent> + Send>,
         ));
+
+        let _filter_file_manager = FilterFileManager::new(&filter_file_path, filters);
 
         subscription_list.attach(Arc::downgrade(&_subscription_file_manager));
 
@@ -155,6 +163,7 @@ impl Widget for Win {
         let model = AppModel {
             app_stream: relm.stream().clone(),
             _subscription_file_manager,
+            _filter_file_manager,
             subscription_list,
             loading: false,
             joiner,

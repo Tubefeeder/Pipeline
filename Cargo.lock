@@ -1507,6 +1507,7 @@ dependencies = [
  "relm-derive",
  "tokio",
  "tubefeeder-extractor-core",
+ "tubefeeder-extractor-filter",
  "tubefeeder-extractor-join",
  "tubefeeder-extractor-youtube",
 ]
@@ -1527,6 +1528,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "tubefeeder-extractor-filter"
+version = "0.0.0"
+
+[[package]]
 name = "tubefeeder-extractor-join"
 version = "0.0.0"
 dependencies = [
@@ -1535,9 +1540,11 @@ dependencies = [
  "futures",
  "gdk-pixbuf",
  "log",
+ "regex",
  "reqwest",
  "tokio",
  "tubefeeder-extractor-core",
+ "tubefeeder-extractor-filter",
  "tubefeeder-extractor-youtube",
 ]
 

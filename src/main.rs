@@ -20,6 +20,7 @@
 
 // mod errors;
 // mod filter;
+mod filter_file_manager;
 mod gui;
 mod player;
 mod subscription_file_manager;

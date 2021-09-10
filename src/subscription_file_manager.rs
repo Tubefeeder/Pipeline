@@ -132,13 +132,6 @@ impl Observer<SubscriptionEvent> for SubscriptionFileManager {
                     .filter(|s| &new_record != s)
                     .collect();
 
-                // log::debug!(
-                //     "Records {:?}",
-                //     records
-                //         .clone()
-                //         .collect::<Vec<Result<StringRecord, csv::Error>>>()
-                // );
-
                 // Write new subscription.
                 let csv_writer_res = WriterBuilder::new()
                     .has_headers(false)
