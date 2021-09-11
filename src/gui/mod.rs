@@ -19,7 +19,7 @@
  */
 
 mod app;
-// mod error_label;
+mod error_label;
 mod feed;
 mod filter;
 mod header_bar;

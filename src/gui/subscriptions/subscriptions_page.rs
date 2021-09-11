@@ -158,6 +158,7 @@ impl Widget for SubscriptionsPage {
         }
     }
 }
+
 pub struct SubscriptionsPageObserver {
     sender: Sender<SubscriptionsPageMsg>,
 }

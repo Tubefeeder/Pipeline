@@ -19,6 +19,7 @@
  */
 
 use crate::filter_file_manager::FilterFileManager;
+use crate::gui::error_label::ErrorLabel;
 use crate::gui::feed::{FeedPage, FeedPageMsg};
 use crate::gui::filter::{FilterPage, FilterPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
@@ -80,7 +81,7 @@ pub enum AppMsg {
 
 pub struct AppModel {
     joiner: Joiner,
-    errors: Arc<Mutex<ErrorStore>>,
+    errors: ErrorStore,
     app_stream: StreamHandle<AppMsg>,
 
     _subscription_file_manager: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
@@ -167,7 +168,7 @@ impl Widget for Win {
             .unwrap()
             .attach(Arc::downgrade(&_filter_file_manager));
 
-        let model = AppModel {
+        AppModel {
             app_stream: relm.stream().clone(),
             _subscription_file_manager,
             _filter_file_manager,
@@ -175,10 +176,8 @@ impl Widget for Win {
             filters,
             loading: false,
             joiner,
-            errors: Arc::new(Mutex::new(ErrorStore::new())),
-        };
-
-        model
+            errors: ErrorStore::new(),
+        }
     }
 
     fn update(&mut self, event: AppMsg) {
@@ -227,8 +226,9 @@ impl Widget for Win {
 
         let joiner = self.model.joiner.clone();
         let errors = self.model.errors.clone();
+        errors.clear();
         tokio::spawn(async move {
-            let feed = joiner.generate(errors).await;
+            let feed = joiner.generate(&errors).await;
             sender.send(feed).unwrap()
         });
     }
@@ -243,11 +243,10 @@ impl Widget for Win {
             },
             #[name="view_switcher_box"]
             gtk::Box {
-
                 gtk::Box {
                     orientation: Vertical,
-                    // #[name="error_label"]
-                    // ErrorLabel {},
+                    #[name="error_label"]
+                    ErrorLabel(self.model.errors.clone()) {},
                     #[name="loading_spinner"]
                     gtk::Spinner {
                         visible: self.model.loading,
