@@ -32,9 +32,11 @@ use tf_join::AnySubscriptionList;
 #[derive(Msg)]
 pub enum SubscriptionItemMsg {
     Remove,
+    UpdateName(String),
 }
 
 pub struct SubscriptionsItemModel {
+    relm: Relm<SubscriptionItem>,
     subscription: AnySubscription,
     subscription_list: AnySubscriptionList,
 }
@@ -42,10 +44,11 @@ pub struct SubscriptionsItemModel {
 #[widget]
 impl Widget for SubscriptionItem {
     fn model(
-        _: &Relm<Self>,
+        relm: &Relm<Self>,
         (subscription, subscription_list): (AnySubscription, AnySubscriptionList),
     ) -> SubscriptionsItemModel {
         SubscriptionsItemModel {
+            relm: relm.clone(),
             subscription,
             subscription_list,
         }
@@ -58,6 +61,10 @@ impl Widget for SubscriptionItem {
                     .subscription_list
                     .remove(self.model.subscription.clone());
             }
+            SubscriptionItemMsg::UpdateName(name) => {
+                self.widgets.label_name.set_text(&name);
+                self.widgets.root.changed();
+            }
         }
     }
 
@@ -68,10 +75,31 @@ impl Widget for SubscriptionItem {
         self.widgets
             .label_name
             .set_attributes(Some(&name_attr_list));
+
+        // Is needed until this supports more platforms.
+        #[allow(irrefutable_let_patterns)]
+        if let AnySubscription::Youtube(sub) = &self.model.subscription {
+            let stream = self.model.relm.stream().clone();
+            let (_channel, sender) = relm::Channel::new(move |name_opt| {
+                if let Some(name) = name_opt {
+                    stream.emit(SubscriptionItemMsg::UpdateName(name));
+                }
+            });
+
+            let sub_clone = sub.clone();
+            std::thread::spawn(move || {
+                let _ = sender.send(
+                    tokio::runtime::Runtime::new()
+                        .unwrap()
+                        .block_on(async { sub_clone.update_name().await }),
+                );
+            });
+        }
     }
 
     // If this needs to be changed, remember to also change the sort function of the SubscriptionsPage
     view! {
+        #[name="root"]
         gtk::ListBoxRow {
             gtk::Box {
                 gtk::Button {
