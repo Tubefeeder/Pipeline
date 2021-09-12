@@ -70,6 +70,7 @@ impl Widget for SubscriptionItem {
             .set_attributes(Some(&name_attr_list));
     }
 
+    // If this needs to be changed, remember to also change the sort function of the SubscriptionsPage
     view! {
         gtk::ListBoxRow {
             gtk::Box {

@@ -20,14 +20,16 @@
 
 use crate::gui::subscriptions::subscription_item::SubscriptionItem;
 
+use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
+use gtk::{Container, Label, ListBoxRow};
 use relm::{Channel, ContainerWidget, Relm, Sender, Widget};
 use relm_derive::{widget, Msg};
-use tf_core::{Observable, Observer};
 use tf_join::{AnySubscription, AnySubscriptionList, SubscriptionEvent};
+use tf_observer::{Observable, Observer};
 use tf_yt::YTSubscription;
 
 #[derive(Msg)]
@@ -43,7 +45,7 @@ pub struct SubscriptionsPageModel {
     add_subscription_visible: bool,
     subscription_list: AnySubscriptionList,
     _subscription_observer: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
-    subscription_order: Vec<(AnySubscription, relm::Component<SubscriptionItem>)>,
+    subscription_items: HashMap<AnySubscription, relm::Component<SubscriptionItem>>,
 }
 
 #[widget]
@@ -66,7 +68,7 @@ impl Widget for SubscriptionsPage {
             add_subscription_visible: false,
             subscription_list: subscription_list_clone,
             _subscription_observer: observer,
-            subscription_order: vec![],
+            subscription_items: HashMap::new(),
         }
     }
 
@@ -96,35 +98,62 @@ impl Widget for SubscriptionsPage {
     }
 
     fn new_subscription(&mut self, sub: AnySubscription) {
-        let sub_item = self
-            .widgets
-            .subscription_list
-            .add_widget::<SubscriptionItem>((sub.clone(), self.model.subscription_list.clone()));
+        if self.model.subscription_items.get(&sub).is_none() {
+            let sub_item = self
+                .widgets
+                .subscription_list
+                .add_widget::<SubscriptionItem>((
+                    sub.clone(),
+                    self.model.subscription_list.clone(),
+                ));
 
-        let index_res = self
-            .model
-            .subscription_order
-            .binary_search_by(|(s, _i)| sub.cmp(s));
-
-        if let Err(index) = index_res {
-            self.model.subscription_order.insert(index, (sub, sub_item));
+            self.model.subscription_items.insert(sub, sub_item);
         }
     }
 
     fn remove_subscription(&mut self, sub: AnySubscription) {
-        let index_res = self
-            .model
-            .subscription_order
-            .binary_search_by(|(s, _i)| sub.cmp(s));
-
-        if let Ok(index) = index_res {
-            let (_sub, sub_item) = self.model.subscription_order.remove(index);
-            self.widgets.subscription_list.remove(sub_item.widget());
+        if let Some(filter_item) = self.model.subscription_items.get(&sub) {
+            self.widgets.subscription_list.remove(filter_item.widget());
+            self.model.subscription_items.remove(&sub);
         }
     }
 
     fn init_view(&mut self) {
         self.widgets.channel_entry_box.hide();
+
+        self.widgets.subscription_list.set_sort_func(Some(Box::new(
+            |l1: &ListBoxRow, l2: &ListBoxRow| {
+                // The gtk::Box inside the gtk::ListBoxRow.
+                let b1 = l1.child().unwrap();
+                let b2 = l2.child().unwrap();
+
+                let c1 = b1.clone().dynamic_cast::<Container>().unwrap();
+                let c2 = b2.clone().dynamic_cast::<Container>().unwrap();
+
+                // The gtk::Box inside the gtk::box b1 and b2.
+                let d1 = &c1.children()[1];
+                let d2 = &c2.children()[1];
+
+                let e1 = d1.clone().dynamic_cast::<Container>().unwrap();
+                let e2 = d2.clone().dynamic_cast::<Container>().unwrap();
+
+                // The gtk::Label inside the gtk::box b1 and b2.
+                let f1 = &e1.children()[0];
+                let f2 = &e2.children()[0];
+
+                let g1 = f1.clone().dynamic_cast::<Label>().unwrap();
+                let g2 = f2.clone().dynamic_cast::<Label>().unwrap();
+
+                let s1 = g1.text().as_str().to_string();
+                let s2 = g2.text().as_str().to_string();
+
+                if s1 < s2 {
+                    -1
+                } else {
+                    1
+                }
+            },
+        )));
     }
 
     view! {

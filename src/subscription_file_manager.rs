@@ -2,8 +2,8 @@ use std::{convert::TryFrom, fs::OpenOptions, path::PathBuf};
 
 use csv::{ReaderBuilder, StringRecord, WriterBuilder};
 
-use tf_core::Observer;
 use tf_join::{AnySubscription, AnySubscriptionList, SubscriptionEvent};
+use tf_observer::Observer;
 
 pub(crate) struct SubscriptionFileManager {
     subscriptions: AnySubscriptionList,

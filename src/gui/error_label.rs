@@ -28,7 +28,8 @@ use relm::Relm;
 use relm::Sender;
 use relm::{Channel, Widget};
 use relm_derive::{widget, Msg};
-use tf_core::{ErrorEvent, ErrorStore, Observable, Observer};
+use tf_core::{ErrorEvent, ErrorStore};
+use tf_observer::{Observable, Observer};
 
 #[derive(Msg)]
 pub enum ErrorLabelMsg {

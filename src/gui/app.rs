@@ -26,7 +26,8 @@ use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
 use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
 use crate::subscription_file_manager::SubscriptionFileManager;
 
-use tf_core::{ErrorStore, Generator, Observable, Observer};
+use tf_core::{ErrorStore, Generator};
+use tf_observer::{Observable, Observer};
 use tf_filter::{FilterEvent, FilterGroup};
 use tf_join::{AnySubscriptionList, AnyVideo, AnyVideoFilter, Joiner, SubscriptionEvent};
 

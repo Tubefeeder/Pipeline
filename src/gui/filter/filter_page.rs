@@ -29,9 +29,9 @@ use gtk::Orientation::Vertical;
 use regex::Regex;
 use relm::{Channel, ContainerWidget, Relm, Sender, Widget};
 use relm_derive::{widget, Msg};
-use tf_core::{Observable, Observer};
 use tf_filter::{FilterEvent, FilterGroup};
 use tf_join::{AnyVideoFilter, Platform};
+use tf_observer::{Observable, Observer};
 
 #[derive(Msg)]
 pub enum FilterPageMsg {

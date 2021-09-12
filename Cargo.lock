@@ -875,6 +875,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "observer"
+version = "0.0.0"
+
+[[package]]
 name = "once_cell"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -962,6 +966,22 @@ name = "pkg-config"
 version = "0.3.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3831453b3449ceb48b6d9c7ad7c96d5ea673e9b470a1dc578c2ce6521230884c"
+
+[[package]]
+name = "platform-youtube"
+version = "0.0.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "gdk-pixbuf",
+ "glib",
+ "log",
+ "quick-xml",
+ "reqwest",
+ "serde",
+ "tokio",
+ "tubefeeder-extractor-core",
+]
 
 [[package]]
 name = "proc-macro-crate"
@@ -1502,7 +1522,9 @@ dependencies = [
  "gtk",
  "libhandy",
  "log",
+ "observer",
  "pango",
+ "platform-youtube",
  "regex",
  "relm",
  "relm-derive",
@@ -1510,7 +1532,6 @@ dependencies = [
  "tubefeeder-extractor-core",
  "tubefeeder-extractor-filter",
  "tubefeeder-extractor-join",
- "tubefeeder-extractor-youtube",
 ]
 
 [[package]]
@@ -1522,6 +1543,7 @@ dependencies = [
  "futures",
  "gdk-pixbuf",
  "log",
+ "observer",
  "quick-xml",
  "reqwest",
  "serde",
@@ -1533,7 +1555,7 @@ name = "tubefeeder-extractor-filter"
 version = "0.0.0"
 dependencies = [
  "log",
- "tubefeeder-extractor-core",
+ "observer",
 ]
 
 [[package]]
@@ -1545,28 +1567,13 @@ dependencies = [
  "futures",
  "gdk-pixbuf",
  "log",
+ "observer",
+ "platform-youtube",
  "regex",
  "reqwest",
  "tokio",
  "tubefeeder-extractor-core",
  "tubefeeder-extractor-filter",
- "tubefeeder-extractor-youtube",
-]
-
-[[package]]
-name = "tubefeeder-extractor-youtube"
-version = "0.0.0"
-dependencies = [
- "async-trait",
- "chrono",
- "gdk-pixbuf",
- "glib",
- "log",
- "quick-xml",
- "reqwest",
- "serde",
- "tokio",
- "tubefeeder-extractor-core",
 ]
 
 [[package]]

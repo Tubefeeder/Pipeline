@@ -18,14 +18,10 @@
  *
  */
 
-// mod errors;
-// mod filter;
 mod filter_file_manager;
 mod gui;
 mod player;
 mod subscription_file_manager;
-// mod subscriptions;
-// mod youtube_feed;
 
 use crate::gui::Win;
 

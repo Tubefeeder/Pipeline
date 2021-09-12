@@ -7,9 +7,9 @@ use std::{
 
 use csv::{ReaderBuilder, StringRecord, WriterBuilder};
 
-use tf_core::Observer;
 use tf_filter::{FilterEvent, FilterGroup};
 use tf_join::AnyVideoFilter;
+use tf_observer::Observer;
 
 pub(crate) struct FilterFileManager {
     filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
