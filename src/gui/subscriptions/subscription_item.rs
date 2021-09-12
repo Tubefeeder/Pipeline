@@ -26,6 +26,7 @@ use gtk::Orientation::Vertical;
 use pango::{AttrList, Attribute, EllipsizeMode};
 use relm::{Relm, Widget};
 use relm_derive::{widget, Msg};
+
 use tf_join::AnySubscription;
 use tf_join::AnySubscriptionList;
 
@@ -39,18 +40,24 @@ pub struct SubscriptionsItemModel {
     relm: Relm<SubscriptionItem>,
     subscription: AnySubscription,
     subscription_list: AnySubscriptionList,
+    client: reqwest::Client,
 }
 
 #[widget]
 impl Widget for SubscriptionItem {
     fn model(
         relm: &Relm<Self>,
-        (subscription, subscription_list): (AnySubscription, AnySubscriptionList),
+        (subscription, subscription_list, client): (
+            AnySubscription,
+            AnySubscriptionList,
+            reqwest::Client,
+        ),
     ) -> SubscriptionsItemModel {
         SubscriptionsItemModel {
             relm: relm.clone(),
             subscription,
             subscription_list,
+            client,
         }
     }
 
@@ -87,12 +94,10 @@ impl Widget for SubscriptionItem {
             });
 
             let sub_clone = sub.clone();
-            std::thread::spawn(move || {
-                let _ = sender.send(
-                    tokio::runtime::Runtime::new()
-                        .unwrap()
-                        .block_on(async { sub_clone.update_name().await }),
-                );
+            let client = self.model.client.clone();
+            tokio::spawn(async move {
+                let name = sub_clone.update_name(&client).await;
+                let _ = sender.send(name);
             });
         }
     }

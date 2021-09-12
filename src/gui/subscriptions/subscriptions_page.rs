@@ -46,6 +46,7 @@ pub struct SubscriptionsPageModel {
     subscription_list: AnySubscriptionList,
     _subscription_observer: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
     subscription_items: HashMap<AnySubscription, relm::Component<SubscriptionItem>>,
+    client: reqwest::Client,
 }
 
 #[widget]
@@ -69,6 +70,7 @@ impl Widget for SubscriptionsPage {
             subscription_list: subscription_list_clone,
             _subscription_observer: observer,
             subscription_items: HashMap::new(),
+            client: reqwest::Client::new(),
         }
     }
 
@@ -84,17 +86,26 @@ impl Widget for SubscriptionsPage {
     }
 
     fn add_subscription(&mut self) {
-        let channel_id = self.widgets.channel_id_entry.text();
+        let channel_id_or_name = self.widgets.channel_id_or_name_entry.text();
 
-        self.widgets.channel_id_entry.set_text("");
+        self.widgets.channel_id_or_name_entry.set_text("");
         self.model
             .relm
             .stream()
             .emit(SubscriptionsPageMsg::ToggleAddSubscription);
 
-        self.model
-            .subscription_list
-            .add(YTSubscription::new(&channel_id).into());
+        let sub_list = self.model.subscription_list.clone();
+
+        std::thread::spawn(move || {
+            let sub_res = tokio::runtime::Runtime::new()
+                .unwrap()
+                .block_on(async { YTSubscription::from_id_or_name(&channel_id_or_name).await });
+
+            // TODO: Error handling
+            if let Ok(sub) = sub_res {
+                sub_list.add(sub.into());
+            }
+        });
     }
 
     fn new_subscription(&mut self, sub: AnySubscription) {
@@ -105,6 +116,7 @@ impl Widget for SubscriptionsPage {
                 .add_widget::<SubscriptionItem>((
                     sub.clone(),
                     self.model.subscription_list.clone(),
+                    self.model.client.clone(),
                 ));
 
             self.model.subscription_items.insert(sub, sub_item);
@@ -147,7 +159,7 @@ impl Widget for SubscriptionsPage {
                 let s1 = g1.text().as_str().to_string();
                 let s2 = g2.text().as_str().to_string();
 
-                if s1 < s2 {
+                if s1.to_lowercase() < s2.to_lowercase() {
                     -1
                 } else {
                     1
@@ -163,9 +175,9 @@ impl Widget for SubscriptionsPage {
             #[name="channel_entry_box"]
             gtk::Box {
                 visible: self.model.add_subscription_visible,
-                #[name="channel_id_entry"]
+                #[name="channel_id_or_name_entry"]
                 gtk::Entry {
-                    placeholder_text: Some("Channel ID")
+                    placeholder_text: Some("Channel ID or Name")
                 },
                 gtk::Button {
                     clicked => SubscriptionsPageMsg::AddSubscription,
