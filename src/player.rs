@@ -23,6 +23,7 @@ use std::{
 };
 
 use tf_join::AnyVideo;
+use tf_core::Video;
 
 pub fn play(video: AnyVideo) {
     thread::spawn(move || {

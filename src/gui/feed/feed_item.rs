@@ -26,7 +26,7 @@ use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::gui::{get_font_size, FONT_RATIO};
 use crate::player::play;
 
-use tf_core::VideoEvent;
+use tf_core::{Video, VideoEvent};
 use tf_join::AnyVideo;
 use tf_observer::{Observable, Observer};
 

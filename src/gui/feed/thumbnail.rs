@@ -24,6 +24,7 @@ use gdk_pixbuf::{Colorspace, Pixbuf};
 use gtk::prelude::*;
 use relm::{Channel, Relm, Widget};
 use relm_derive::{widget, Msg};
+use tf_core::Video;
 use tf_join::AnyVideo;
 
 const WIDTH: i32 = 120;
