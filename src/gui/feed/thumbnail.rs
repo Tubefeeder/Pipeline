@@ -18,8 +18,6 @@
  *
  */
 
-use std::thread;
-
 use gdk_pixbuf::{Colorspace, Pixbuf};
 use gtk::prelude::*;
 use relm::{Channel, Relm, Widget};
@@ -41,6 +39,7 @@ pub fn default_pixbuf() -> Pixbuf {
 pub struct ThumbnailModel {
     relm: Relm<Thumbnail>,
     video: AnyVideo,
+    client: reqwest::Client,
 }
 
 #[derive(Msg)]
@@ -51,10 +50,11 @@ pub enum ThumbnailMsg {
 
 #[widget]
 impl Widget for Thumbnail {
-    fn model(relm: &Relm<Self>, video: AnyVideo) -> ThumbnailModel {
+    fn model(relm: &Relm<Self>, (video, client): (AnyVideo, reqwest::Client)) -> ThumbnailModel {
         ThumbnailModel {
             relm: relm.clone(),
             video,
+            client,
         }
     }
 
@@ -77,16 +77,16 @@ impl Widget for Thumbnail {
         });
 
         let video = self.model.video.clone();
-        thread::spawn(move || {
+        let client = self.model.client.clone();
+        tokio::spawn(async move {
             let mut user_data_dir = glib::user_cache_dir();
             user_data_dir.push("tubefeeder");
             user_data_dir.push(&format!("{}.png", video.title()));
             let path = user_data_dir;
-            // TODO: Use same reqwest::Client for all thumbnail queries.
             // TODO: Use Caching
-            tokio::runtime::Runtime::new()
-                .unwrap()
-                .block_on(async { video.thumbnail(path.clone(), WIDTH, HEIGHT).await });
+            video
+                .thumbnail_with_client(&client, path.clone(), WIDTH, HEIGHT)
+                .await;
             sender.send(path).expect("Could not send pixbuf");
         });
     }

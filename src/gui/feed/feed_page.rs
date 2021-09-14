@@ -31,24 +31,25 @@ use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
 pub struct FeedElementBuilder {
-    chunks: Vec<Vec<(AnyVideo, StreamHandle<AppMsg>)>>,
+    chunks: Vec<Vec<(AnyVideo, StreamHandle<AppMsg>, reqwest::Client)>>,
 }
 
 impl FeedElementBuilder {
     fn new(feed: Box<dyn Iterator<Item = AnyVideo>>, app_stream: StreamHandle<AppMsg>) -> Self {
+        let client = reqwest::Client::new();
         FeedElementBuilder {
             chunks: feed
-                .map(|v| (v, app_stream.clone()))
-                .collect::<Vec<(AnyVideo, StreamHandle<AppMsg>)>>()
+                .map(|v| (v, app_stream.clone(), client.clone()))
+                .collect::<Vec<(AnyVideo, StreamHandle<AppMsg>, reqwest::Client)>>()
                 .chunks(10)
                 .map(Vec::from)
-                .collect::<Vec<Vec<(AnyVideo, StreamHandle<AppMsg>)>>>(),
+                .collect::<Vec<Vec<(AnyVideo, StreamHandle<AppMsg>, reqwest::Client)>>>(),
         }
     }
 }
 
 impl ListElementBuilder<FeedListItem> for FeedElementBuilder {
-    fn poll(&mut self) -> Vec<(AnyVideo, StreamHandle<AppMsg>)> {
+    fn poll(&mut self) -> Vec<(AnyVideo, StreamHandle<AppMsg>, reqwest::Client)> {
         if !self.chunks.is_empty() {
             self.chunks.remove(0)
         } else {

@@ -103,7 +103,6 @@ pub struct ErrorLabelObserver {
 
 impl Observer<ErrorEvent> for ErrorLabelObserver {
     fn notify(&mut self, message: ErrorEvent) {
-        log::debug!("Notify label");
         match message {
             ErrorEvent::Add(_error) => {
                 let _ = self.sender.send(ErrorLabelMsg::Set);

@@ -50,14 +50,15 @@ pub struct FeedListItemModel {
     playing: bool,
     relm: Relm<FeedListItem>,
     observer: Arc<Mutex<Box<dyn Observer<VideoEvent> + Send>>>,
-    _channel: Channel<FeedListItemMsg>,
+
+    client: reqwest::Client,
 }
 
 #[widget]
 impl Widget for FeedListItem {
     fn model(
         relm: &Relm<Self>,
-        (entry, _app_stream): (AnyVideo, StreamHandle<AppMsg>),
+        (entry, _app_stream, client): (AnyVideo, StreamHandle<AppMsg>, reqwest::Client),
     ) -> FeedListItemModel {
         let relm_clone = relm.clone();
         let (_channel, sender) = Channel::new(move |msg| {
@@ -69,7 +70,8 @@ impl Widget for FeedListItem {
             playing: false,
             relm: relm.clone(),
             observer: Arc::new(Mutex::new(Box::new(FeedListItemObserver { sender }))),
-            _channel,
+
+            client,
         }
     }
 
@@ -157,7 +159,7 @@ impl Widget for FeedListItem {
                 },
 
                 #[name="thumbnail"]
-                Thumbnail(self.model.entry.clone()),
+                Thumbnail(self.model.entry.clone(), self.model.client.clone()),
 
                 #[name="box_info"]
                 gtk::Box {
