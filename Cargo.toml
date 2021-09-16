@@ -32,11 +32,3 @@ tf_join = { package = "tubefeeder-extractor-join", git = "https://github.com/Tub
 tf_filter = { package = "tubefeeder-extractor-filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
 tf_observer = { package = "observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
 tf_playlist = { package = "playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git" }
-
-[patch."https://github.com/Tubefeeder/tubefeeder-extractor.git"]
-tf_core = { package = "tubefeeder-extractor-core", path = "../tubefeeder-extractor/tubefeeder-extractor-core" }
-tf_yt = { package = "platform-youtube", path = "../tubefeeder-extractor/platform-youtube" }
-tf_join = { package = "tubefeeder-extractor-join", path = "../tubefeeder-extractor/tubefeeder-extractor-join" }
-tf_filter = { package = "tubefeeder-extractor-filter", path = "../tubefeeder-extractor/tubefeeder-extractor-filter" }
-tf_observer = { package = "observer", path = "../tubefeeder-extractor/observer" }
-tf_playlist = { package = "playlist", path = "../tubefeeder-extractor/playlist" }
