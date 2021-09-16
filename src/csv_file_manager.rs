@@ -1,39 +1,62 @@
-use std::{convert::TryFrom, fs::OpenOptions, path::PathBuf};
+/*
+ * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ *
+ * This file is part of Tubefeeder-extractor.
+ *
+ * Tubefeeder-extractor is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Tubefeeder-extractor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Tubefeeder-extractor.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+use std::{
+    convert::{TryFrom, TryInto},
+    fs::OpenOptions,
+    marker::PhantomData,
+    path::PathBuf,
+};
 
 use csv::{ReaderBuilder, StringRecord, WriterBuilder};
 
-use tf_join::{AnyVideo, Joiner};
+use tf_filter::FilterEvent;
+use tf_join::{AnySubscription, SubscriptionEvent};
 use tf_observer::Observer;
-use tf_playlist::{PlaylistEvent, PlaylistManager};
+use tf_playlist::PlaylistEvent;
 
-pub(crate) struct PlaylistFileManager {
-    playlist_manager: PlaylistManager<String, AnyVideo>,
-    playlist_name: String,
+pub(crate) struct CsvFileManager<T> {
     path: PathBuf,
-    joiner: Joiner,
+    _phantom: PhantomData<T>,
 }
 
-impl PlaylistFileManager {
-    pub fn new(
-        path: &PathBuf,
-        playlist_manager: PlaylistManager<String, AnyVideo>,
-        playlist_name: String,
-        joiner: Joiner,
-    ) -> Self {
+impl<T> CsvFileManager<T>
+where
+    T: TryFrom<Vec<String>>,
+{
+    pub fn new<F>(path: &PathBuf, add_func: &mut F) -> Self
+    where
+        F: FnMut(T) -> (),
+    {
         let mut manager = Self {
-            playlist_manager: playlist_manager.clone(),
-            playlist_name,
             path: path.clone(),
-            joiner,
+            _phantom: PhantomData,
         };
 
-        manager.fill_videos();
+        manager.fill(add_func);
         manager
     }
 
-    fn fill_videos(&mut self) {
-        // TODO: Insert into video store
-        log::debug!("Filling in the video playlist from {:?}", self.path);
+    fn fill<F>(&mut self, add_func: &mut F)
+    where
+        F: FnMut(T) -> (),
+    {
         let file_res = OpenOptions::new().read(true).write(false).open(&self.path);
 
         // TODO: Error handling
@@ -51,30 +74,67 @@ impl PlaylistFileManager {
 
         for record_res in records {
             if let Ok(record) = record_res {
-                let items: Vec<&str> = record.iter().collect();
+                let items: Vec<String> = record.iter().map(|s| s.to_string()).collect();
 
-                let video_res = AnyVideo::try_from(items.as_slice());
+                let res = T::try_from(items.clone());
 
-                if video_res.is_ok() {
-                    let video = video_res.unwrap();
-                    let join_video = self.joiner.upgrade_video(&video);
-                    self.playlist_manager
-                        .toggle(&self.playlist_name.clone(), &join_video);
+                if let Ok(r) = res {
+                    add_func(r);
                 } else {
-                    log::error!("Error parsing video with csv {:?}", items);
+                    log::error!("Error parsing csv {:?}", items);
                 }
             } else {
-                log::error!("Error parsing video csv");
+                log::error!("Error parsing csv");
             }
         }
     }
 }
 
-impl Observer<PlaylistEvent<AnyVideo>> for PlaylistFileManager {
-    fn notify(&mut self, message: PlaylistEvent<AnyVideo>) {
-        match message {
-            PlaylistEvent::Add(video) => {
-                let new_record: StringRecord = Vec::<String>::from(video).into();
+pub enum CsvEvent<T> {
+    Add(T),
+    Remove(T),
+}
+
+impl<T> TryFrom<PlaylistEvent<T>> for CsvEvent<T> {
+    type Error = ();
+    fn try_from(e: PlaylistEvent<T>) -> Result<Self, ()> {
+        match e {
+            PlaylistEvent::Add(i) => Ok(CsvEvent::Add(i)),
+            PlaylistEvent::Remove(i) => Ok(CsvEvent::Remove(i)),
+        }
+    }
+}
+
+impl TryFrom<SubscriptionEvent> for CsvEvent<AnySubscription> {
+    type Error = ();
+    fn try_from(e: SubscriptionEvent) -> Result<Self, ()> {
+        match e {
+            SubscriptionEvent::Add(i) => Ok(CsvEvent::Add(i)),
+            SubscriptionEvent::Remove(i) => Ok(CsvEvent::Remove(i)),
+        }
+    }
+}
+
+impl<T> TryFrom<FilterEvent<T>> for CsvEvent<T> {
+    type Error = ();
+    fn try_from(e: FilterEvent<T>) -> Result<Self, ()> {
+        match e {
+            FilterEvent::Add(i) => Ok(CsvEvent::Add(i)),
+            FilterEvent::Remove(i) => Ok(CsvEvent::Remove(i)),
+        }
+    }
+}
+
+impl<E, T> Observer<E> for CsvFileManager<T>
+where
+    E: TryInto<CsvEvent<T>>,
+    T: Into<Vec<String>>,
+{
+    fn notify(&mut self, message: E) {
+        match message.try_into() {
+            Ok(CsvEvent::Add(item)) => {
+                let vec_str: Vec<String> = item.into();
+                let new_record: StringRecord = vec_str.into();
 
                 let file_res = OpenOptions::new()
                     .read(true)
@@ -101,11 +161,11 @@ impl Observer<PlaylistEvent<AnyVideo>> for PlaylistFileManager {
                 for record_res in records {
                     if let Ok(record) = record_res {
                         if new_record == record {
-                            log::debug!("Video already in playlist file");
+                            log::debug!("Entry already file");
                             return;
                         }
                     } else {
-                        log::error!("Error parsing playlist csv");
+                        log::error!("Error parsing csv {:?}", self.path);
                     }
                 }
 
@@ -121,8 +181,9 @@ impl Observer<PlaylistEvent<AnyVideo>> for PlaylistFileManager {
                     log::error!("Error writing to file {:?}", self.path)
                 }
             }
-            PlaylistEvent::Remove(video) => {
-                let new_record: StringRecord = Vec::<String>::from(video).into();
+            Ok(CsvEvent::Remove(item)) => {
+                let vec_str: Vec<String> = item.into();
+                let new_record: StringRecord = vec_str.into();
 
                 let csv_reader_res = ReaderBuilder::new()
                     .has_headers(false)
@@ -166,6 +227,7 @@ impl Observer<PlaylistEvent<AnyVideo>> for PlaylistFileManager {
                     log::error!("Error writing to file {:?}", self.path)
                 }
             }
+            _ => {}
         }
     }
 }

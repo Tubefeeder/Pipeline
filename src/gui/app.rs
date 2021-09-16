@@ -18,15 +18,13 @@
  *
  */
 
-use crate::filter_file_manager::FilterFileManager;
+use crate::csv_file_manager::CsvFileManager;
 use crate::gui::error_label::ErrorLabel;
 use crate::gui::feed::{FeedPage, FeedPageMsg};
 use crate::gui::filter::{FilterPage, FilterPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
 use crate::gui::playlist::PlaylistPage;
 use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
-use crate::playlist_file_manager::PlaylistFileManager;
-use crate::subscription_file_manager::SubscriptionFileManager;
 
 use tf_core::{ErrorStore, Generator};
 use tf_filter::{FilterEvent, FilterGroup};
@@ -157,25 +155,27 @@ impl Widget for Win {
         let mut subscription_list = joiner.subscription_list();
         let filters = joiner.filters();
         let mut playlist_manager = PlaylistManager::new();
+        let mut playlist_manager_clone = playlist_manager.clone();
+        let joiner_clone = joiner.clone();
 
-        let _subscription_file_manager = Arc::new(Mutex::new(
-            Box::new(SubscriptionFileManager::new(
-                &subscriptions_file_path,
-                &subscription_list,
-            )) as Box<dyn Observer<SubscriptionEvent> + Send>,
-        ));
+        let _subscription_file_manager = Arc::new(Mutex::new(Box::new(CsvFileManager::new(
+            &subscriptions_file_path,
+            &mut |sub| subscription_list.add(sub),
+        ))
+            as Box<dyn Observer<SubscriptionEvent> + Send>));
 
-        let _filter_file_manager = Arc::new(Mutex::new(Box::new(FilterFileManager::new(
+        let _filter_file_manager = Arc::new(Mutex::new(Box::new(CsvFileManager::new(
             &filter_file_path,
-            filters.clone(),
+            &mut |fil| filters.lock().unwrap().add(fil),
         ))
             as Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>));
 
-        let _watchlater_file_manager = Arc::new(Mutex::new(Box::new(PlaylistFileManager::new(
+        let _watchlater_file_manager = Arc::new(Mutex::new(Box::new(CsvFileManager::new(
             &watchlater_file_path,
-            playlist_manager.clone(),
-            "WATCHLATER".to_string(),
-            joiner.clone(),
+            &mut move |v| {
+                let join_video = joiner_clone.upgrade_video(&v);
+                playlist_manager_clone.toggle(&"WATCHLATER".to_string(), &join_video);
+            },
         ))
             as Box<dyn Observer<PlaylistEvent<AnyVideo>> + Send>));
 

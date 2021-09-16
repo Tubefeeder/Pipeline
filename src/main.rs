@@ -18,12 +18,9 @@
  *
  */
 
-// TODO: Refactor file managers into one.
-mod filter_file_manager;
+mod csv_file_manager;
 mod gui;
 mod player;
-mod playlist_file_manager;
-mod subscription_file_manager;
 
 use crate::gui::Win;
 
