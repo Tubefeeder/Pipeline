@@ -32,6 +32,9 @@ use tf_join::{AnySubscriptionList, AnyVideo, AnyVideoFilter, Joiner, Subscriptio
 use tf_observer::{Observable, Observer};
 use tf_playlist::{PlaylistEvent, PlaylistManager};
 
+use std::fs::OpenOptions;
+use std::io::{Read, Write};
+use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
 
@@ -70,6 +73,47 @@ pub fn init_icons() {
     icon_theme.add_resource_path("/org/gnome/design/IconLibrary/data/icons/");
 
     gio::resources_register(&resource);
+}
+
+pub fn migrate_config(old: &PathBuf, new: &PathBuf) {
+    if old.exists() {
+        let old_file_res = OpenOptions::new().read(true).write(false).open(old);
+
+        if old_file_res.is_err() {
+            log::error!("A error migrating configuration occured: Cannot open old file");
+            return;
+        }
+
+        let mut old_str = String::new();
+        if old_file_res.unwrap().read_to_string(&mut old_str).is_err() {
+            log::error!("A error migrating configuration occured: Cannot read from old file");
+            return;
+        }
+
+        let new_str = old_str
+            .replace('"', "")
+            .replace("https://www.youtube.com/channel/", "")
+            .replace("+00:00", "")
+            .lines()
+            .skip(1)
+            .map(|s| format!("{},{}\n", String::from(tf_join::Platform::Youtube), s))
+            .collect::<String>();
+
+        let new_file_res = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .truncate(true)
+            .create(true)
+            .open(new);
+        if new_file_res.is_err() {
+            log::error!("A error migrating configuration occured: Cannot open new file");
+            return;
+        }
+        if write!(&mut new_file_res.unwrap(), "{}", new_str).is_err() {
+            log::error!("A error migrating configuration occured: Cannot write to new file");
+            return;
+        }
+    }
 }
 
 #[derive(Msg)]
@@ -146,11 +190,29 @@ impl Widget for Win {
         let mut subscriptions_file_path = user_data_dir.clone();
         subscriptions_file_path.push("subscriptions.csv");
 
+        if !subscriptions_file_path.exists() {
+            let mut old_file_path = user_data_dir.clone();
+            old_file_path.push("subscriptions.db");
+            migrate_config(&old_file_path, &subscriptions_file_path);
+        }
+
         let mut filter_file_path = user_data_dir.clone();
         filter_file_path.push("filters.csv");
 
+        if !filter_file_path.exists() {
+            let mut old_file_path = user_data_dir.clone();
+            old_file_path.push(&"filters.db");
+            migrate_config(&old_file_path, &filter_file_path);
+        }
+
         let mut watchlater_file_path = user_data_dir.clone();
         watchlater_file_path.push("playlist_watch_later.csv");
+
+        if !watchlater_file_path.exists() {
+            let mut old_file_path = user_data_dir.clone();
+            old_file_path.push("watch_later.db");
+            migrate_config(&old_file_path, &watchlater_file_path);
+        }
 
         let mut subscription_list = joiner.subscription_list();
         let filters = joiner.filters();
