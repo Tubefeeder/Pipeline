@@ -22,18 +22,32 @@ use std::{
     thread,
 };
 
-use tf_join::AnyVideo;
 use tf_core::Video;
+use tf_join::AnyVideo;
 
 pub fn play(video: AnyVideo) {
     thread::spawn(move || {
         log::debug!("Playing video with title: {}", video.title());
         video.play();
-        let _ = Command::new("mpv")
+        let player = std::env::var("PLAYER").unwrap_or("mpv".to_string());
+
+        let stdout = if log::log_enabled!(log::Level::Debug) {
+            Stdio::inherit()
+        } else {
+            Stdio::null()
+        };
+
+        let stderr = if log::log_enabled!(log::Level::Error) {
+            Stdio::inherit()
+        } else {
+            Stdio::null()
+        };
+
+        let _ = Command::new(&player)
             .arg(video.url())
-            .stdout(Stdio::null())
+            .stdout(stdout)
+            .stderr(stderr)
             .stdin(Stdio::null())
-            .stderr(Stdio::null())
             .spawn()
             .unwrap()
             .wait();

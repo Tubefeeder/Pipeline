@@ -1052,6 +1052,7 @@ dependencies = [
 [[package]]
 name = "observer"
 version = "0.0.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#3271221b3076bf60c52791ad0bdf194a2278cda4"
 
 [[package]]
 name = "once_cell"
@@ -1178,6 +1179,7 @@ checksum = "3831453b3449ceb48b6d9c7ad7c96d5ea673e9b470a1dc578c2ce6521230884c"
 [[package]]
 name = "platform-youtube"
 version = "0.0.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#3271221b3076bf60c52791ad0bdf194a2278cda4"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1196,6 +1198,7 @@ dependencies = [
 [[package]]
 name = "playlist"
 version = "0.0.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#3271221b3076bf60c52791ad0bdf194a2278cda4"
 dependencies = [
  "log",
  "observer",
@@ -1908,6 +1911,7 @@ dependencies = [
 [[package]]
 name = "tubefeeder-extractor-core"
 version = "0.0.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#3271221b3076bf60c52791ad0bdf194a2278cda4"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1924,6 +1928,7 @@ dependencies = [
 [[package]]
 name = "tubefeeder-extractor-filter"
 version = "0.0.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#3271221b3076bf60c52791ad0bdf194a2278cda4"
 dependencies = [
  "log",
  "observer",
@@ -1932,6 +1937,7 @@ dependencies = [
 [[package]]
 name = "tubefeeder-extractor-join"
 version = "0.0.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git#3271221b3076bf60c52791ad0bdf194a2278cda4"
 dependencies = [
  "async-trait",
  "chrono",
