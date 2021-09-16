@@ -1194,6 +1194,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "playlist"
+version = "0.0.0"
+dependencies = [
+ "log",
+ "observer",
+]
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1886,6 +1894,7 @@ dependencies = [
  "observer",
  "pango",
  "platform-youtube",
+ "playlist",
  "regex",
  "relm",
  "relm-derive",

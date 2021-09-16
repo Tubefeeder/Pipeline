@@ -11,3 +11,9 @@ if [ -f filters.db ]; then
 else
     echo "Filters file does not exist"
 fi
+
+if [ -f watch_later.db ]; then
+    tail watch_later.db -n +2 | sed "s/\"//g" | sed "s/https:\/\/www.youtube.com\/channel\///g" | sed "s/+00:00//g" | sed "s/^/youtube,/" > playlist_watch_later.csv
+else
+    echo "Watch later file does not exist"
+fi

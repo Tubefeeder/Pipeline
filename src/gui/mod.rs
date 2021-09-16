@@ -24,6 +24,7 @@ mod feed;
 mod filter;
 mod header_bar;
 mod lazy_list;
+mod playlist;
 mod subscriptions;
 
 pub use app::Win;

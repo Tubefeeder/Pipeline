@@ -124,8 +124,8 @@ impl Widget for SubscriptionsPage {
     }
 
     fn remove_subscription(&mut self, sub: AnySubscription) {
-        if let Some(filter_item) = self.model.subscription_items.get(&sub) {
-            self.widgets.subscription_list.remove(filter_item.widget());
+        if let Some(sub_item) = self.model.subscription_items.get(&sub) {
+            self.widgets.subscription_list.remove(sub_item.widget());
             self.model.subscription_items.remove(&sub);
         }
     }

@@ -18,9 +18,6 @@
  *
  */
 
-mod date_label;
-pub(crate) mod feed_item;
-mod feed_page;
-mod thumbnail;
+mod playlist_page;
 
-pub use feed_page::{FeedPage, FeedPageMsg};
+pub use playlist_page::{PlaylistPage, PlaylistPageMsg};

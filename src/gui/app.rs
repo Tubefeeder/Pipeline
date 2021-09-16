@@ -23,13 +23,16 @@ use crate::gui::error_label::ErrorLabel;
 use crate::gui::feed::{FeedPage, FeedPageMsg};
 use crate::gui::filter::{FilterPage, FilterPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
+use crate::gui::playlist::PlaylistPage;
 use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
+use crate::playlist_file_manager::PlaylistFileManager;
 use crate::subscription_file_manager::SubscriptionFileManager;
 
 use tf_core::{ErrorStore, Generator};
-use tf_observer::{Observable, Observer};
 use tf_filter::{FilterEvent, FilterGroup};
 use tf_join::{AnySubscriptionList, AnyVideo, AnyVideoFilter, Joiner, SubscriptionEvent};
+use tf_observer::{Observable, Observer};
+use tf_playlist::{PlaylistEvent, PlaylistManager};
 
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
@@ -82,11 +85,13 @@ pub enum AppMsg {
 
 pub struct AppModel {
     joiner: Joiner,
+    playlist_manager: PlaylistManager<String, AnyVideo>,
     errors: ErrorStore,
     app_stream: StreamHandle<AppMsg>,
 
     _subscription_file_manager: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
     _filter_file_manager: Arc<Mutex<Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>>>,
+    _watchlater_file_manager: Arc<Mutex<Box<dyn Observer<PlaylistEvent<AnyVideo>> + Send>>>,
     subscription_list: AnySubscriptionList,
     filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
     loading: bool,
@@ -146,8 +151,12 @@ impl Widget for Win {
         let mut filter_file_path = user_data_dir.clone();
         filter_file_path.push("filters.csv");
 
+        let mut watchlater_file_path = user_data_dir.clone();
+        watchlater_file_path.push("playlist_watch_later.csv");
+
         let mut subscription_list = joiner.subscription_list();
         let filters = joiner.filters();
+        let mut playlist_manager = PlaylistManager::new();
 
         let _subscription_file_manager = Arc::new(Mutex::new(
             Box::new(SubscriptionFileManager::new(
@@ -162,6 +171,14 @@ impl Widget for Win {
         ))
             as Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>));
 
+        let _watchlater_file_manager = Arc::new(Mutex::new(Box::new(PlaylistFileManager::new(
+            &watchlater_file_path,
+            playlist_manager.clone(),
+            "WATCHLATER".to_string(),
+            joiner.clone(),
+        ))
+            as Box<dyn Observer<PlaylistEvent<AnyVideo>> + Send>));
+
         subscription_list.attach(Arc::downgrade(&_subscription_file_manager));
 
         filters
@@ -169,14 +186,21 @@ impl Widget for Win {
             .unwrap()
             .attach(Arc::downgrade(&_filter_file_manager));
 
+        playlist_manager.attach_at(
+            Arc::downgrade(&_watchlater_file_manager),
+            &"WATCHLATER".to_string(),
+        );
+
         AppModel {
             app_stream: relm.stream().clone(),
             _subscription_file_manager,
             _filter_file_manager,
+            _watchlater_file_manager,
             subscription_list,
             filters,
             loading: false,
             joiner,
+            playlist_manager,
             errors: ErrorStore::new(),
         }
     }
@@ -258,21 +282,21 @@ impl Widget for Win {
                 #[name="application_stack"]
                 gtk::Stack {
                     #[name="feed_page"]
-                    FeedPage(self.model.app_stream.clone()) {
+                    FeedPage(self.model.playlist_manager.clone()) {
                         widget_name: &String::from(Page::Feed),
                         child: {
                             icon_name: Some("go-home-symbolic"),
                             title: Some(&String::from(Page::Feed))
                         }
                     },
-                    // #[name="watch_later_page"]
-                    // FeedPage(self.model.app_stream.clone()) {
-                    //     widget_name: &String::from(Page::WatchLater),
-                    //     child: {
-                    //         icon_name: Some("alarm-symbolic"),
-                    //         title: Some(&String::from(Page::WatchLater))
-                    //     }
-                    // },
+                    #[name="watch_later_page"]
+                    PlaylistPage(self.model.playlist_manager.clone(), "WATCHLATER".to_string()) {
+                        widget_name: &String::from(Page::WatchLater),
+                        child: {
+                            icon_name: Some("alarm-symbolic"),
+                            title: Some(&String::from(Page::WatchLater))
+                        }
+                    },
                     #[name="filter_page"]
                     FilterPage(self.model.filters.clone()) {
                         widget_name: &String::from(Page::Filters),

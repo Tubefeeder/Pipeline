@@ -20,7 +20,6 @@
 
 use std::sync::{Arc, Mutex};
 
-use crate::gui::app::AppMsg;
 use crate::gui::feed::date_label::DateLabel;
 use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::gui::{get_font_size, FONT_RATIO};
@@ -29,11 +28,12 @@ use crate::player::play;
 use tf_core::{Video, VideoEvent};
 use tf_join::AnyVideo;
 use tf_observer::{Observable, Observer};
+use tf_playlist::PlaylistManager;
 
 use gtk::prelude::*;
 use gtk::{Align, Justification, Orientation, PackType};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
-use relm::{Channel, Relm, Sender, StreamHandle, Widget};
+use relm::{Channel, Relm, Sender, Widget};
 use relm_derive::{widget, Msg};
 
 #[derive(Msg)]
@@ -45,11 +45,11 @@ pub enum FeedListItemMsg {
 }
 
 pub struct FeedListItemModel {
-    _app_stream: StreamHandle<AppMsg>,
     entry: AnyVideo,
     playing: bool,
     relm: Relm<FeedListItem>,
     observer: Arc<Mutex<Box<dyn Observer<VideoEvent> + Send>>>,
+    playlist_manager: PlaylistManager<String, AnyVideo>,
 
     client: reqwest::Client,
 }
@@ -58,18 +58,22 @@ pub struct FeedListItemModel {
 impl Widget for FeedListItem {
     fn model(
         relm: &Relm<Self>,
-        (entry, _app_stream, client): (AnyVideo, StreamHandle<AppMsg>, reqwest::Client),
+        (entry, client, playlist_manager): (
+            AnyVideo,
+            reqwest::Client,
+            PlaylistManager<String, AnyVideo>,
+        ),
     ) -> FeedListItemModel {
         let relm_clone = relm.clone();
         let (_channel, sender) = Channel::new(move |msg| {
             relm_clone.stream().emit(msg);
         });
         FeedListItemModel {
-            _app_stream,
             entry,
             playing: false,
             relm: relm.clone(),
             observer: Arc::new(Mutex::new(Box::new(FeedListItemObserver { sender }))),
+            playlist_manager,
 
             client,
         }
@@ -82,14 +86,15 @@ impl Widget for FeedListItem {
             }
             FeedListItemMsg::SetPlaying(playing) => {
                 self.model.playing = playing;
+                self.widgets.root.show();
             }
             FeedListItemMsg::Clicked => {
                 play(self.model.entry.clone());
             }
             FeedListItemMsg::WatchLater => {
-                // self.model
-                //     .app_stream
-                //     .emit(AppMsg::ToggleWatchLater(self.model.entry.clone()));
+                self.model
+                    .playlist_manager
+                    .toggle(&("WATCHLATER".to_string()), &self.model.entry);
             }
         }
     }
@@ -147,6 +152,7 @@ impl Widget for FeedListItem {
     }
 
     view! {
+        #[name="root"]
         gtk::ListBoxRow {
             #[name="box_content"]
             gtk::Box {
