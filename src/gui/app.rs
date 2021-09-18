@@ -91,7 +91,6 @@ pub fn migrate_config(old: &PathBuf, new: &PathBuf) {
         }
 
         let new_str = old_str
-            .replace('"', "")
             .replace("https://www.youtube.com/channel/", "")
             .replace("+00:00", "")
             .lines()
