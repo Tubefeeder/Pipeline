@@ -29,7 +29,11 @@ pub fn play(video: AnyVideo) {
     thread::spawn(move || {
         log::debug!("Playing video with title: {}", video.title());
         video.play();
-        let player = std::env::var("PLAYER").unwrap_or("mpv".to_string());
+        let player_str = std::env::var("PLAYER").unwrap_or("mpv".to_string());
+
+        let mut player_iter = player_str.split(" ");
+        let player = player_iter.next().unwrap_or("mpv");
+        let args: Vec<String> = player_iter.map(|s| s.to_string()).collect();
 
         let stdout = if log::log_enabled!(log::Level::Debug) {
             Stdio::inherit()
@@ -44,6 +48,7 @@ pub fn play(video: AnyVideo) {
         };
 
         let _ = Command::new(&player)
+            .args(args)
             .arg(video.url())
             .stdout(stdout)
             .stderr(stderr)
