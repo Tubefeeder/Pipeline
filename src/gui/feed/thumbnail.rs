@@ -18,6 +18,11 @@
  *
  */
 
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc, Mutex,
+};
+
 use gdk_pixbuf::{Colorspace, Pixbuf};
 use gtk::prelude::*;
 use relm::{Channel, Relm, Widget};
@@ -40,6 +45,14 @@ pub struct ThumbnailModel {
     relm: Relm<Thumbnail>,
     video: AnyVideo,
     client: reqwest::Client,
+
+    deleted: Arc<Mutex<AtomicBool>>,
+}
+
+impl Drop for ThumbnailModel {
+    fn drop(&mut self) {
+        self.deleted.lock().unwrap().store(true, Ordering::Relaxed);
+    }
 }
 
 #[derive(Msg)]
@@ -55,6 +68,8 @@ impl Widget for Thumbnail {
             relm: relm.clone(),
             video,
             client,
+
+            deleted: Arc::new(Mutex::new(AtomicBool::new(false))),
         }
     }
 
@@ -78,16 +93,22 @@ impl Widget for Thumbnail {
 
         let video = self.model.video.clone();
         let client = self.model.client.clone();
+        let deleted = self.model.deleted.clone();
         tokio::spawn(async move {
             let mut user_data_dir = glib::user_cache_dir();
             user_data_dir.push("tubefeeder");
             user_data_dir.push(&format!("{}.png", video.title()));
             let path = user_data_dir;
-            // TODO: Use Caching
-            video
-                .thumbnail_with_client(&client, path.clone(), WIDTH, HEIGHT)
-                .await;
-            sender.send(path).expect("Could not send pixbuf");
+
+            if !path.exists() {
+                video
+                    .thumbnail_with_client(&client, path.clone(), WIDTH, HEIGHT)
+                    .await;
+            }
+
+            if !deleted.lock().unwrap().load(Ordering::Relaxed) {
+                sender.send(path).expect("Could not send pixbuf");
+            }
         });
     }
 

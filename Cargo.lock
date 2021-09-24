@@ -1110,7 +1110,6 @@ dependencies = [
 [[package]]
 name = "observer"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?tag=0.1.0#1f6549b68b7e48c4e2f873fa6693844326e59f14"
 
 [[package]]
 name = "once_cell"
@@ -1267,8 +1266,7 @@ dependencies = [
 
 [[package]]
 name = "playlist"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?tag=0.1.0#1f6549b68b7e48c4e2f873fa6693844326e59f14"
+version = "0.1.1"
 dependencies = [
  "log",
  "observer",

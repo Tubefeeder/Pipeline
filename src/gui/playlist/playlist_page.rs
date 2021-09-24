@@ -99,6 +99,7 @@ impl Widget for PlaylistPage {
             if item == &video {
                 self.widgets.video_list.remove(widget.widget());
                 self.widgets.root.show();
+                self.widgets.video_list.show();
             }
         }
 
@@ -142,11 +143,9 @@ impl Observer<PlaylistEvent<AnyVideo>> for PlaylistPageObserver {
     fn notify(&mut self, message: PlaylistEvent<AnyVideo>) {
         match message {
             PlaylistEvent::Add(video) => {
-                log::debug!("Got add message");
                 let _ = self.sender.send(PlaylistPageMsg::NewVideo(video));
             }
             PlaylistEvent::Remove(video) => {
-                log::debug!("Got remove message");
                 let _ = self.sender.send(PlaylistPageMsg::RemoveVideo(video));
             }
         }

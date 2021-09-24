@@ -30,4 +30,8 @@ tf_yt = { package = "platform-youtube", git = "https://github.com/Tubefeeder/tub
 tf_join = { package = "tubefeeder-extractor-join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.0" }
 tf_filter = { package = "tubefeeder-extractor-filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.0" }
 tf_observer = { package = "observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.0" }
-tf_playlist = { package = "playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.0" }
+tf_playlist = { package = "playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.1" }
+
+[patch."https://github.com/Tubefeeder/tubefeeder-extractor.git"]
+tf_observer = { package = "observer", path = "../tubefeeder-extractor/observer" }
+tf_playlist = { package = "playlist", path = "../tubefeeder-extractor/playlist" }
