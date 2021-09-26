@@ -86,7 +86,7 @@ impl Widget for FeedListItem {
             }
             FeedListItemMsg::SetPlaying(playing) => {
                 self.model.playing = playing;
-                self.widgets.root.show();
+                self.widgets.box_content.show();
             }
             FeedListItemMsg::Clicked => {
                 play(self.model.entry.clone());
