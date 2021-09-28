@@ -18,8 +18,6 @@
  *
  */
 
-mod filter_entries;
-mod filter_group;
+mod playlist_page;
 
-pub use filter_entries::EntryFilter;
-pub use filter_group::EntryFilterGroup;
+pub use playlist_page::{PlaylistPage, PlaylistPageMsg};

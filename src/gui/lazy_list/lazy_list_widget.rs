@@ -82,7 +82,7 @@ impl<W: 'static + relm::Widget> Update for LazyList<W> {
             LazyListMsg::RowActivated(row) => {
                 let index = self
                     .list
-                    .get_children()
+                    .children()
                     .iter()
                     .position(|x| x.clone() == row)
                     .unwrap();

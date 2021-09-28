@@ -1,28 +1,33 @@
 [package]
 name = "tubefeeder"
-version = "1.2.3"
+version = "1.3.0"
 authors = ["Julian Schmidhuber <schmidhuberj2@protonmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bytes = "1.0.1"
-gio = "0.9.0"
-gtk = {version = "0.9.0", features = ["v3_16"]}
-gdk-pixbuf = "0.9.0"
-glib = "0.10.3"
-pango = "0.9.0"
-relm = {git = "https://github.com/Schmiddiii/relm", branch = "panic-streamhandle"}
-relm-derive = "0.21.0"
-regex = "1.4.4"
-reqwest = {version = "0.11.1", features = ["rustls-tls", "blocking"], default-features = false}
+gio = "0.14.0"
+gtk = {version = "0.14.0"}
+gdk-pixbuf = "0.14.0"
+glib = "0.14.4"
+pango = "0.14.3"
+relm = "0.22.0"
+relm-derive = "0.22.0"
+libhandy = "0.8.0"
 tokio = {version = "1.2.0", features = ["full"]}
-quick-xml = {version = "0.21", features = ["serialize"]}
-serde = {version = "1.0", features = ["derive"]}
-chrono = {version = "0.4.19", features = ["serde"]}
-libhandy = "0.7.1"
-rayon = "1.5.0"
 futures = "0.3.13"
+regex = "1.5.4"
+chrono = {version = "0.4.19"}
+csv = "1.1.6"
+reqwest = "0.11.4"
 
-file-minidb = {git = "https://github.com/Schmiddiii/file-minidb.git"}
+log = "0.4.14"
+env_logger = "0.9.0"
+
+tf_core = { package = "tf_core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_join = { package = "tf_join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_filter = { package = "tf_filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_observer = { package = "tf_observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_playlist = { package = "tf_playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_yt = { package = "tf_platform_youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }

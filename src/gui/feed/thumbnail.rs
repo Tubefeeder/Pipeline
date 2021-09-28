@@ -18,125 +18,106 @@
  *
  */
 
-use crate::youtube_feed;
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc, Mutex,
+};
 
-use std::fs::File;
-use std::io::{Read, Write};
-use std::thread;
-
-use bytes::Bytes;
 use gdk_pixbuf::{Colorspace, Pixbuf};
-use gio::{MemoryInputStream, NONE_CANCELLABLE};
 use gtk::prelude::*;
 use relm::{Channel, Relm, Widget};
 use relm_derive::{widget, Msg};
+use tf_core::Video;
+use tf_join::AnyVideo;
 
 const WIDTH: i32 = 120;
 const HEIGHT: i32 = 90;
 
+pub fn default_pixbuf() -> Pixbuf {
+    let pixbuf =
+        Pixbuf::new(Colorspace::Rgb, true, 8, WIDTH, HEIGHT).expect("Could not create empty");
+    pixbuf.fill(0);
+
+    pixbuf
+}
+
 pub struct ThumbnailModel {
-    url: String,
     relm: Relm<Thumbnail>,
+    video: AnyVideo,
+    client: reqwest::Client,
+
+    deleted: Arc<Mutex<AtomicBool>>,
+}
+
+impl Drop for ThumbnailModel {
+    fn drop(&mut self) {
+        self.deleted.lock().unwrap().store(true, Ordering::Relaxed);
+    }
 }
 
 #[derive(Msg)]
 pub enum ThumbnailMsg {
     SetImage,
-    SetImageBytes(Bytes),
+    SetImagePixbuf(Pixbuf),
 }
 
 #[widget]
 impl Widget for Thumbnail {
-    fn model(relm: &Relm<Self>, thumbnail: youtube_feed::Thumbnail) -> ThumbnailModel {
+    fn model(relm: &Relm<Self>, (video, client): (AnyVideo, reqwest::Client)) -> ThumbnailModel {
         ThumbnailModel {
-            url: thumbnail.url,
             relm: relm.clone(),
+            video,
+            client,
+
+            deleted: Arc::new(Mutex::new(AtomicBool::new(false))),
         }
     }
 
     fn update(&mut self, event: ThumbnailMsg) {
         match event {
             ThumbnailMsg::SetImage => self.set_image(),
-            ThumbnailMsg::SetImageBytes(bytes) => {
-                self.set_image_bytes(bytes);
+            ThumbnailMsg::SetImagePixbuf(pixbuf) => {
+                self.set_image_pixbuf(pixbuf);
             }
         }
     }
 
     fn set_image(&mut self) {
-        let url = self.model.url.clone();
-
-        let image_id = url.split('/').nth(4);
-        let mut cached = false;
-        let mut cache_file = None;
-
-        if let Some(id) = image_id {
-            let mut user_data_dir =
-                glib::get_user_cache_dir().expect("could not get user cache directory");
-            user_data_dir.push("tubefeeder");
-            user_data_dir.push(&format!("{}.thumbnail", id));
-            cache_file = Some(user_data_dir);
-
-            if cache_file.clone().unwrap().exists() {
-                cached = true;
-            }
-        }
-
         let stream = self.model.relm.stream().clone();
 
-        let (_channel, sender) = Channel::new(move |bytes| {
-            stream.emit(ThumbnailMsg::SetImageBytes(bytes));
+        let (_channel, sender) = Channel::new(move |path| {
+            stream.emit(ThumbnailMsg::SetImagePixbuf(
+                Pixbuf::from_file(path).unwrap_or_else(|_| default_pixbuf()),
+            ));
         });
 
-        thread::spawn(move || {
-            if !cached {
-                let response = reqwest::blocking::get(&url);
+        let video = self.model.video.clone();
+        let client = self.model.client.clone();
+        let deleted = self.model.deleted.clone();
+        tokio::spawn(async move {
+            let mut user_data_dir = glib::user_cache_dir();
+            user_data_dir.push("tubefeeder");
+            user_data_dir.push(&format!("{}.png", video.title()));
+            let path = user_data_dir;
 
-                if response.is_err() {
-                    return;
-                }
+            if !path.exists() {
+                video
+                    .thumbnail_with_client(&client, path.clone(), WIDTH, HEIGHT)
+                    .await;
+            }
 
-                let parsed = response.unwrap().bytes();
-
-                if parsed.is_err() {
-                    return;
-                }
-
-                let parsed_bytes = parsed.unwrap();
-
-                sender
-                    .send(parsed_bytes.clone())
-                    .expect("could not send bytes");
-
-                // Save file to cache.
-                if let Some(cache_file) = cache_file {
-                    if let Ok(mut cache) = File::create(cache_file) {
-                        cache.write_all(&parsed_bytes).unwrap_or(());
-                    }
-                }
-            } else if let Ok(mut cache) = File::open(cache_file.unwrap()) {
-                    let mut buffer = vec![];
-                    cache.read_to_end(&mut buffer).unwrap_or_default();
-                    sender.send(buffer.into()).expect("could not send bytes");
+            if !deleted.lock().unwrap().load(Ordering::Relaxed) {
+                sender.send(path).expect("Could not send pixbuf");
             }
         });
     }
 
-    fn set_image_bytes(&mut self, bytes: Bytes) {
-        let glib_bytes = glib::Bytes::from(&bytes.to_vec());
-        let stream = MemoryInputStream::from_bytes(&glib_bytes);
-        let pixbuf =
-            Pixbuf::from_stream_at_scale(&stream, WIDTH, HEIGHT, true, NONE_CANCELLABLE).unwrap();
-
+    fn set_image_pixbuf(&mut self, pixbuf: Pixbuf) {
         self.widgets.image.set_from_pixbuf(Some(&pixbuf));
     }
 
     fn init_view(&mut self) {
-        let pixbuf =
-            Pixbuf::new(Colorspace::Rgb, true, 8, WIDTH, HEIGHT).expect("Could not create empty");
-        pixbuf.fill(0);
-
-        self.widgets.image.set_from_pixbuf(Some(&pixbuf));
+        self.widgets.image.set_from_pixbuf(Some(&default_pixbuf()));
     }
 
     view! {

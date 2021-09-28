@@ -18,10 +18,11 @@
  *
  */
 
-use crate::gui::app::AppMsg;
 use crate::gui::feed::feed_item::{FeedListItem, FeedListItemMsg};
 use crate::gui::lazy_list::{LazyList, LazyListMsg, ListElementBuilder};
-use crate::youtube_feed::{Entry, Feed};
+
+use tf_join::AnyVideo;
+use tf_playlist::PlaylistManager;
 
 use gtk::prelude::*;
 use gtk::Orientation::Vertical;
@@ -29,28 +30,44 @@ use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
 pub struct FeedElementBuilder {
-    chunks: Vec<Vec<(Entry, StreamHandle<AppMsg>)>>,
+    chunks: Vec<Vec<(AnyVideo, reqwest::Client, PlaylistManager<String, AnyVideo>)>>,
 }
 
 impl FeedElementBuilder {
-    fn new(feed: Feed, app_stream: StreamHandle<AppMsg>) -> Self {
+    fn new(
+        feed: Box<dyn Iterator<Item = AnyVideo>>,
+        playlist_manager: PlaylistManager<String, AnyVideo>,
+    ) -> Self {
+        let client = reqwest::Client::new();
         FeedElementBuilder {
             chunks: feed
-                .entries
-                .chunks(10)
-                .map(|slice| {
-                    slice
-                        .iter()
-                        .map(|c| (c.clone(), app_stream.clone()))
-                        .collect()
+                .map(|v| {
+                    (
+                        v,
+                        client.clone(),
+                        playlist_manager.clone(),
+                    )
                 })
-                .collect::<Vec<Vec<(Entry, StreamHandle<AppMsg>)>>>(),
+                .collect::<Vec<(
+                    AnyVideo,
+                    reqwest::Client,
+                    PlaylistManager<String, AnyVideo>,
+                )>>()
+                .chunks(10)
+                .map(Vec::from)
+                .collect::<Vec<
+                    Vec<(
+                        AnyVideo,
+                        reqwest::Client,
+                        PlaylistManager<String, AnyVideo>,
+                    )>,
+                >>(),
         }
     }
 }
 
 impl ListElementBuilder<FeedListItem> for FeedElementBuilder {
-    fn poll(&mut self) -> Vec<(Entry, StreamHandle<AppMsg>)> {
+    fn poll(&mut self) -> Vec<(AnyVideo, reqwest::Client, PlaylistManager<String, AnyVideo>)> {
         if !self.chunks.is_empty() {
             self.chunks.remove(0)
         } else {
@@ -69,17 +86,17 @@ impl ListElementBuilder<FeedListItem> for FeedElementBuilder {
 
 #[derive(Msg)]
 pub enum FeedPageMsg {
-    SetFeed(Feed),
+    SetFeed(Box<dyn Iterator<Item = AnyVideo>>),
 }
 
 pub struct FeedPageModel {
-    app_stream: StreamHandle<AppMsg>,
+    playlist_manager: PlaylistManager<String, AnyVideo>,
 }
 
 #[widget]
 impl Widget for FeedPage {
-    fn model(_: &Relm<Self>, app_stream: StreamHandle<AppMsg>) -> FeedPageModel {
-        FeedPageModel { app_stream }
+    fn model(_: &Relm<Self>, playlist_manager: PlaylistManager<String, AnyVideo>) -> FeedPageModel {
+        FeedPageModel { playlist_manager }
     }
 
     fn update(&mut self, event: FeedPageMsg) {
@@ -88,7 +105,7 @@ impl Widget for FeedPage {
                 self.components
                     .feed_list
                     .emit(LazyListMsg::SetListElementBuilder(Box::new(
-                        FeedElementBuilder::new(feed, self.model.app_stream.clone()),
+                        FeedElementBuilder::new(feed, self.model.playlist_manager.clone()),
                     )));
             }
         }

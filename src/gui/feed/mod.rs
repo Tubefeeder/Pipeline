@@ -19,7 +19,7 @@
  */
 
 mod date_label;
-mod feed_item;
+pub(crate) mod feed_item;
 mod feed_page;
 mod thumbnail;
 

@@ -23,8 +23,9 @@ use crate::gui::app::AppMsg;
 use std::convert::{From, Into};
 use std::str::FromStr;
 
-use gtk::{AboutDialogBuilder, ButtonExt, GtkMenuItemExt, MenuButtonExt, MenuShellExt, WidgetExt};
-use libhandy::HeaderBarExt;
+use gtk::prelude::*;
+use gtk::AboutDialogBuilder;
+use libhandy::traits::HeaderBarExt;
 use relm::{Relm, StreamHandle, Widget};
 use relm_derive::{widget, Msg};
 
@@ -116,7 +117,7 @@ impl Widget for HeaderBar {
                     .authors(vec!["Julian Schmidhuber".to_string()])
                     .comments("A Youtube-Client made for the Pinephone")
                     .copyright(
-                        &include_str!("../../NOTICE")
+                        include_str!("../../NOTICE")
                             .to_string()
                             .lines()
                             .next()
@@ -125,8 +126,8 @@ impl Widget for HeaderBar {
                     .license_type(gtk::License::Gpl30)
                     .logo_icon_name("icon")
                     .program_name("Tubefeeder")
-                    .version("1.2.3")
-                    .website("https://www.schmidhuberj.de/Tubefeeder/")
+                    .version("1.3.0")
+                    .website("https://www.tubefeeder.de")
                     .build();
                 about_dialog.show();
             }

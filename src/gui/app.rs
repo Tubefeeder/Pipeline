@@ -18,21 +18,28 @@
  *
  */
 
-use crate::errors::Error;
-use crate::filter::{EntryFilter, EntryFilterGroup};
-use crate::gui::error_label::{ErrorLabel, ErrorLabelMsg};
+use crate::csv_file_manager::CsvFileManager;
+use crate::gui::error_label::ErrorLabel;
 use crate::gui::feed::{FeedPage, FeedPageMsg};
 use crate::gui::filter::{FilterPage, FilterPageMsg};
 use crate::gui::header_bar::{HeaderBar, HeaderBarMsg, Page};
+use crate::gui::playlist::PlaylistPage;
 use crate::gui::subscriptions::{SubscriptionsPage, SubscriptionsPageMsg};
-use crate::subscriptions::{Channel, ChannelGroup};
-use crate::youtube_feed::{Entry, Feed};
 
+use tf_core::{ErrorStore, Generator};
+use tf_filter::{FilterEvent, FilterGroup};
+use tf_join::{AnySubscriptionList, AnyVideo, AnyVideoFilter, Joiner, SubscriptionEvent};
+use tf_observer::{Observable, Observer};
+use tf_playlist::{PlaylistEvent, PlaylistManager};
+
+use std::fs::OpenOptions;
+use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
-use std::thread;
+use std::sync::{Arc, Mutex};
 
 use gtk::prelude::*;
+use gtk::traits::SettingsExt;
 use gtk::{Inhibit, Orientation::Vertical};
 use libhandy::ViewSwitcherBarBuilder;
 use relm::{Relm, StreamHandle, Widget};
@@ -42,9 +49,9 @@ use relm_derive::{widget, Msg};
 pub const FONT_RATIO: f32 = 2.0 / 3.0;
 
 pub fn get_font_size() -> i32 {
-    gtk::Settings::get_default()
+    gtk::Settings::default()
         .unwrap()
-        .get_property_gtk_font_name()
+        .gtk_font_name()
         .unwrap_or_else(|| " ".into())
         .to_string()
         .split(' ')
@@ -60,7 +67,7 @@ pub fn init_icons() {
     let gbytes = glib::Bytes::from_static(res_bytes.as_ref());
     let resource = gio::Resource::from_data(&gbytes).unwrap();
 
-    let icon_theme = gtk::IconTheme::get_default().unwrap_or(gtk::IconTheme::new());
+    let icon_theme = gtk::IconTheme::default().unwrap_or_default();
 
     icon_theme.add_resource_path("/");
     icon_theme.add_resource_path("/org/gnome/design/IconLibrary/data/icons/");
@@ -68,93 +75,111 @@ pub fn init_icons() {
     gio::resources_register(&resource);
 }
 
+pub fn migrate_config(old: &PathBuf, new: &PathBuf) {
+    if old.exists() {
+        let old_file_res = OpenOptions::new().read(true).write(false).open(old);
+
+        if old_file_res.is_err() {
+            log::error!("A error migrating configuration occured: Cannot open old file");
+            return;
+        }
+
+        let mut old_str = String::new();
+        if old_file_res.unwrap().read_to_string(&mut old_str).is_err() {
+            log::error!("A error migrating configuration occured: Cannot read from old file");
+            return;
+        }
+
+        let new_str = old_str
+            .replace("https://www.youtube.com/channel/", "")
+            .replace("+00:00", "")
+            .lines()
+            .skip(1)
+            .map(|s| format!("{},{}\n", String::from(tf_join::Platform::Youtube), s))
+            .collect::<String>();
+
+        let new_file_res = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .truncate(true)
+            .create(true)
+            .open(new);
+        if new_file_res.is_err() {
+            log::error!("A error migrating configuration occured: Cannot open new file");
+            return;
+        }
+        if write!(&mut new_file_res.unwrap(), "{}", new_str).is_err() {
+            log::error!("A error migrating configuration occured: Cannot write to new file");
+            return;
+        }
+    }
+}
+
 #[derive(Msg)]
 pub enum AppMsg {
     Loading(bool),
     Reload,
-    SetSubscriptions(ChannelGroup),
-    AddSubscription(Channel),
-    RemoveSubscription(Channel),
     ToggleAddSubscription,
-    SetFilters(EntryFilterGroup),
-    AddFilter(EntryFilter),
-    RemoveFilter(EntryFilter),
     ToggleAddFilter,
-    Error(Error),
-    ToggleWatchLater(Entry),
     Quit,
 }
 
 pub struct AppModel {
+    joiner: Joiner,
+    playlist_manager: PlaylistManager<String, AnyVideo>,
+    errors: ErrorStore,
     app_stream: StreamHandle<AppMsg>,
 
-    subscriptions_file: PathBuf,
-    subscriptions: ChannelGroup,
-
-    filter_file: PathBuf,
-    filter: EntryFilterGroup,
-
-    watch_later_file: PathBuf,
-    watch_later: Feed,
-
+    _subscription_file_manager: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
+    _filter_file_manager: Arc<Mutex<Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>>>,
+    _watchlater_file_manager: Arc<Mutex<Box<dyn Observer<PlaylistEvent<AnyVideo>> + Send>>>,
+    subscription_list: AnySubscriptionList,
+    filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
     loading: bool,
-    startup_err: Option<Error>,
-}
-
-impl AppModel {
-    fn reload_subscriptions(&mut self) -> Result<(), Error> {
-        let subscription_res = ChannelGroup::get_from_path(&self.subscriptions_file);
-        self.subscriptions = subscription_res
-            .clone()
-            .unwrap_or_else(|_| ChannelGroup::new());
-
-        if let Err(e) = subscription_res {
-            Err(e)
-        } else {
-            Ok(())
-        }
-    }
-
-    fn reload_filters(&mut self) -> Result<(), Error> {
-        let filter_res = EntryFilterGroup::get_from_path(&self.filter_file);
-        self.filter = filter_res
-            .clone()
-            .unwrap_or_else(|_| EntryFilterGroup::new());
-
-        if let Err(e) = filter_res {
-            Err(e)
-        } else {
-            Ok(())
-        }
-    }
-
-    fn reload_watch_later(&mut self) -> Result<(), Error> {
-        let watch_later_res = Feed::get_from_path(&self.watch_later_file);
-        self.watch_later = watch_later_res.clone().unwrap_or_else(|_| Feed::empty());
-
-        if let Err(e) = watch_later_res {
-            Err(e)
-        } else {
-            Ok(())
-        }
-    }
 }
 
 #[widget]
 impl Widget for Win {
-    fn model(relm: &Relm<Self>, _: ()) -> AppModel {
+    fn init_view(&mut self) {
+        self.widgets.window.resize(800, 500);
+
+        // Build view switcher
+        let view_switcher = ViewSwitcherBarBuilder::new()
+            .stack(&self.widgets.application_stack)
+            .reveal(true)
+            .build();
+
+        self.widgets.view_switcher_box.add(&view_switcher);
+        view_switcher.show();
+
+        // Build header bar
+        let header_bar_stream = self.components.header_bar.stream();
+        header_bar_stream.emit(HeaderBarMsg::SetPage(Page::Feed));
+
+        self.widgets
+            .application_stack
+            .connect_visible_child_notify(move |stack| {
+                let child = stack.visible_child().unwrap();
+                let title = child.widget_name();
+                header_bar_stream.emit(HeaderBarMsg::SetPage(Page::from_str(&title).unwrap()));
+            });
+
+        self.widgets.loading_spinner.start();
+
+        self.model.app_stream.emit(AppMsg::Reload);
+    }
+
+    fn model(relm: &Relm<Self>, joiner: Joiner) -> AppModel {
         init_icons();
 
-        let mut user_cache_dir =
-            glib::get_user_cache_dir().expect("could not get user cache directory");
+        let mut user_cache_dir = glib::user_cache_dir();
         user_cache_dir.push("tubefeeder");
 
         if !user_cache_dir.exists() {
             std::fs::create_dir_all(user_cache_dir).expect("could not create user cache dir");
         }
 
-        let mut user_data_dir =
-            glib::get_user_data_dir().expect("could not get user data directory");
+        let mut user_data_dir = glib::user_data_dir();
         user_data_dir.push("tubefeeder");
 
         if !user_data_dir.exists() {
@@ -162,39 +187,83 @@ impl Widget for Win {
         }
 
         let mut subscriptions_file_path = user_data_dir.clone();
-        subscriptions_file_path.push("subscriptions.db");
+        subscriptions_file_path.push("subscriptions.csv");
 
-        let mut filter_file_path = user_data_dir.clone();
-        filter_file_path.push("filters.db");
-
-        let mut watch_later_file_path = user_data_dir;
-        watch_later_file_path.push("watch_later.db");
-
-        let mut model = AppModel {
-            app_stream: relm.stream().clone(),
-            subscriptions_file: subscriptions_file_path,
-            subscriptions: ChannelGroup::new(),
-            filter_file: filter_file_path,
-            filter: EntryFilterGroup::new(),
-            watch_later_file: watch_later_file_path,
-            watch_later: Feed::empty(),
-            loading: false,
-            startup_err: None,
-        };
-
-        let err = model.reload_subscriptions();
-        let err2 = model.reload_filters();
-        let err3 = model.reload_watch_later();
-
-        if let Err(e) = err {
-            model.startup_err = Some(e);
-        } else if let Err(e) = err2 {
-            model.startup_err = Some(e)
-        } else if let Err(e) = err3 {
-            model.startup_err = Some(e)
+        if !subscriptions_file_path.exists() {
+            let mut old_file_path = user_data_dir.clone();
+            old_file_path.push("subscriptions.db");
+            migrate_config(&old_file_path, &subscriptions_file_path);
         }
 
-        model
+        let mut filter_file_path = user_data_dir.clone();
+        filter_file_path.push("filters.csv");
+
+        if !filter_file_path.exists() {
+            let mut old_file_path = user_data_dir.clone();
+            old_file_path.push(&"filters.db");
+            migrate_config(&old_file_path, &filter_file_path);
+        }
+
+        let mut watchlater_file_path = user_data_dir.clone();
+        watchlater_file_path.push("playlist_watch_later.csv");
+
+        if !watchlater_file_path.exists() {
+            let mut old_file_path = user_data_dir.clone();
+            old_file_path.push("watch_later.db");
+            migrate_config(&old_file_path, &watchlater_file_path);
+        }
+
+        let mut subscription_list = joiner.subscription_list();
+        let filters = joiner.filters();
+        let mut playlist_manager = PlaylistManager::new();
+        let mut playlist_manager_clone = playlist_manager.clone();
+        let joiner_clone = joiner.clone();
+
+        let _subscription_file_manager = Arc::new(Mutex::new(Box::new(CsvFileManager::new(
+            &subscriptions_file_path,
+            &mut |sub| subscription_list.add(sub),
+        ))
+            as Box<dyn Observer<SubscriptionEvent> + Send>));
+
+        let _filter_file_manager = Arc::new(Mutex::new(Box::new(CsvFileManager::new(
+            &filter_file_path,
+            &mut |fil| filters.lock().unwrap().add(fil),
+        ))
+            as Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>));
+
+        let _watchlater_file_manager = Arc::new(Mutex::new(Box::new(CsvFileManager::new(
+            &watchlater_file_path,
+            &mut move |v| {
+                let join_video = joiner_clone.upgrade_video(&v);
+                playlist_manager_clone.toggle(&"WATCHLATER".to_string(), &join_video);
+            },
+        ))
+            as Box<dyn Observer<PlaylistEvent<AnyVideo>> + Send>));
+
+        subscription_list.attach(Arc::downgrade(&_subscription_file_manager));
+
+        filters
+            .lock()
+            .unwrap()
+            .attach(Arc::downgrade(&_filter_file_manager));
+
+        playlist_manager.attach_at(
+            Arc::downgrade(&_watchlater_file_manager),
+            &"WATCHLATER".to_string(),
+        );
+
+        AppModel {
+            app_stream: relm.stream().clone(),
+            _subscription_file_manager,
+            _filter_file_manager,
+            _watchlater_file_manager,
+            subscription_list,
+            filters,
+            loading: false,
+            joiner,
+            playlist_manager,
+            errors: ErrorStore::new(),
+        }
     }
 
     fn update(&mut self, event: AppMsg) {
@@ -205,123 +274,20 @@ impl Widget for Win {
             AppMsg::Reload => {
                 self.reload();
             }
-            AppMsg::SetSubscriptions(subscriptions) => {
-                self.model.subscriptions = subscriptions;
-                self.components
-                    .subscriptions_page
-                    .emit(SubscriptionsPageMsg::SetSubscriptions(
-                        self.model.subscriptions.clone(),
-                    ));
-            }
-            AppMsg::AddSubscription(channel) => {
-                let mut new_group = self.model.subscriptions.clone();
-                new_group.add(channel);
-                let write_res = new_group.write_to_path(&self.model.subscriptions_file);
-
-                if let Err(e) = write_res {
-                    self.components
-                        .error_label
-                        .emit(ErrorLabelMsg::Set(Some(e)));
-                } else {
-                    self.model
-                        .app_stream
-                        .emit(AppMsg::SetSubscriptions(new_group));
-                }
-            }
-            AppMsg::RemoveSubscription(channel) => {
-                let mut new_group = self.model.subscriptions.clone();
-                new_group.remove(channel);
-                let write_res = new_group.write_to_path(&self.model.subscriptions_file);
-
-                if let Err(e) = write_res {
-                    self.components
-                        .error_label
-                        .emit(ErrorLabelMsg::Set(Some(e)));
-                } else {
-                    self.model
-                        .app_stream
-                        .emit(AppMsg::SetSubscriptions(new_group));
-                }
-            }
             AppMsg::ToggleAddSubscription => {
                 self.components
                     .subscriptions_page
                     .emit(SubscriptionsPageMsg::ToggleAddSubscription);
-            }
-            AppMsg::SetFilters(filter) => {
-                self.model.filter = filter;
-                self.components
-                    .filter_page
-                    .emit(FilterPageMsg::SetFilters(self.model.filter.clone()));
-            }
-            AppMsg::AddFilter(filter) => {
-                let mut new_filter_group = self.model.filter.clone();
-                new_filter_group.add(filter);
-                let write_res = new_filter_group.write_to_path(&self.model.filter_file);
-
-                if let Err(e) = write_res {
-                    self.components
-                        .error_label
-                        .emit(ErrorLabelMsg::Set(Some(e)));
-                } else {
-                    self.model
-                        .app_stream
-                        .emit(AppMsg::SetFilters(new_filter_group));
-                }
-            }
-            AppMsg::RemoveFilter(filter) => {
-                let mut new_filter_group = self.model.filter.clone();
-                new_filter_group.remove(filter);
-                let write_res = new_filter_group.write_to_path(&self.model.filter_file);
-
-                if let Err(e) = write_res {
-                    self.components
-                        .error_label
-                        .emit(ErrorLabelMsg::Set(Some(e)));
-                } else {
-                    self.model
-                        .app_stream
-                        .emit(AppMsg::SetFilters(new_filter_group));
-                }
             }
             AppMsg::ToggleAddFilter => {
                 self.components
                     .filter_page
                     .emit(FilterPageMsg::ToggleAddFilter);
             }
-            AppMsg::ToggleWatchLater(entry) => {
-                let current = &mut self.model.watch_later.entries;
-                if !current.contains(&entry) {
-                    current.push(entry);
-                } else {
-                    current.retain(|e| e != &entry);
-                }
-
-                let write_res = self
-                    .model
-                    .watch_later
-                    .write_to_path(&self.model.watch_later_file);
-
-                if let Err(e) = write_res {
-                    self.components
-                        .error_label
-                        .emit(ErrorLabelMsg::Set(Some(e)));
-                } else {
-                    self.components
-                        .watch_later_page
-                        .emit(FeedPageMsg::SetFeed(self.model.watch_later.clone()));
-                }
-            }
-            AppMsg::Error(error) => {
-                self.components
-                    .error_label
-                    .emit(ErrorLabelMsg::Set(Some(error)));
-            }
             AppMsg::Quit => {
                 gtk::main_quit();
 
-                let mut user_cache_dir =
-                    glib::get_user_cache_dir().expect("could not get user cache directory");
+                let mut user_cache_dir = glib::user_cache_dir();
                 user_cache_dir.push("tubefeeder");
 
                 if user_cache_dir.exists() {
@@ -337,96 +303,20 @@ impl Widget for Win {
 
         let feed_stream = self.components.feed_page.stream();
         let app_stream = self.model.app_stream.clone();
-        let mut subscriptions1 = self.model.subscriptions.clone();
-        let error_label_stream = self.components.error_label.stream();
-
-        let filter = self.model.filter.clone();
-
-        // Dont override errors from startup
-        if self.model.startup_err.is_none() {
-            error_label_stream.emit(ErrorLabelMsg::Set(None));
-        } else {
-            self.model.startup_err = None;
-        }
-
         app_stream.emit(AppMsg::Loading(true));
 
-        let (_channel, sender) = relm::Channel::new(move |feed_option: Result<Feed, _>| {
-            if let Err(e) = feed_option.clone() {
-                error_label_stream.emit(ErrorLabelMsg::Set(Some(e)));
-            }
-
-            let mut feed = feed_option.clone().unwrap_or_else(|_| Feed::empty());
-            feed.filter(&filter);
-
-            feed_stream.emit(FeedPageMsg::SetFeed(feed));
-
-            if let Ok(feed) = feed_option {
-                let channels = feed.extract_channels();
-                subscriptions1.resolve_name(&channels);
-
-                app_stream.emit(AppMsg::SetSubscriptions(subscriptions1.clone()));
-            }
+        let (_channel, sender) = relm::Channel::new(move |feed: std::vec::IntoIter<AnyVideo>| {
+            feed_stream.emit(FeedPageMsg::SetFeed(Box::new(feed)));
             app_stream.emit(AppMsg::Loading(false));
         });
 
-        let subscriptions2 = self.model.subscriptions.clone();
-
-        thread::spawn(move || {
-            sender
-                .send(futures::executor::block_on(subscriptions2.get_feed()))
-                .expect("could not send feed");
+        let joiner = self.model.joiner.clone();
+        let errors = self.model.errors.clone();
+        errors.clear();
+        tokio::spawn(async move {
+            let feed = joiner.generate(&errors).await;
+            sender.send(feed).unwrap()
         });
-    }
-
-    fn init_view(&mut self) {
-        self.widgets.window.resize(800, 500);
-
-        // Build view switcher
-        let view_switcher = ViewSwitcherBarBuilder::new()
-            .stack(&self.widgets.application_stack)
-            .reveal(true)
-            .build();
-
-        self.widgets.view_switcher_box.add(&view_switcher);
-        self.widgets.view_switcher_box.show_all();
-
-        // Build header bar
-        let header_bar_stream = self.components.header_bar.stream();
-        header_bar_stream.emit(HeaderBarMsg::SetPage(Page::Feed));
-
-        self.widgets
-            .application_stack
-            .connect_property_visible_child_notify(move |stack| {
-                let child = stack.get_visible_child().unwrap();
-                let title = child.get_widget_name();
-                header_bar_stream.emit(HeaderBarMsg::SetPage(Page::from_str(&title).unwrap()));
-            });
-
-        self.widgets.loading_spinner.start();
-
-        // Hide the subscription entry (Visible by default, no idea why).
-        let subscriptions_page = &self.components.subscriptions_page;
-        subscriptions_page.emit(SubscriptionsPageMsg::ToggleAddSubscription);
-        subscriptions_page.emit(SubscriptionsPageMsg::ToggleAddSubscription);
-
-        // Hide the filter entry (Visible by default, no idea why).
-        let filter_page = &self.components.filter_page;
-        filter_page.emit(FilterPageMsg::ToggleAddFilter);
-        filter_page.emit(FilterPageMsg::ToggleAddFilter);
-
-        self.components
-            .error_label
-            .emit(ErrorLabelMsg::Set(self.model.startup_err.clone()));
-
-        self.model
-            .app_stream
-            .emit(AppMsg::SetFilters(self.model.filter.clone()));
-        self.model.app_stream.emit(AppMsg::Reload);
-
-        self.components
-            .watch_later_page
-            .emit(FeedPageMsg::SetFeed(self.model.watch_later.clone()));
     }
 
     view! {
@@ -439,22 +329,21 @@ impl Widget for Win {
             },
             #[name="view_switcher_box"]
             gtk::Box {
-
                 gtk::Box {
                     orientation: Vertical,
                     #[name="error_label"]
-                    ErrorLabel {},
+                    ErrorLabel(self.model.errors.clone()) {},
                     #[name="loading_spinner"]
                     gtk::Spinner {
                         visible: self.model.loading,
-                        property_active: true
+                        active: true
                     }
                 },
                 orientation: Vertical,
                 #[name="application_stack"]
                 gtk::Stack {
                     #[name="feed_page"]
-                    FeedPage(self.model.app_stream.clone()) {
+                    FeedPage(self.model.playlist_manager.clone()) {
                         widget_name: &String::from(Page::Feed),
                         child: {
                             icon_name: Some("go-home-symbolic"),
@@ -462,7 +351,7 @@ impl Widget for Win {
                         }
                     },
                     #[name="watch_later_page"]
-                    FeedPage(self.model.app_stream.clone()) {
+                    PlaylistPage(self.model.playlist_manager.clone(), "WATCHLATER".to_string()) {
                         widget_name: &String::from(Page::WatchLater),
                         child: {
                             icon_name: Some("alarm-symbolic"),
@@ -470,7 +359,7 @@ impl Widget for Win {
                         }
                     },
                     #[name="filter_page"]
-                    FilterPage(self.model.app_stream.clone()) {
+                    FilterPage(self.model.filters.clone()) {
                         widget_name: &String::from(Page::Filters),
                         child: {
                             icon_name: Some("funnel-symbolic"),
@@ -478,7 +367,7 @@ impl Widget for Win {
                         }
                     },
                     #[name="subscriptions_page"]
-                    SubscriptionsPage(self.model.app_stream.clone()) {
+                    SubscriptionsPage(self.model.subscription_list.clone()) {
                         widget_name: &String::from(Page::Subscriptions),
                         child: {
                             icon_name: Some("library-artists-symbolic"),

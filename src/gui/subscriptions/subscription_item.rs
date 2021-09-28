@@ -18,36 +18,46 @@
  *
  */
 
-use crate::gui::app::AppMsg;
-use crate::gui::{get_font_size, FONT_RATIO};
-use crate::subscriptions::Channel;
+use crate::gui::get_font_size;
 
 use gtk::prelude::*;
 use gtk::Align;
 use gtk::Orientation::Vertical;
 use pango::{AttrList, Attribute, EllipsizeMode};
-use relm::{Relm, StreamHandle, Widget};
+use relm::{Relm, Widget};
 use relm_derive::{widget, Msg};
+
+use tf_join::AnySubscription;
+use tf_join::AnySubscriptionList;
 
 #[derive(Msg)]
 pub enum SubscriptionItemMsg {
     Remove,
+    UpdateName(String),
 }
 
 pub struct SubscriptionsItemModel {
-    channel: Channel,
-    app_stream: StreamHandle<AppMsg>,
+    relm: Relm<SubscriptionItem>,
+    subscription: AnySubscription,
+    subscription_list: AnySubscriptionList,
+    client: reqwest::Client,
 }
 
 #[widget]
 impl Widget for SubscriptionItem {
     fn model(
-        _: &Relm<Self>,
-        (channel, app_stream): (Channel, StreamHandle<AppMsg>),
+        relm: &Relm<Self>,
+        (subscription, subscription_list, client): (
+            AnySubscription,
+            AnySubscriptionList,
+            reqwest::Client,
+        ),
     ) -> SubscriptionsItemModel {
         SubscriptionsItemModel {
-            channel,
-            app_stream,
+            relm: relm.clone(),
+            subscription,
+            subscription_list,
+            client,
         }
     }
 
@@ -55,8 +65,12 @@ impl Widget for SubscriptionItem {
         match event {
             SubscriptionItemMsg::Remove => {
                 self.model
-                    .app_stream
-                    .emit(AppMsg::RemoveSubscription(self.model.channel.clone()));
+                    .subscription_list
+                    .remove(self.model.subscription.clone());
+            }
+            SubscriptionItemMsg::UpdateName(name) => {
+                self.widgets.label_name.set_text(&name);
+                self.widgets.root.changed();
             }
         }
     }
@@ -64,19 +78,33 @@ impl Widget for SubscriptionItem {
     fn init_view(&mut self) {
         let font_size = get_font_size();
         let name_attr_list = AttrList::new();
-        name_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
+        name_attr_list.insert(Attribute::new_size(font_size * pango::SCALE));
         self.widgets
             .label_name
             .set_attributes(Some(&name_attr_list));
 
-        let id_attr_list = AttrList::new();
-        id_attr_list.insert(
-            Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
-        );
-        self.widgets.label_id.set_attributes(Some(&id_attr_list));
+        // Is needed until this supports more platforms.
+        #[allow(irrefutable_let_patterns)]
+        if let AnySubscription::Youtube(sub) = &self.model.subscription {
+            let stream = self.model.relm.stream().clone();
+            let (_channel, sender) = relm::Channel::new(move |name_opt| {
+                if let Some(name) = name_opt {
+                    stream.emit(SubscriptionItemMsg::UpdateName(name));
+                }
+            });
+
+            let sub_clone = sub.clone();
+            let client = self.model.client.clone();
+            tokio::spawn(async move {
+                let name = sub_clone.update_name(&client).await;
+                let _ = sender.send(name);
+            });
+        }
     }
 
+    // If this needs to be changed, remember to also change the sort function of the SubscriptionsPage
     view! {
+        #[name="root"]
         gtk::ListBoxRow {
             gtk::Box {
                 gtk::Button {
@@ -87,13 +115,7 @@ impl Widget for SubscriptionItem {
                     orientation: Vertical,
                     #[name="label_name"]
                     gtk::Label {
-                        text: &self.model.channel.get_name().unwrap_or("".to_string()),
-                        ellipsize: EllipsizeMode::End,
-                        halign: Align::Start
-                    },
-                    #[name="label_id"]
-                    gtk::Label {
-                        text: &self.model.channel.get_id(),
+                        text: &self.model.subscription.to_string(),
                         ellipsize: EllipsizeMode::End,
                         halign: Align::Start
                     },

@@ -18,18 +18,22 @@
  *
  */
 
-use crate::gui::app::AppMsg;
+use std::sync::{Arc, Mutex};
+
 use crate::gui::feed::date_label::DateLabel;
 use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::gui::{get_font_size, FONT_RATIO};
-use crate::youtube_feed::Entry;
+use crate::player::play;
 
-use std::thread;
+use tf_core::{Video, VideoEvent};
+use tf_join::AnyVideo;
+use tf_observer::{Observable, Observer};
+use tf_playlist::PlaylistManager;
 
 use gtk::prelude::*;
-use gtk::{Align, ImageExt, Justification, Orientation, PackType};
+use gtk::{Align, Justification, Orientation, PackType};
 use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
-use relm::{Relm, StreamHandle, Widget};
+use relm::{Channel, Relm, Sender, Widget};
 use relm_derive::{widget, Msg};
 
 #[derive(Msg)]
@@ -41,23 +45,37 @@ pub enum FeedListItemMsg {
 }
 
 pub struct FeedListItemModel {
-    app_stream: StreamHandle<AppMsg>,
-    entry: Entry,
+    entry: AnyVideo,
     playing: bool,
     relm: Relm<FeedListItem>,
+    observer: Arc<Mutex<Box<dyn Observer<VideoEvent> + Send>>>,
+    playlist_manager: PlaylistManager<String, AnyVideo>,
+
+    client: reqwest::Client,
 }
 
 #[widget]
 impl Widget for FeedListItem {
     fn model(
         relm: &Relm<Self>,
-        (entry, app_stream): (Entry, StreamHandle<AppMsg>),
+        (entry, client, playlist_manager): (
+            AnyVideo,
+            reqwest::Client,
+            PlaylistManager<String, AnyVideo>,
+        ),
     ) -> FeedListItemModel {
+        let relm_clone = relm.clone();
+        let (_channel, sender) = Channel::new(move |msg| {
+            relm_clone.stream().emit(msg);
+        });
         FeedListItemModel {
-            app_stream,
             entry,
             playing: false,
             relm: relm.clone(),
+            observer: Arc::new(Mutex::new(Box::new(FeedListItemObserver { sender }))),
+            playlist_manager,
+
+            client,
         }
     }
 
@@ -68,34 +86,23 @@ impl Widget for FeedListItem {
             }
             FeedListItemMsg::SetPlaying(playing) => {
                 self.model.playing = playing;
+                self.widgets.box_content.show();
             }
             FeedListItemMsg::Clicked => {
-                let result = self.model.entry.play();
-
-                if let Ok(mut child) = result {
-                    let stream = self.model.relm.stream().clone();
-
-                    stream.emit(FeedListItemMsg::SetPlaying(true));
-
-                    let (_channel, sender) = relm::Channel::new(move |_| {
-                        stream.emit(FeedListItemMsg::SetPlaying(false));
-                    });
-
-                    thread::spawn(move || {
-                        let _ = child.wait();
-                        sender.send(()).expect("Could not send message");
-                    });
-                }
+                play(self.model.entry.clone());
             }
             FeedListItemMsg::WatchLater => {
                 self.model
-                    .app_stream
-                    .emit(AppMsg::ToggleWatchLater(self.model.entry.clone()));
+                    .playlist_manager
+                    .toggle(&("WATCHLATER".to_string()), &self.model.entry);
             }
         }
     }
 
     fn init_view(&mut self) {
+        self.model
+            .entry
+            .attach(Arc::downgrade(&self.model.observer));
         self.widgets.box_content.set_child_packing(
             &self.widgets.button_watch_later,
             false,
@@ -115,15 +122,15 @@ impl Widget for FeedListItem {
         let font_size = get_font_size();
 
         let title_attr_list = AttrList::new();
-        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE).unwrap());
+        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE));
         self.widgets
             .label_title
             .set_attributes(Some(&title_attr_list));
 
         let author_attr_list = AttrList::new();
-        author_attr_list.insert(
-            Attribute::new_size((FONT_RATIO * (font_size * pango::SCALE) as f32) as i32).unwrap(),
-        );
+        author_attr_list.insert(Attribute::new_size(
+            (FONT_RATIO * (font_size * pango::SCALE) as f32) as i32,
+        ));
         self.widgets
             .label_author
             .set_attributes(Some(&author_attr_list));
@@ -133,12 +140,19 @@ impl Widget for FeedListItem {
             .label_date
             .set_attributes(Some(&date_attr_list));
 
-        self.widgets
-            .playing
-            .set_from_icon_name(Some("media-playback-start-symbolic"), gtk::IconSize::LargeToolbar);
+        self.widgets.playing.set_from_icon_name(
+            Some("media-playback-start-symbolic"),
+            gtk::IconSize::LargeToolbar,
+        );
+
+        self.model
+            .relm
+            .stream()
+            .emit(FeedListItemMsg::SetPlaying(self.model.entry.playing()));
     }
 
     view! {
+        #[name="root"]
         gtk::ListBoxRow {
             #[name="box_content"]
             gtk::Box {
@@ -151,7 +165,7 @@ impl Widget for FeedListItem {
                 },
 
                 #[name="thumbnail"]
-                Thumbnail(self.model.entry.media.thumbnail.clone()),
+                Thumbnail(self.model.entry.clone(), self.model.client.clone()),
 
                 #[name="box_info"]
                 gtk::Box {
@@ -160,29 +174,46 @@ impl Widget for FeedListItem {
 
                     #[name="label_title"]
                     gtk::Label {
-                        text: &self.model.entry.title,
+                        text: &self.model.entry.title(),
                         ellipsize: EllipsizeMode::End,
-                        property_wrap: true,
-                        property_wrap_mode: WrapMode::Word,
+                        wrap: true,
+                        wrap_mode: WrapMode::Word,
                         lines: 2,
                         justify: Justification::Left,
                     },
                     #[name="label_author"]
                     gtk::Label {
-                        text: &self.model.entry.author.name,
+                        text: &self.model.entry.subscription().to_string(),
                         ellipsize: EllipsizeMode::End,
-                        property_wrap: true,
-                        property_wrap_mode: WrapMode::Word,
+                        wrap: true,
+                        wrap_mode: WrapMode::Word,
                         halign: Align::Start
                     },
                     #[name="label_date"]
-                    DateLabel(self.model.entry.published.clone()) {}
+                    DateLabel(self.model.entry.uploaded().clone()) {}
                 },
                 #[name="button_watch_later"]
                 gtk::Button {
                     clicked => FeedListItemMsg::WatchLater,
                     image: Some(&gtk::Image::from_icon_name(Some("appointment-new-symbolic"), gtk::IconSize::LargeToolbar)),
                 }
+            }
+        }
+    }
+}
+
+pub struct FeedListItemObserver {
+    sender: Sender<FeedListItemMsg>,
+}
+
+impl Observer<VideoEvent> for FeedListItemObserver {
+    fn notify(&mut self, message: VideoEvent) {
+        match message {
+            VideoEvent::Play => {
+                let _ = self.sender.send(FeedListItemMsg::SetPlaying(true));
+            }
+            VideoEvent::Stop => {
+                let _ = self.sender.send(FeedListItemMsg::SetPlaying(false));
             }
         }
     }

@@ -18,11 +18,9 @@
  *
  */
 
-mod errors;
-mod filter;
+mod csv_file_manager;
 mod gui;
-mod subscriptions;
-mod youtube_feed;
+mod player;
 
 use crate::gui::Win;
 
@@ -30,5 +28,8 @@ use relm::Widget;
 
 #[tokio::main]
 async fn main() {
-    Win::run(()).unwrap();
+    env_logger::init();
+    let joiner = tf_join::Joiner::new();
+
+    Win::run(joiner).unwrap();
 }
