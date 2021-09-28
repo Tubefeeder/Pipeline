@@ -1,6 +1,6 @@
 [package]
 name = "tubefeeder"
-version = "1.2.3"
+version = "1.3.0"
 authors = ["Julian Schmidhuber <schmidhuberj2@protonmail.com>"]
 edition = "2018"
 
@@ -25,13 +25,9 @@ reqwest = "0.11.4"
 log = "0.4.14"
 env_logger = "0.9.0"
 
-tf_core = { package = "tubefeeder-extractor-core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.0" }
-tf_yt = { package = "platform-youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.0" }
-tf_join = { package = "tubefeeder-extractor-join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.0" }
-tf_filter = { package = "tubefeeder-extractor-filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.0" }
-tf_observer = { package = "observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.0" }
-tf_playlist = { package = "playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", tag = "0.1.1" }
-
-[patch."https://github.com/Tubefeeder/tubefeeder-extractor.git"]
-tf_observer = { package = "observer", path = "../tubefeeder-extractor/observer" }
-tf_playlist = { package = "playlist", path = "../tubefeeder-extractor/playlist" }
+tf_core = { package = "tf_core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_join = { package = "tf_join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_filter = { package = "tf_filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_observer = { package = "tf_observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_playlist = { package = "tf_playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_yt = { package = "tf_platform_youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }

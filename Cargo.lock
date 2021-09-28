@@ -1108,10 +1108,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "observer"
-version = "0.1.0"
-
-[[package]]
 name = "once_cell"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1243,34 +1239,6 @@ name = "pkg-config"
 version = "0.3.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3831453b3449ceb48b6d9c7ad7c96d5ea673e9b470a1dc578c2ce6521230884c"
-
-[[package]]
-name = "platform-youtube"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?tag=0.1.0#1f6549b68b7e48c4e2f873fa6693844326e59f14"
-dependencies = [
- "async-trait",
- "chrono",
- "futures",
- "gdk-pixbuf",
- "glib",
- "log",
- "quick-xml",
- "regex",
- "reqwest",
- "rusty_pipe",
- "serde",
- "tokio",
- "tubefeeder-extractor-core",
-]
-
-[[package]]
-name = "playlist"
-version = "0.1.1"
-dependencies = [
- "log",
- "observer",
-]
 
 [[package]]
 name = "ppv-lite86"
@@ -1797,6 +1765,85 @@ dependencies = [
 ]
 
 [[package]]
+name = "tf_core"
+version = "0.1.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "futures",
+ "gdk-pixbuf",
+ "log",
+ "quick-xml",
+ "reqwest",
+ "serde",
+ "tf_observer",
+ "tokio",
+]
+
+[[package]]
+name = "tf_filter"
+version = "0.1.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+dependencies = [
+ "log",
+ "tf_observer",
+]
+
+[[package]]
+name = "tf_join"
+version = "0.1.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "futures",
+ "gdk-pixbuf",
+ "log",
+ "regex",
+ "reqwest",
+ "tf_core",
+ "tf_filter",
+ "tf_observer",
+ "tf_platform_youtube",
+ "tokio",
+]
+
+[[package]]
+name = "tf_observer"
+version = "0.1.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+
+[[package]]
+name = "tf_platform_youtube"
+version = "0.1.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "futures",
+ "gdk-pixbuf",
+ "glib",
+ "log",
+ "quick-xml",
+ "regex",
+ "reqwest",
+ "rusty_pipe",
+ "serde",
+ "tf_core",
+ "tokio",
+]
+
+[[package]]
+name = "tf_playlist"
+version = "0.1.1"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+dependencies = [
+ "log",
+ "tf_observer",
+]
+
+[[package]]
 name = "thiserror"
 version = "1.0.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1951,7 +1998,7 @@ checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
 
 [[package]]
 name = "tubefeeder"
-version = "1.2.3"
+version = "1.3.0"
 dependencies = [
  "chrono",
  "csv",
@@ -1963,63 +2010,18 @@ dependencies = [
  "gtk",
  "libhandy",
  "log",
- "observer",
  "pango",
- "platform-youtube",
- "playlist",
  "regex",
  "relm",
  "relm-derive",
  "reqwest",
+ "tf_core",
+ "tf_filter",
+ "tf_join",
+ "tf_observer",
+ "tf_platform_youtube",
+ "tf_playlist",
  "tokio",
- "tubefeeder-extractor-core",
- "tubefeeder-extractor-filter",
- "tubefeeder-extractor-join",
-]
-
-[[package]]
-name = "tubefeeder-extractor-core"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?tag=0.1.0#1f6549b68b7e48c4e2f873fa6693844326e59f14"
-dependencies = [
- "async-trait",
- "chrono",
- "futures",
- "gdk-pixbuf",
- "log",
- "observer",
- "quick-xml",
- "reqwest",
- "serde",
- "tokio",
-]
-
-[[package]]
-name = "tubefeeder-extractor-filter"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?tag=0.1.0#1f6549b68b7e48c4e2f873fa6693844326e59f14"
-dependencies = [
- "log",
- "observer",
-]
-
-[[package]]
-name = "tubefeeder-extractor-join"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?tag=0.1.0#1f6549b68b7e48c4e2f873fa6693844326e59f14"
-dependencies = [
- "async-trait",
- "chrono",
- "futures",
- "gdk-pixbuf",
- "log",
- "observer",
- "platform-youtube",
- "regex",
- "reqwest",
- "tokio",
- "tubefeeder-extractor-core",
- "tubefeeder-extractor-filter",
 ]
 
 [[package]]

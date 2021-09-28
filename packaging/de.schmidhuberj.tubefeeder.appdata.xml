@@ -10,6 +10,11 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
+	  <release version="v1.3.0" date="2021-09-28">
+		  <description>
+			  <p>Major refactoring, no big changes to features or gui but preparations for such features.</p>
+		  </description>
+	  </release>
 	  <release version="v1.2.3" date="2021-07-08">
 		  <description> 
 			  <p>Made the application visible in phoshs "show only adaptive apps".</p>
@@ -37,18 +42,9 @@
     <p>
     Tubefeeder uses mpv to play the videos. 
     This is already included in Flatpak, install it otherwise.
-    </p>
 
-    <p>
-    Features:
+    You can choose to use a different video player, for more information see [here](https://www.tubefeeder.de/wiki/different-player.html).
     </p>
-
-    <ul>
-    <li>Feed of your favorite videos.</li>
-    <li>Add videos to a watch-later list</li>
-    <li>Filter out unwanted videos.</li>
-    <li>Subscribe to a channel by name.</li>
-    </ul>
   </description>
 
   <screenshots>
@@ -70,9 +66,10 @@
     </screenshot>
   </screenshots>
 
-  <url type="homepage">https://www.schmidhuberj.de/Tubefeeder/</url>
+  <url type="homepage">https://www.tubefeeder.de/</url>
   <url type="bugtracker">https://github.com/Schmiddiii/Tubefeeder/issues</url>
-  <url type="help">https://github.com/Schmiddiii/Tubefeeder/wiki</url>
+  <url type="help">http://www.tubefeeder.de/wiki/</url>
+  <url type="donation">https://www.tubefeeder.de/donate</url>
 
   <provides>
     <binary>tubefeeder</binary>

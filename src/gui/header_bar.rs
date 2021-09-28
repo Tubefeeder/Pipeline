@@ -126,8 +126,8 @@ impl Widget for HeaderBar {
                     .license_type(gtk::License::Gpl30)
                     .logo_icon_name("icon")
                     .program_name("Tubefeeder")
-                    .version("1.2.3")
-                    .website("https://www.schmidhuberj.de/Tubefeeder/")
+                    .version("1.3.0")
+                    .website("https://www.tubefeeder.de")
                     .build();
                 about_dialog.show();
             }
