@@ -3,21 +3,6 @@
 version = 3
 
 [[package]]
-name = "addr2line"
-version = "0.16.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e61f2b7f93d2c7d2b08263acaa4a363b3e276806c68af6134c44f523bf1aacd"
-dependencies = [
- "gimli",
-]
-
-[[package]]
-name = "adler"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f26201604c87b1e01bd3d98f8d5d9a8fcbb815e8cedb41ffccbeb4bf593a35fe"
-
-[[package]]
 name = "aho-corasick"
 version = "0.7.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -31,6 +16,27 @@ name = "anyhow"
 version = "1.0.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "61604a8f862e1d5c3229fdd78f8b02c68dcf73a4c4b05fd636d12240aaa242c1"
+
+[[package]]
+name = "async-stream"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "171374e7e3b2504e0e5236e3b59260560f9fe94bfe9ac39ba5e4e929c5590625"
+dependencies = [
+ "async-stream-impl",
+ "futures-core",
+]
+
+[[package]]
+name = "async-stream-impl"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "648ed8c8d2ce5409ccd57453d9d1b214b342a0d69376a6feda1fd6cae3299308"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "async-trait"
@@ -85,40 +91,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
-name = "backtrace"
-version = "0.3.61"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7a905d892734eea339e896738c14b9afce22b5318f64b951e70bf3844419b01"
-dependencies = [
- "addr2line",
- "cc",
- "cfg-if",
- "libc",
- "miniz_oxide",
- "object",
- "rustc-demangle",
-]
-
-[[package]]
 name = "base64"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
-
-[[package]]
-name = "bit-set"
-version = "0.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e11e16035ea35e4e5997b393eacbf6f63983188f7a2ad25bfb13465f5ad59de"
-dependencies = [
- "bit-vec",
-]
-
-[[package]]
-name = "bit-vec"
-version = "0.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "349f9b6a179ed607305526ca489b34ad0a41aed5f7980fa90eb03160b69598fb"
 
 [[package]]
 name = "bitflags"
@@ -273,38 +249,6 @@ dependencies = [
  "log",
  "regex",
  "termcolor",
-]
-
-[[package]]
-name = "failure"
-version = "0.1.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d32e9bd16cc02eae7db7ef620b392808b89f6a5e16bb3497d159c6b92a0f4f86"
-dependencies = [
- "backtrace",
- "failure_derive",
-]
-
-[[package]]
-name = "failure_derive"
-version = "0.1.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aa4da3c766cd7a0db8242e326e9e4e081edd567072893ed320008189715366a4"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
- "synstructure",
-]
-
-[[package]]
-name = "fancy-regex"
-version = "0.3.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae91abf6555234338687bb47913978d275539235fcb77ba9863b779090b42b14"
-dependencies = [
- "bit-set",
- "regex",
 ]
 
 [[package]]
@@ -516,12 +460,6 @@ dependencies = [
  "libc",
  "wasi",
 ]
-
-[[package]]
-name = "gimli"
-version = "0.25.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0a01e0497841a3b2db4f8afa483cce65f7e96a3498bd6c541734792aeac8fe7"
 
 [[package]]
 name = "gio"
@@ -830,6 +768,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "invidious-client"
+version = "0.1.0"
+source = "git+https://github.com/Tubefeeder/invidious-client.git?rev=bcc6ddeb34d2280abd898029de18c3dfd34215cf#bcc6ddeb34d2280abd898029de18c3dfd34215cf"
+dependencies = [
+ "async-stream",
+ "futures",
+ "log",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "ipnet"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -953,16 +905,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a60c7ce501c71e03a9c9c0d35b861413ae925bd979cc7a4e30d060069aaac8d"
 
 [[package]]
-name = "miniz_oxide"
-version = "0.4.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a92518e98c078586bc6c934028adcca4c92a53d6a958196de835170a01d84e4b"
-dependencies = [
- "adler",
- "autocfg",
-]
-
-[[package]]
 name = "mio"
 version = "0.7.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1012,70 +954,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "num"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8536030f9fea7127f841b45bb6243b27255787fb4eb83958aa1ef9d2fdc0c36"
-dependencies = [
- "num-bigint",
- "num-complex",
- "num-integer",
- "num-iter",
- "num-rational",
- "num-traits",
-]
-
-[[package]]
-name = "num-bigint"
-version = "0.2.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "090c7f9998ee0ff65aa5b723e4009f7b217707f1fb5ea551329cc4d6231fb304"
-dependencies = [
- "autocfg",
- "num-integer",
- "num-traits",
-]
-
-[[package]]
-name = "num-complex"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6b19411a9719e753aff12e5187b74d60d3dc449ec3f4dc21e3989c3f554bc95"
-dependencies = [
- "autocfg",
- "num-traits",
-]
-
-[[package]]
 name = "num-integer"
 version = "0.1.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2cc698a63b549a70bc047073d2949cce27cd1c7b0a4a862d08a8031bc2801db"
 dependencies = [
  "autocfg",
- "num-traits",
-]
-
-[[package]]
-name = "num-iter"
-version = "0.1.42"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b2021c8337a54d21aca0d59a92577a029af9431cb59b909b03252b9c164fad59"
-dependencies = [
- "autocfg",
- "num-integer",
- "num-traits",
-]
-
-[[package]]
-name = "num-rational"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c000134b5dbf44adc5cb772486d335293351644b801551abe8f75c84cfa4aef"
-dependencies = [
- "autocfg",
- "num-bigint",
- "num-integer",
  "num-traits",
 ]
 
@@ -1096,15 +980,6 @@ checksum = "05499f3756671c15885fee9034446956fff3f243d6077b91e5767df161f766b3"
 dependencies = [
  "hermit-abi",
  "libc",
-]
-
-[[package]]
-name = "object"
-version = "0.26.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39f37e50073ccad23b6d09bcb5b263f4e76d3bb6038e4a3c08e52162ffa8abc2"
-dependencies = [
- "memchr",
 ]
 
 [[package]]
@@ -1194,17 +1069,6 @@ dependencies = [
  "redox_syscall",
  "smallvec",
  "winapi",
-]
-
-[[package]]
-name = "parse_duration"
-version = "2.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7037e5e93e0172a5a96874380bf73bc6ecef022e26fa25f2be26864d6b3ba95d"
-dependencies = [
- "lazy_static",
- "num",
- "regex",
 ]
 
 [[package]]
@@ -1483,12 +1347,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustc-demangle"
-version = "0.1.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ef03e0a2b150c7a90d01faf6254c9c48a41e95fb2a8c2ac1c6f0d2b9aefc342"
-
-[[package]]
 name = "rustc_version"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1508,25 +1366,6 @@ dependencies = [
  "ring",
  "sct",
  "webpki",
-]
-
-[[package]]
-name = "rusty_pipe"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/rusty_pipe.git?tag=0.1.0#3c3ceded9cd424b7c04d1fe76b967f003ba28ac0"
-dependencies = [
- "async-trait",
- "chrono",
- "failure",
- "fancy-regex",
- "futures",
- "lazy_static",
- "log",
- "parse_duration",
- "percent-encoding",
- "regex",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -1712,18 +1551,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "synstructure"
-version = "0.12.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "474aaa926faa1603c40b7885a9eaea29b444d1cb2850cb7c0e37bb1a4182f4fa"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
- "unicode-xid",
-]
-
-[[package]]
 name = "system-deps"
 version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1767,7 +1594,7 @@ dependencies = [
 [[package]]
 name = "tf_core"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=invidious#53c2872d7868ddaf714f09d683016b82bc0890ba"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1784,7 +1611,7 @@ dependencies = [
 [[package]]
 name = "tf_filter"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=invidious#53c2872d7868ddaf714f09d683016b82bc0890ba"
 dependencies = [
  "log",
  "tf_observer",
@@ -1793,7 +1620,7 @@ dependencies = [
 [[package]]
 name = "tf_join"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=invidious#53c2872d7868ddaf714f09d683016b82bc0890ba"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1812,23 +1639,23 @@ dependencies = [
 [[package]]
 name = "tf_observer"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=invidious#53c2872d7868ddaf714f09d683016b82bc0890ba"
 
 [[package]]
 name = "tf_platform_youtube"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=invidious#53c2872d7868ddaf714f09d683016b82bc0890ba"
 dependencies = [
  "async-trait",
  "chrono",
  "futures",
  "gdk-pixbuf",
  "glib",
+ "invidious-client",
  "log",
  "quick-xml",
  "regex",
  "reqwest",
- "rusty_pipe",
  "serde",
  "tf_core",
  "tokio",
@@ -1837,7 +1664,7 @@ dependencies = [
 [[package]]
 name = "tf_playlist"
 version = "0.1.1"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=invidious#53c2872d7868ddaf714f09d683016b82bc0890ba"
 dependencies = [
  "log",
  "tf_observer",
@@ -1998,7 +1825,7 @@ checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
 
 [[package]]
 name = "tubefeeder"
-version = "1.3.0"
+version = "1.3.1"
 dependencies = [
  "chrono",
  "csv",
