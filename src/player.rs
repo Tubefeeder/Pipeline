@@ -28,8 +28,9 @@ use tf_join::AnyVideo;
 pub fn play(video: AnyVideo) {
     thread::spawn(move || {
         log::debug!("Playing video with title: {}", video.title());
+        log::debug!("Playing video with url: {}", video.url());
         video.play();
-        let player_str = std::env::var("PLAYER").unwrap_or("mpv".to_string());
+        let player_str = std::env::var("PLAYER").unwrap_or("mpv --ytdl".to_string());
 
         let mut player_iter = player_str.split(" ");
         let player = player_iter.next().unwrap_or("mpv");

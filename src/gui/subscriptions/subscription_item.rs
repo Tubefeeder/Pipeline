@@ -83,23 +83,26 @@ impl Widget for SubscriptionItem {
             .label_name
             .set_attributes(Some(&name_attr_list));
 
-        // Is needed until this supports more platforms.
-        #[allow(irrefutable_let_patterns)]
-        if let AnySubscription::Youtube(sub) = &self.model.subscription {
-            let stream = self.model.relm.stream().clone();
-            let (_channel, sender) = relm::Channel::new(move |name_opt| {
-                if let Some(name) = name_opt {
-                    stream.emit(SubscriptionItemMsg::UpdateName(name));
-                }
-            });
+        self.update_name();
+    }
 
-            let sub_clone = sub.clone();
-            let client = self.model.client.clone();
-            tokio::spawn(async move {
-                let name = sub_clone.update_name(&client).await;
-                let _ = sender.send(name);
-            });
-        }
+    fn update_name(&self) {
+        let stream = self.model.relm.stream().clone();
+        let (_channel, sender) = relm::Channel::new(move |name_opt| {
+            if let Some(name) = name_opt {
+                stream.emit(SubscriptionItemMsg::UpdateName(name));
+            }
+        });
+
+        let sub_clone = self.model.subscription.clone();
+        let client = self.model.client.clone();
+        tokio::spawn(async move {
+            let name = match &sub_clone {
+                AnySubscription::Youtube(sub) => sub.update_name(&client).await,
+                AnySubscription::Peertube(sub) => sub.update_name(&client).await,
+            };
+            let _ = sender.send(name);
+        });
     }
 
     // If this needs to be changed, remember to also change the sort function of the SubscriptionsPage

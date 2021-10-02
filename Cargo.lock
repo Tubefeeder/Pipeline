@@ -1767,7 +1767,7 @@ dependencies = [
 [[package]]
 name = "tf_core"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=platform-peertube#326a93f3edd436b9c7b30d8884328ce9ce671aa5"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1784,7 +1784,7 @@ dependencies = [
 [[package]]
 name = "tf_filter"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=platform-peertube#326a93f3edd436b9c7b30d8884328ce9ce671aa5"
 dependencies = [
  "log",
  "tf_observer",
@@ -1793,7 +1793,7 @@ dependencies = [
 [[package]]
 name = "tf_join"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=platform-peertube#326a93f3edd436b9c7b30d8884328ce9ce671aa5"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1805,6 +1805,7 @@ dependencies = [
  "tf_core",
  "tf_filter",
  "tf_observer",
+ "tf_platform_peertube",
  "tf_platform_youtube",
  "tokio",
 ]
@@ -1812,12 +1813,30 @@ dependencies = [
 [[package]]
 name = "tf_observer"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=platform-peertube#326a93f3edd436b9c7b30d8884328ce9ce671aa5"
+
+[[package]]
+name = "tf_platform_peertube"
+version = "0.0.0"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=platform-peertube#326a93f3edd436b9c7b30d8884328ce9ce671aa5"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "gdk-pixbuf",
+ "gio",
+ "glib",
+ "log",
+ "quick-xml",
+ "reqwest",
+ "serde",
+ "tf_core",
+ "tokio",
+]
 
 [[package]]
 name = "tf_platform_youtube"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=platform-peertube#326a93f3edd436b9c7b30d8884328ce9ce671aa5"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1837,7 +1856,7 @@ dependencies = [
 [[package]]
 name = "tf_playlist"
 version = "0.1.1"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=f697eecb893f0761d89df9ce2763a87d6a0f01df#f697eecb893f0761d89df9ce2763a87d6a0f01df"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?branch=platform-peertube#326a93f3edd436b9c7b30d8884328ce9ce671aa5"
 dependencies = [
  "log",
  "tf_observer",
@@ -1998,7 +2017,7 @@ checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
 
 [[package]]
 name = "tubefeeder"
-version = "1.3.0"
+version = "1.3.1"
 dependencies = [
  "chrono",
  "csv",
@@ -2019,6 +2038,7 @@ dependencies = [
  "tf_filter",
  "tf_join",
  "tf_observer",
+ "tf_platform_peertube",
  "tf_platform_youtube",
  "tf_playlist",
  "tokio",

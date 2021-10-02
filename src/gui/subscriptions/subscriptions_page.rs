@@ -18,6 +18,7 @@
  *
  */
 
+use crate::gui::subscriptions::subscription_adder::SubscriptionAdder;
 use crate::gui::subscriptions::subscription_item::SubscriptionItem;
 
 use std::collections::HashMap;
@@ -30,19 +31,17 @@ use relm::{Channel, ContainerWidget, Relm, Sender, Widget};
 use relm_derive::{widget, Msg};
 use tf_join::{AnySubscription, AnySubscriptionList, SubscriptionEvent};
 use tf_observer::{Observable, Observer};
-use tf_yt::YTSubscription;
+
+use super::subscription_adder::SubscriptionAdderMsg;
 
 #[derive(Msg)]
 pub enum SubscriptionsPageMsg {
     ToggleAddSubscription,
-    AddSubscription,
     NewSubscription(AnySubscription),
     RemoveSubscription(AnySubscription),
 }
 
 pub struct SubscriptionsPageModel {
-    relm: Relm<SubscriptionsPage>,
-    add_subscription_visible: bool,
     subscription_list: AnySubscriptionList,
     _subscription_observer: Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>,
     subscription_items: HashMap<AnySubscription, relm::Component<SubscriptionItem>>,
@@ -65,8 +64,6 @@ impl Widget for SubscriptionsPage {
         subscription_list_clone.attach(Arc::downgrade(&observer));
 
         SubscriptionsPageModel {
-            relm: relm.clone(),
-            add_subscription_visible: false,
             subscription_list: subscription_list_clone,
             _subscription_observer: observer,
             subscription_items: HashMap::new(),
@@ -77,35 +74,13 @@ impl Widget for SubscriptionsPage {
     fn update(&mut self, event: SubscriptionsPageMsg) {
         match event {
             SubscriptionsPageMsg::ToggleAddSubscription => {
-                self.model.add_subscription_visible = !self.model.add_subscription_visible;
+                self.streams
+                    .subscription_adder
+                    .emit(SubscriptionAdderMsg::ToggleVisible);
             }
-            SubscriptionsPageMsg::AddSubscription => self.add_subscription(),
             SubscriptionsPageMsg::NewSubscription(sub) => self.new_subscription(sub),
             SubscriptionsPageMsg::RemoveSubscription(sub) => self.remove_subscription(sub),
         }
-    }
-
-    fn add_subscription(&mut self) {
-        let channel_id_or_name = self.widgets.channel_id_or_name_entry.text();
-
-        self.widgets.channel_id_or_name_entry.set_text("");
-        self.model
-            .relm
-            .stream()
-            .emit(SubscriptionsPageMsg::ToggleAddSubscription);
-
-        let sub_list = self.model.subscription_list.clone();
-
-        std::thread::spawn(move || {
-            let sub_res = tokio::runtime::Runtime::new()
-                .unwrap()
-                .block_on(async { YTSubscription::from_id_or_name(&channel_id_or_name).await });
-
-            // TODO: Error handling
-            if let Ok(sub) = sub_res {
-                sub_list.add(sub.into());
-            }
-        });
     }
 
     fn new_subscription(&mut self, sub: AnySubscription) {
@@ -131,8 +106,6 @@ impl Widget for SubscriptionsPage {
     }
 
     fn init_view(&mut self) {
-        self.widgets.channel_entry_box.hide();
-
         self.widgets.subscription_list.set_sort_func(Some(Box::new(
             |l1: &ListBoxRow, l2: &ListBoxRow| {
                 // The gtk::Box inside the gtk::ListBoxRow.
@@ -172,17 +145,8 @@ impl Widget for SubscriptionsPage {
         gtk::Box {
             orientation: Vertical,
 
-            #[name="channel_entry_box"]
-            gtk::Box {
-                visible: self.model.add_subscription_visible,
-                #[name="channel_id_or_name_entry"]
-                gtk::Entry {
-                    placeholder_text: Some("Channel ID or Name")
-                },
-                gtk::Button {
-                    clicked => SubscriptionsPageMsg::AddSubscription,
-                    image: Some(&gtk::Image::from_icon_name(Some("go-next-symbolic"), gtk::IconSize::LargeToolbar)),
-                }
+            #[name="subscription_adder"]
+            SubscriptionAdder(self.model.subscription_list.clone()) {
             },
 
             gtk::ScrolledWindow {

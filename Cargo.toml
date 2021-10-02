@@ -25,9 +25,10 @@ reqwest = "0.11.4"
 log = "0.4.14"
 env_logger = "0.9.0"
 
-tf_core = { package = "tf_core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
-tf_join = { package = "tf_join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
-tf_filter = { package = "tf_filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
-tf_observer = { package = "tf_observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
-tf_playlist = { package = "tf_playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
-tf_yt = { package = "tf_platform_youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "f697eecb893f0761d89df9ce2763a87d6a0f01df" }
+tf_core = { package = "tf_core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", branch = "platform-peertube" }
+tf_join = { package = "tf_join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", branch = "platform-peertube" }
+tf_filter = { package = "tf_filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", branch = "platform-peertube" }
+tf_observer = { package = "tf_observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", branch = "platform-peertube" }
+tf_playlist = { package = "tf_playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", branch = "platform-peertube" }
+tf_yt = { package = "tf_platform_youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", branch = "platform-peertube" }
+tf_pt = { package = "tf_platform_peertube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", branch = "platform-peertube" }
