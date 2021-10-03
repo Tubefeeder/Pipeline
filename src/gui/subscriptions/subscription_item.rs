@@ -22,7 +22,6 @@ use crate::gui::get_font_size;
 
 use gtk::prelude::*;
 use gtk::Align;
-use gtk::Orientation::Vertical;
 use pango::{AttrList, Attribute, EllipsizeMode};
 use relm::{Relm, Widget};
 use relm_derive::{widget, Msg};
@@ -115,11 +114,18 @@ impl Widget for SubscriptionItem {
                     clicked => SubscriptionItemMsg::Remove,
                 },
                 gtk::Box {
-                    orientation: Vertical,
+                    spacing: 4,
                     #[name="label_name"]
                     gtk::Label {
                         text: &self.model.subscription.to_string(),
                         ellipsize: EllipsizeMode::End,
+                        halign: Align::Start
+                    },
+                    #[name="label_platform"]
+                    gtk::Label {
+                        text: &("(".to_owned() + &self.model.subscription.platform().to_string() + ")"),
+                        ellipsize: EllipsizeMode::End,
+                        wrap: true,
                         halign: Align::Start
                     },
                 }

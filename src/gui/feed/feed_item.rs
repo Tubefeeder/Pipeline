@@ -127,18 +127,20 @@ impl Widget for FeedListItem {
             .label_title
             .set_attributes(Some(&title_attr_list));
 
-        let author_attr_list = AttrList::new();
-        author_attr_list.insert(Attribute::new_size(
+        let small_text_attr_list = AttrList::new();
+        small_text_attr_list.insert(Attribute::new_size(
             (FONT_RATIO * (font_size * pango::SCALE) as f32) as i32,
         ));
+
         self.widgets
             .label_author
-            .set_attributes(Some(&author_attr_list));
-
-        let date_attr_list = author_attr_list;
+            .set_attributes(Some(&small_text_attr_list));
+        self.widgets
+            .label_platform
+            .set_attributes(Some(&small_text_attr_list));
         self.widgets
             .label_date
-            .set_attributes(Some(&date_attr_list));
+            .set_attributes(Some(&small_text_attr_list));
 
         self.widgets.playing.set_from_icon_name(
             Some("media-playback-start-symbolic"),
@@ -181,13 +183,24 @@ impl Widget for FeedListItem {
                         lines: 2,
                         justify: Justification::Left,
                     },
-                    #[name="label_author"]
-                    gtk::Label {
-                        text: &self.model.entry.subscription().to_string(),
-                        ellipsize: EllipsizeMode::End,
-                        wrap: true,
-                        wrap_mode: WrapMode::Word,
-                        halign: Align::Start
+                    gtk::Box {
+                        spacing: 4,
+                        #[name="label_author"]
+                        gtk::Label {
+                            text: &self.model.entry.subscription().to_string(),
+                            ellipsize: EllipsizeMode::End,
+                            wrap: true,
+                            wrap_mode: WrapMode::Word,
+                            halign: Align::Start
+                        },
+                        #[name="label_platform"]
+                        gtk::Label {
+                            text: &("(".to_owned() + &self.model.entry.platform().to_string() + ")"),
+                            ellipsize: EllipsizeMode::End,
+                            wrap: true,
+                            wrap_mode: WrapMode::Word,
+                            halign: Align::Start
+                        },
                     },
                     #[name="label_date"]
                     DateLabel(self.model.entry.uploaded().clone()) {}
