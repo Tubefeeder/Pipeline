@@ -18,6 +18,7 @@
  *
  */
 
+mod subscription_adder;
 mod subscription_item;
 mod subscriptions_page;
 
