@@ -99,6 +99,7 @@ impl Widget for SubscriptionItem {
             let name = match &sub_clone {
                 AnySubscription::Youtube(sub) => sub.update_name(&client).await,
                 AnySubscription::Peertube(sub) => sub.update_name(&client).await,
+                AnySubscription::Lbry(sub) => sub.update_name(&client).await,
             };
             let _ = sender.send(name);
         });

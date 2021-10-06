@@ -26,6 +26,7 @@ use relm_derive::{widget, Msg};
 use tf_join::{AnySubscription, AnySubscriptionList, Platform};
 use tf_pt::PTSubscription;
 use tf_yt::YTSubscription;
+use tf_lbry::LbrySubscription;
 
 #[derive(Msg)]
 pub enum SubscriptionAdderMsg {
@@ -80,7 +81,6 @@ impl Widget for SubscriptionAdder {
         let platform = self.model.platform.clone();
 
         std::thread::spawn(move || {
-            // TODO: Differentiate between platforms.
             let sub_res: Result<AnySubscription, tf_core::Error> =
                 tokio::runtime::Runtime::new().unwrap().block_on(async {
                     match platform {
@@ -89,7 +89,10 @@ impl Widget for SubscriptionAdder {
                             .map(|s| s.into()),
                         Platform::Peertube => {
                             Ok(PTSubscription::new(&base_url, &channel_id_or_name).into())
-                        }
+                        },
+                        Platform::Lbry => Ok(LbrySubscription::new(&channel_id_or_name).into()),
+                        // -- Add case here
+
                     }
                 });
 
