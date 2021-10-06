@@ -18,9 +18,12 @@
  *
  */
 
-use std::sync::{
-    atomic::{AtomicBool, Ordering},
-    Arc, Mutex,
+use std::{
+    convert::TryInto,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc, Mutex,
+    },
 };
 
 use gdk_pixbuf::{Colorspace, Pixbuf};
@@ -30,12 +33,18 @@ use relm_derive::{widget, Msg};
 use tf_core::Video;
 use tf_join::AnyVideo;
 
-const WIDTH: i32 = 120;
-const HEIGHT: i32 = 90;
+const WIDTH: u32 = 120;
+const HEIGHT: u32 = 90;
 
 pub fn default_pixbuf() -> Pixbuf {
-    let pixbuf =
-        Pixbuf::new(Colorspace::Rgb, true, 8, WIDTH, HEIGHT).expect("Could not create empty");
+    let pixbuf = Pixbuf::new(
+        Colorspace::Rgb,
+        true,
+        8,
+        WIDTH.try_into().unwrap_or(1),
+        HEIGHT.try_into().unwrap_or(1),
+    )
+    .expect("Could not create empty");
     pixbuf.fill(0);
 
     pixbuf
@@ -101,9 +110,10 @@ impl Widget for Thumbnail {
             let path = user_data_dir;
 
             if !path.exists() {
-                video
-                    .thumbnail_with_client(&client, path.clone(), WIDTH, HEIGHT)
-                    .await;
+                let image = video.thumbnail_with_client(&client).await;
+                let resized =
+                    image.resize_to_fill(WIDTH, HEIGHT, image::imageops::FilterType::Triangle);
+                let _ = resized.save(&path);
             }
 
             if !deleted.lock().unwrap().load(Ordering::Relaxed) {
