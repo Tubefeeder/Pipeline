@@ -1865,7 +1865,7 @@ dependencies = [
 [[package]]
 name = "tf_core"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=1656676ebd89ecbe6f3eeca651f73ba1c9c3855f#1656676ebd89ecbe6f3eeca651f73ba1c9c3855f"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1883,7 +1883,7 @@ dependencies = [
 [[package]]
 name = "tf_filter"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=1656676ebd89ecbe6f3eeca651f73ba1c9c3855f#1656676ebd89ecbe6f3eeca651f73ba1c9c3855f"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
 dependencies = [
  "tf_observer",
 ]
@@ -1891,7 +1891,7 @@ dependencies = [
 [[package]]
 name = "tf_join"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=1656676ebd89ecbe6f3eeca651f73ba1c9c3855f#1656676ebd89ecbe6f3eeca651f73ba1c9c3855f"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1910,12 +1910,12 @@ dependencies = [
 [[package]]
 name = "tf_observer"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=1656676ebd89ecbe6f3eeca651f73ba1c9c3855f#1656676ebd89ecbe6f3eeca651f73ba1c9c3855f"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
 
 [[package]]
 name = "tf_platform_lbry"
 version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=1656676ebd89ecbe6f3eeca651f73ba1c9c3855f#1656676ebd89ecbe6f3eeca651f73ba1c9c3855f"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1927,7 +1927,7 @@ dependencies = [
 [[package]]
 name = "tf_platform_peertube"
 version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=1656676ebd89ecbe6f3eeca651f73ba1c9c3855f#1656676ebd89ecbe6f3eeca651f73ba1c9c3855f"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1939,7 +1939,7 @@ dependencies = [
 [[package]]
 name = "tf_platform_youtube"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=1656676ebd89ecbe6f3eeca651f73ba1c9c3855f#1656676ebd89ecbe6f3eeca651f73ba1c9c3855f"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1957,7 +1957,7 @@ dependencies = [
 [[package]]
 name = "tf_playlist"
 version = "0.1.1"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=1656676ebd89ecbe6f3eeca651f73ba1c9c3855f#1656676ebd89ecbe6f3eeca651f73ba1c9c3855f"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
 dependencies = [
  "log",
  "tf_observer",
@@ -1966,7 +1966,7 @@ dependencies = [
 [[package]]
 name = "tf_utils"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=1656676ebd89ecbe6f3eeca651f73ba1c9c3855f#1656676ebd89ecbe6f3eeca651f73ba1c9c3855f"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
 dependencies = [
  "async-trait",
  "chrono",

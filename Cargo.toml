@@ -27,11 +27,11 @@ env_logger = "0.9.0"
 
 image = "0.23.14"
 
-tf_core = { package = "tf_core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "1656676ebd89ecbe6f3eeca651f73ba1c9c3855f" }
-tf_join = { package = "tf_join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "1656676ebd89ecbe6f3eeca651f73ba1c9c3855f" }
-tf_filter = { package = "tf_filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "1656676ebd89ecbe6f3eeca651f73ba1c9c3855f" }
-tf_observer = { package = "tf_observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "1656676ebd89ecbe6f3eeca651f73ba1c9c3855f" }
-tf_playlist = { package = "tf_playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "1656676ebd89ecbe6f3eeca651f73ba1c9c3855f" }
-tf_yt = { package = "tf_platform_youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "1656676ebd89ecbe6f3eeca651f73ba1c9c3855f" }
-tf_pt = { package = "tf_platform_peertube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "1656676ebd89ecbe6f3eeca651f73ba1c9c3855f" }
-tf_lbry = { package = "tf_platform_lbry", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "1656676ebd89ecbe6f3eeca651f73ba1c9c3855f" }
+tf_core = { package = "tf_core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "d18735f502fc8ff46ac8505df268fdd541d96902" }
+tf_join = { package = "tf_join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "d18735f502fc8ff46ac8505df268fdd541d96902" }
+tf_filter = { package = "tf_filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "d18735f502fc8ff46ac8505df268fdd541d96902" }
+tf_observer = { package = "tf_observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "d18735f502fc8ff46ac8505df268fdd541d96902" }
+tf_playlist = { package = "tf_playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "d18735f502fc8ff46ac8505df268fdd541d96902" }
+tf_yt = { package = "tf_platform_youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "d18735f502fc8ff46ac8505df268fdd541d96902" }
+tf_pt = { package = "tf_platform_peertube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "d18735f502fc8ff46ac8505df268fdd541d96902" }
+tf_lbry = { package = "tf_platform_lbry", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "d18735f502fc8ff46ac8505df268fdd541d96902" }

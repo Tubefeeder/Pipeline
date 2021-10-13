@@ -111,8 +111,7 @@ impl Widget for Thumbnail {
 
             if !path.exists() {
                 let image = video.thumbnail_with_client(&client).await;
-                let resized =
-                    image.resize_to_fill(WIDTH, HEIGHT, image::imageops::FilterType::Triangle);
+                let resized = image.resize(WIDTH, HEIGHT, image::imageops::FilterType::Triangle);
                 let _ = resized.save(&path);
             }
 
