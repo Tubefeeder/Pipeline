@@ -155,9 +155,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.0.70"
+version = "1.0.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d26a6ce4b6a484fa3edb70f7efa6fc430fd2b87285fe8b84304fd0936faa0dc0"
+checksum = "79c2681d6594606957bbb8631c4b90a7fcaaa72cdb714743a437b156d6a7eedd"
 dependencies = [
  "jobserver",
 ]
@@ -199,9 +199,9 @@ checksum = "3d7b894f5411737b7867f4827955924d7c254fc9f4d91a6aad6b097804b1018b"
 
 [[package]]
 name = "core-foundation"
-version = "0.9.1"
+version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a89e2ae426ea83155dccf10c0fa6b1463ef6d5fcb44cee0b224a408fa640a62"
+checksum = "6888e10551bb93e424d8df1d07f1a8b4fceb0001a3a4b048bfc47554946f47b3"
 dependencies = [
  "core-foundation-sys",
  "libc",
@@ -209,9 +209,9 @@ dependencies = [
 
 [[package]]
 name = "core-foundation-sys"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea221b5284a47e40033bf9b66f35f984ec0ea2931eb03505246cd27a963f981b"
+checksum = "5827cebf4670468b8772dd191856768aedcb1b0278a04f989f7766351917b9dc"
 
 [[package]]
 name = "crc32fast"
@@ -469,9 +469,9 @@ dependencies = [
 
 [[package]]
 name = "gdk"
-version = "0.14.2"
+version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a453eae5ec10345b3a96ca1b547328bfc94edd40aa95b08f14bb4c35863db140"
+checksum = "b9d749dcfc00d8de0d7c3a289e04a04293eb5ba3d8a4e64d64911d481fa9933b"
 dependencies = [
  "bitflags",
  "cairo-rs",
@@ -538,9 +538,9 @@ dependencies = [
 
 [[package]]
 name = "gif"
-version = "0.11.2"
+version = "0.11.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a668f699973d0f573d15749b7002a9ac9e1f9c6b220e7b165601334c173d8de"
+checksum = "c3a7187e78088aead22ceedeee99779455b23fc231fe13ec443f99bb71694e5b"
 dependencies = [
  "color_quant",
  "weezl",
@@ -548,9 +548,9 @@ dependencies = [
 
 [[package]]
 name = "gio"
-version = "0.14.6"
+version = "0.14.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3a29d8062af72045518271a2cd98b4e1617ce43f5b4223ad0fb9a0eff8f718c"
+checksum = "711c3632b3ebd095578a9c091418d10fed492da9443f58ebc8f45efbeb215cb0"
 dependencies = [
  "bitflags",
  "futures-channel",
@@ -578,9 +578,9 @@ dependencies = [
 
 [[package]]
 name = "glib"
-version = "0.14.5"
+version = "0.14.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4a930b7208e6e0ab839eea5f65ac2b82109f729621430d47fe905e2e09d33f4"
+checksum = "7c515f1e62bf151ef6635f528d05b02c11506de986e43b34a5c920ef0b3796a4"
 dependencies = [
  "bitflags",
  "futures-channel",
@@ -633,9 +633,9 @@ dependencies = [
 
 [[package]]
 name = "gtk"
-version = "0.14.1"
+version = "0.14.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6603bb79ded6ac6f3bac203794383afa8b1d6a8656d34a93a88f0b22826cd46c"
+checksum = "2eb51122dd3317e9327ec1e4faa151d1fa0d95664cd8fb8dcfacf4d4d29ac70c"
 dependencies = [
  "atk",
  "bitflags",
@@ -1228,9 +1228,9 @@ dependencies = [
 
 [[package]]
 name = "pango"
-version = "0.14.3"
+version = "0.14.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e1fc88307d9797976ea62722ff2ec5de3fae279c6e20100ed3f49ca1a4bf3f96"
+checksum = "546fd59801e5ca735af82839007edd226fe7d3bb06433ec48072be4439c28581"
 dependencies = [
  "bitflags",
  "glib",
@@ -1317,7 +1317,7 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 [[package]]
 name = "piped"
 version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/piped-rust-sdk.git?branch=cleanup#973fc966bbb332c81b4a43d50a7a8f6fa98e5c70"
+source = "git+https://github.com/TeamPiped/piped-rust-sdk.git?rev=d33978556893d95a59f246b1e3a04776f5e834b6#d33978556893d95a59f246b1e3a04776f5e834b6"
 dependencies = [
  "reqwest",
  "serde",
@@ -1346,9 +1346,9 @@ dependencies = [
 
 [[package]]
 name = "ppv-lite86"
-version = "0.2.10"
+version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac74c624d6b2d21f425f752262f42188365d7b8ff1aff74c82e45136510a4857"
+checksum = "c3ca011bd0129ff4ae15cd04c4eef202cadf6c51c21e47aba319b4e0501db741"
 
 [[package]]
 name = "proc-macro-crate"
@@ -1398,9 +1398,9 @@ checksum = "bc881b2c22681370c6a780e47af9840ef841837bc98118431d4e1868bd0c1086"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.29"
+version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9f5105d4fdaab20335ca9565e106a5d9b82b6219b5ba735731124ac6711d23d"
+checksum = "edc3358ebc67bc8b7fa0c007f945b0b18226f78437d61bec735a9eb96b61ee70"
 dependencies = [
  "unicode-xid",
 ]
@@ -1560,9 +1560,9 @@ dependencies = [
 
 [[package]]
 name = "reqwest"
-version = "0.11.4"
+version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "246e9f61b9bb77df069a947682be06e31ac43ea37862e244a69f177694ea6d22"
+checksum = "51c732d463dd300362ffb44b7b125f299c23d2990411a4253824630ebc7467fb"
 dependencies = [
  "base64",
  "bytes",
@@ -1584,6 +1584,7 @@ dependencies = [
  "pin-project-lite",
  "rustls",
  "serde",
+ "serde_json",
  "serde_urlencoded",
  "tokio",
  "tokio-native-tls",
@@ -1766,9 +1767,9 @@ dependencies = [
 
 [[package]]
 name = "slab"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c307a32c1c5c437f38c7fd45d753050587732ba8628319fbdf12a7e289ccc590"
+checksum = "9def91fd1e018fe007022791f865d0ccc9b3a0d5001e01aabb8b40e46000afb5"
 
 [[package]]
 name = "smallvec"
@@ -1865,14 +1866,11 @@ dependencies = [
 [[package]]
 name = "tf_core"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
 dependencies = [
  "async-trait",
  "chrono",
  "futures",
- "gdk-pixbuf",
- "gio",
- "glib",
  "image",
  "log",
  "reqwest",
@@ -1883,7 +1881,7 @@ dependencies = [
 [[package]]
 name = "tf_filter"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
 dependencies = [
  "tf_observer",
 ]
@@ -1891,7 +1889,7 @@ dependencies = [
 [[package]]
 name = "tf_join"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1910,12 +1908,12 @@ dependencies = [
 [[package]]
 name = "tf_observer"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
 
 [[package]]
 name = "tf_platform_lbry"
 version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1927,7 +1925,7 @@ dependencies = [
 [[package]]
 name = "tf_platform_peertube"
 version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1939,7 +1937,7 @@ dependencies = [
 [[package]]
 name = "tf_platform_youtube"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1957,7 +1955,7 @@ dependencies = [
 [[package]]
 name = "tf_playlist"
 version = "0.1.1"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
 dependencies = [
  "log",
  "tf_observer",
@@ -1966,7 +1964,7 @@ dependencies = [
 [[package]]
 name = "tf_utils"
 version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=d18735f502fc8ff46ac8505df268fdd541d96902#d18735f502fc8ff46ac8505df268fdd541d96902"
+source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1980,18 +1978,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.29"
+version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "602eca064b2d83369e2b2f34b09c70b605402801927c65c11071ac911d299b88"
+checksum = "854babe52e4df1653706b98fcfc05843010039b406875930a70e4d9644e5c417"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.29"
+version = "1.0.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bad553cc2c78e8de258400763a647e80e6d1b31ee237275d756f6836d204494c"
+checksum = "aa32fd3f627f367fe16f893e2597ae3c05020f8bba2666a4e6ea73d377e5714b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2057,9 +2055,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-macros"
-version = "1.4.1"
+version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "154794c8f499c2619acd19e839294703e9e32e7630ef5f46ea80d4ef0fbee5eb"
+checksum = "b2dd85aeaba7b68df939bd357c6afb36c87951be9e80bf9c859f2fc3e9fca0fd"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2181,9 +2179,9 @@ checksum = "56dee185309b50d1f11bfedef0fe6d036842e3fb77413abef29f8f8d1c5d4c1c"
 
 [[package]]
 name = "unicode-bidi"
-version = "0.3.6"
+version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "246f4c42e67e7a4e3c6106ff716a5d067d4132a642840b242e357e468a2a0085"
+checksum = "1a01404663e3db436ed2746d9fefef640d868edae3cceb81c3b8d5732fda678f"
 
 [[package]]
 name = "unicode-normalization"
@@ -2265,8 +2263,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "632f73e236b219150ea279196e54e610f5dbafa5d61786303d4da54f84e47fce"
 dependencies = [
  "cfg-if",
- "serde",
- "serde_json",
  "wasm-bindgen-macro",
 ]
 
