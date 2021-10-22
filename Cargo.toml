@@ -1,6 +1,6 @@
 [package]
 name = "tubefeeder"
-version = "1.3.1"
+version = "1.4.0"
 authors = ["Julian Schmidhuber <schmidhuberj2@protonmail.com>"]
 edition = "2018"
 
@@ -27,11 +27,11 @@ env_logger = "0.9.0"
 
 image = "0.23.14"
 
-tf_core = { package = "tf_core", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "005777524e7018e194e859312d7517a187f18ef1" }
-tf_join = { package = "tf_join", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "005777524e7018e194e859312d7517a187f18ef1" }
-tf_filter = { package = "tf_filter", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "005777524e7018e194e859312d7517a187f18ef1" }
-tf_observer = { package = "tf_observer", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "005777524e7018e194e859312d7517a187f18ef1" }
-tf_playlist = { package = "tf_playlist", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "005777524e7018e194e859312d7517a187f18ef1" }
-tf_yt = { package = "tf_platform_youtube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "005777524e7018e194e859312d7517a187f18ef1" }
-tf_pt = { package = "tf_platform_peertube", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "005777524e7018e194e859312d7517a187f18ef1" }
-tf_lbry = { package = "tf_platform_lbry", git = "https://github.com/Tubefeeder/tubefeeder-extractor.git", rev = "005777524e7018e194e859312d7517a187f18ef1" }
+tf_core = "0.1.1"
+tf_join = "0.1.1"
+tf_filter = "0.1.1"
+tf_observer = "0.1.1"
+tf_playlist = "0.1.2"
+tf_yt = { package = "tf_platform_youtube", version = "0.1.1" }
+tf_pt = { package = "tf_platform_peertube", version = "0.1.0" }
+tf_lbry = { package = "tf_platform_lbry", version = "0.1.0" }

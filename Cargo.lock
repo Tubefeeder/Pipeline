@@ -1316,8 +1316,9 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "piped"
-version = "0.0.0"
-source = "git+https://github.com/TeamPiped/piped-rust-sdk.git?rev=d33978556893d95a59f246b1e3a04776f5e834b6#d33978556893d95a59f246b1e3a04776f5e834b6"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d63f1f13e917f0ef427475c0e8f604563ce31cd90514e160a52a194218ac6ebf"
 dependencies = [
  "reqwest",
  "serde",
@@ -1865,8 +1866,9 @@ dependencies = [
 
 [[package]]
 name = "tf_core"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1af7f0a9cd265ea6ed14e6a318a48ab0fea7c11a5b6824187791921e20599397"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1880,16 +1882,18 @@ dependencies = [
 
 [[package]]
 name = "tf_filter"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6839f816703c900d17f2b2e0ee7b36ac6e6a9494da507cf82366a5269147f897"
 dependencies = [
  "tf_observer",
 ]
 
 [[package]]
 name = "tf_join"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1fec3f5e6bddfb86b6cef1fce7fe6156148721c8e606583dbda9da15e80aa35d"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1907,13 +1911,15 @@ dependencies = [
 
 [[package]]
 name = "tf_observer"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "69135f8151cd5fd713817c89603725b4bc0dbb97adcc690f4f45c6f7832a620f"
 
 [[package]]
 name = "tf_platform_lbry"
-version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3ac3d52143b035564916e0a5e62ae6eae0bae495d950d85f12956519bc86e371"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1924,8 +1930,9 @@ dependencies = [
 
 [[package]]
 name = "tf_platform_peertube"
-version = "0.0.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba5c92b54c589baa1f74c39d8c03895d9c61615c2c42f66bbf04f750113cfb28"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1936,8 +1943,9 @@ dependencies = [
 
 [[package]]
 name = "tf_platform_youtube"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2748530eae56dcc8a20d38ccc051d72d317c1d27700124004e13b22dfd18b3b3"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1954,8 +1962,9 @@ dependencies = [
 
 [[package]]
 name = "tf_playlist"
-version = "0.1.1"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7b2db6c1bbb57c3562cba7eb5dfa3d786db9a5c9df70edf49bd580b66252ceff"
 dependencies = [
  "log",
  "tf_observer",
@@ -1963,8 +1972,9 @@ dependencies = [
 
 [[package]]
 name = "tf_utils"
-version = "0.1.0"
-source = "git+https://github.com/Tubefeeder/tubefeeder-extractor.git?rev=005777524e7018e194e859312d7517a187f18ef1#005777524e7018e194e859312d7517a187f18ef1"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3fccd53de45b579a6b3ff34e60769b13ec462185b71c7685322fc530c511094"
 dependencies = [
  "async-trait",
  "chrono",
@@ -2142,7 +2152,7 @@ checksum = "59547bce71d9c38b83d9c0e92b6066c4253371f15005def0c30d9657f50c7642"
 
 [[package]]
 name = "tubefeeder"
-version = "1.3.1"
+version = "1.4.0"
 dependencies = [
  "chrono",
  "csv",
