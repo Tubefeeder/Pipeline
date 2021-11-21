@@ -6,5 +6,8 @@
   <gresource prefix="/org/gnome/design/IconLibrary/">
     <file preprocess="xml-stripblanks">data/icons/funnel-symbolic.svg</file>
     <file preprocess="xml-stripblanks">data/icons/library-artists-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">data/icons/clipboard-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">data/icons/arrow1-left-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">data/icons/arrow1-right-symbolic.svg</file>
   </gresource>
 </gresources>

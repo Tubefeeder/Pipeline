@@ -19,6 +19,7 @@
  */
 
 mod csv_file_manager;
+mod downloader;
 mod gui;
 mod player;
 

@@ -20,6 +20,7 @@
 
 use std::sync::{Arc, Mutex};
 
+use crate::downloader::download;
 use crate::gui::feed::date_label::DateLabel;
 use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
 use crate::gui::{get_font_size, FONT_RATIO};
@@ -42,10 +43,14 @@ pub enum FeedListItemMsg {
     Clicked,
     SetPlaying(bool),
     WatchLater,
+    Expand,
+    Clipboard,
+    Download,
 }
 
 pub struct FeedListItemModel {
     entry: AnyVideo,
+    expanded: bool,
     playing: bool,
     relm: Relm<FeedListItem>,
     observer: Arc<Mutex<Box<dyn Observer<VideoEvent> + Send>>>,
@@ -70,6 +75,7 @@ impl Widget for FeedListItem {
         });
         FeedListItemModel {
             entry,
+            expanded: false,
             playing: false,
             relm: relm.clone(),
             observer: Arc::new(Mutex::new(Box::new(FeedListItemObserver { sender }))),
@@ -96,6 +102,27 @@ impl Widget for FeedListItem {
                     .playlist_manager
                     .toggle(&("WATCHLATER".to_string()), &self.model.entry);
             }
+            FeedListItemMsg::Expand => {
+                self.model.expanded = !self.model.expanded;
+                let expand_icon_name = if self.model.expanded {
+                    "arrow1-right-symbolic"
+                } else {
+                    "arrow1-left-symbolic"
+                };
+                self.widgets
+                    .button_expand
+                    .set_image(Some(&gtk::Image::from_icon_name(
+                        Some(expand_icon_name),
+                        gtk::IconSize::LargeToolbar,
+                    )));
+            }
+            FeedListItemMsg::Clipboard => {
+                let clipboard = gtk::Clipboard::get(&gdk::Atom::intern("CLIPBOARD"));
+                // Replace // with / because of simple bug I am too lazy to fix in the youtube-extractor.
+                clipboard.set_text(&self.model.entry.url().replace("//", "/"));
+                clipboard.store();
+            }
+            FeedListItemMsg::Download => download(self.model.entry.clone()),
         }
     }
 
@@ -204,6 +231,25 @@ impl Widget for FeedListItem {
                     },
                     #[name="label_date"]
                     DateLabel(self.model.entry.uploaded().clone()) {}
+                },
+                #[name="button_expand"]
+                gtk::Button {
+                    clicked => FeedListItemMsg::Expand,
+                    image: Some(&gtk::Image::from_icon_name(Some("arrow1-left-symbolic"), gtk::IconSize::LargeToolbar)),
+                },
+                gtk::Box {
+                    visible: self.model.expanded,
+
+                    #[name="button_clipboard"]
+                    gtk::Button {
+                        clicked => FeedListItemMsg::Clipboard,
+                        image: Some(&gtk::Image::from_icon_name(Some("clipboard-symbolic"), gtk::IconSize::LargeToolbar)),
+                    },
+                    #[name="button_download"]
+                    gtk::Button {
+                        clicked => FeedListItemMsg::Download,
+                        image: Some(&gtk::Image::from_icon_name(Some("folder-download-symbolic"), gtk::IconSize::LargeToolbar)),
+                    }
                 },
                 #[name="button_watch_later"]
                 gtk::Button {
