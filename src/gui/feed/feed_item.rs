@@ -119,7 +119,7 @@ impl Widget for FeedListItem {
             FeedListItemMsg::Clipboard => {
                 let clipboard = gtk::Clipboard::get(&gdk::Atom::intern("CLIPBOARD"));
                 // Replace // with / because of simple bug I am too lazy to fix in the youtube-extractor.
-                clipboard.set_text(&self.model.entry.url().replace("//", "/"));
+                clipboard.set_text(&self.model.entry.url().replace("//watch", "/watch"));
                 clipboard.store();
             }
             FeedListItemMsg::Download => download(self.model.entry.clone()),
