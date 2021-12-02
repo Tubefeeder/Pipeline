@@ -10,6 +10,11 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
+	  <release version="v1.5.0" date="2021-12-02">
+		  <description>
+			  <p>Add support for downloading videos and copying the link to clipboard.</p>
+		  </description>
+	  </release>
 	  <release version="v1.4.0" date="2021-10-22">
 		  <description>
 			  <p>Added support for the platforms peertube and lbry.</p>
