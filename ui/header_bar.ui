@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+
+  <object class="AdwHeaderBar" id="header_bar">
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+    <property name="halign">GTK_ALIGN_FILL</property>
+    <property name="valign">GTK_ALIGN_FILL</property>
+
+    <property name="title-widget">
+      <object class="AdwWindowTitle">
+        <!-- TODO: Change dynamically -->
+        <property name="title">Tubefeeder</property>
+      </object>
+    </property>
+
+    <child>
+      <object class="GtkButton" id="btn_refresh">
+        <child>
+          <object class="GtkBox" id="box_refresh">
+            <child>
+              <object class="GtkSpinner" id="loading_spinner">
+                <property name="spinning">True</property>
+                <property name="visible">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage" id="image_refresh">
+                <property name="icon-name">view-refresh-symbolic</property>
+                <property name="visible">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <!-- TODO: Other Buttons -->
+  </object>
+</interface>

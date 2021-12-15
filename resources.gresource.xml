@@ -2,6 +2,11 @@
 <gresources>
   <gresource prefix="/">
     <file alias="icon.png">packaging/tubefeeder.png</file>
+
+    <file preprocess="xml-stripblanks">ui/window.ui</file>
+    <file preprocess="xml-stripblanks">ui/header_bar.ui</file>
+    <file preprocess="xml-stripblanks">ui/feed_page.ui</file>
+    <file preprocess="xml-stripblanks">ui/feed_item.ui</file>
   </gresource>
   <gresource prefix="/org/gnome/design/IconLibrary/">
     <file preprocess="xml-stripblanks">data/icons/funnel-symbolic.svg</file>

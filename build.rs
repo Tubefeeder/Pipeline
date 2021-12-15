@@ -3,5 +3,13 @@ fn main() {
 
     std::process::Command::new("glib-compile-resources")
         .arg("resources.gresource.xml")
-        .spawn().unwrap();
+        .spawn()
+        .unwrap();
+
+    println!("cargo:rerun-if-changed=ui");
+
+    std::process::Command::new("glib-compile-resources")
+        .arg("resources.gresource.xml")
+        .spawn()
+        .unwrap();
 }

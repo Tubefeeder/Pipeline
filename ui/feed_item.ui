@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+
+  <object class="GtkListBoxRow" id="root">
+    <property name="hexpand">True</property>
+    <property name="vexpand">False</property>
+    <property name="halign">GTK_ALIGN_FILL</property>
+    <property name="valign">GTK_ALIGN_FILL</property>
+
+    <child>
+      <object class="GtkBox" id="box_content">
+        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+        <property name="spacing">0</property>
+
+        <child>
+            <object class="GtkImage" id="playing">
+                <property name="icon-name">media-playback-start-symbolic</property>
+            </object>
+        </child>
+
+        <child>
+            <object class="GtkBox">
+                <property name="hexpand">False</property>
+                <property name="vexpand">False</property>
+                <property name="halign">GTK_ALIGN_FILL</property>
+                <property name="valign">GTK_ALIGN_FILL</property>
+                <property name="width-request">120</property>
+                <property name="height-request">90</property>
+                <property name="spacing">0</property>
+                <child>
+                    <object class="GtkImage" id="thumbnail">
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="halign">GTK_ALIGN_FILL</property>
+                        <property name="valign">GTK_ALIGN_FILL</property>
+                    </object>
+                </child>
+            </object>
+        </child>
+
+        <child>
+            <object class="GtkBox" id="box_info">
+                <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+                <property name="spacing">4</property>
+
+                <child>
+                    <object class="GtkLabel" id="label_title">
+                        <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
+                        <property name="wrap">true</property>
+                        <property name="wrap-mode">PANGO_WRAP_WORD</property>
+                        <property name="lines">2</property>
+                        <property name="justify">GTK_JUSTIFY_LEFT</property>
+                    </object>
+                <!-- TODO: Other Info -->
+                </child>
+            </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

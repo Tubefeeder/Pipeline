@@ -1,4 +1,5 @@
 .idea
+tubefeeder_derive/target
 /target
 *~*
 packaging/AppImage/Tubefeeder-latest-*.AppImage

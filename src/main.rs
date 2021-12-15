@@ -22,14 +22,28 @@ mod csv_file_manager;
 mod gui;
 mod player;
 
-use crate::gui::Win;
+use relm::RelmApp;
 
-use relm::Widget;
+use crate::gui::AppModel;
 
+fn init_resource() {
+    let res_bytes = include_bytes!("../resources.gresource");
+
+    let gbytes = glib::Bytes::from_static(res_bytes.as_ref());
+    let resource = gio::Resource::from_data(&gbytes).unwrap();
+
+    gio::resources_register(&resource);
+}
 #[tokio::main]
 async fn main() {
     env_logger::init();
+    let _ = gtk::init();
+    let _ = libadwaita::init();
+    init_resource();
+
     let joiner = tf_join::Joiner::new();
 
-    Win::run(joiner).unwrap();
+    let model = AppModel::new(joiner);
+    let app = RelmApp::new(model);
+    app.run()
 }

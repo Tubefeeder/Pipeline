@@ -18,216 +18,82 @@
  *
  */
 
-use std::sync::{Arc, Mutex};
+use std::path::PathBuf;
 
-use crate::gui::feed::date_label::DateLabel;
-use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
-use crate::gui::{get_font_size, FONT_RATIO};
-use crate::player::play;
-
+use gdk::cairo::Path;
+use gdk_pixbuf::Pixbuf;
+use gtk::prelude::WidgetExt;
+use relm::factory::{FactoryPrototype, FactoryVec};
 use tf_core::{Video, VideoEvent};
 use tf_join::AnyVideo;
-use tf_observer::{Observable, Observer};
-use tf_playlist::PlaylistManager;
+use tf_observer::Observer;
+use tubefeeder_derive::FromUiResource;
 
-use gtk::prelude::*;
-use gtk::{Align, Justification, Orientation, PackType};
-use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
-use relm::{Channel, Relm, Sender, Widget};
-use relm_derive::{widget, Msg};
+use super::FeedPageMsg;
 
-#[derive(Msg)]
-pub enum FeedListItemMsg {
-    SetImage,
-    Clicked,
-    SetPlaying(bool),
-    WatchLater,
+pub struct VideoFactory {
+    video: AnyVideo,
+    thumbnail: Option<PathBuf>,
+    _update: usize,
 }
 
-pub struct FeedListItemModel {
-    entry: AnyVideo,
-    playing: bool,
-    relm: Relm<FeedListItem>,
-    observer: Arc<Mutex<Box<dyn Observer<VideoEvent> + Send>>>,
-    playlist_manager: PlaylistManager<String, AnyVideo>,
-
-    client: reqwest::Client,
-}
-
-#[widget]
-impl Widget for FeedListItem {
-    fn model(
-        relm: &Relm<Self>,
-        (entry, client, playlist_manager): (
-            AnyVideo,
-            reqwest::Client,
-            PlaylistManager<String, AnyVideo>,
-        ),
-    ) -> FeedListItemModel {
-        let relm_clone = relm.clone();
-        let (_channel, sender) = Channel::new(move |msg| {
-            relm_clone.stream().emit(msg);
-        });
-        FeedListItemModel {
-            entry,
-            playing: false,
-            relm: relm.clone(),
-            observer: Arc::new(Mutex::new(Box::new(FeedListItemObserver { sender }))),
-            playlist_manager,
-
-            client,
+impl VideoFactory {
+    pub fn new(v: AnyVideo) -> Self {
+        VideoFactory {
+            video: v,
+            thumbnail: None,
+            _update: 0,
         }
     }
 
-    fn update(&mut self, event: FeedListItemMsg) {
-        match event {
-            FeedListItemMsg::SetImage => {
-                self.components.thumbnail.emit(ThumbnailMsg::SetImage);
-            }
-            FeedListItemMsg::SetPlaying(playing) => {
-                self.model.playing = playing;
-                self.widgets.box_content.show();
-            }
-            FeedListItemMsg::Clicked => {
-                play(self.model.entry.clone());
-            }
-            FeedListItemMsg::WatchLater => {
-                self.model
-                    .playlist_manager
-                    .toggle(&("WATCHLATER".to_string()), &self.model.entry);
-            }
-        }
+    pub fn set_thumbnail(&mut self, thumbnail: PathBuf) {
+        self.thumbnail = Some(thumbnail);
     }
 
-    fn init_view(&mut self) {
-        self.model
-            .entry
-            .attach(Arc::downgrade(&self.model.observer));
-        self.widgets.box_content.set_child_packing(
-            &self.widgets.button_watch_later,
-            false,
-            true,
-            0,
-            PackType::End,
-        );
-
-        self.widgets.box_content.set_child_packing(
-            &self.widgets.box_info,
-            true,
-            true,
-            0,
-            PackType::Start,
-        );
-
-        let font_size = get_font_size();
-
-        let title_attr_list = AttrList::new();
-        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE));
-        self.widgets
-            .label_title
-            .set_attributes(Some(&title_attr_list));
-
-        let small_text_attr_list = AttrList::new();
-        small_text_attr_list.insert(Attribute::new_size(
-            (FONT_RATIO * (font_size * pango::SCALE) as f32) as i32,
-        ));
-
-        self.widgets
-            .label_author
-            .set_attributes(Some(&small_text_attr_list));
-        self.widgets
-            .label_platform
-            .set_attributes(Some(&small_text_attr_list));
-        self.widgets
-            .label_date
-            .set_attributes(Some(&small_text_attr_list));
-
-        self.widgets.playing.set_from_icon_name(
-            Some("media-playback-start-symbolic"),
-            gtk::IconSize::LargeToolbar,
-        );
-
-        self.model
-            .relm
-            .stream()
-            .emit(FeedListItemMsg::SetPlaying(self.model.entry.playing()));
+    pub fn get(&self) -> AnyVideo {
+        self.video.clone()
     }
 
-    view! {
-        #[name="root"]
-        gtk::ListBoxRow {
-            #[name="box_content"]
-            gtk::Box {
-                orientation: Orientation::Horizontal,
-                spacing: 8,
-
-                #[name="playing"]
-                gtk::Image {
-                    visible: self.model.playing
-                },
-
-                #[name="thumbnail"]
-                Thumbnail(self.model.entry.clone(), self.model.client.clone()),
-
-                #[name="box_info"]
-                gtk::Box {
-                    orientation: Orientation::Vertical,
-                    spacing: 4,
-
-                    #[name="label_title"]
-                    gtk::Label {
-                        text: &self.model.entry.title(),
-                        ellipsize: EllipsizeMode::End,
-                        wrap: true,
-                        wrap_mode: WrapMode::Word,
-                        lines: 2,
-                        justify: Justification::Left,
-                    },
-                    gtk::Box {
-                        spacing: 4,
-                        #[name="label_author"]
-                        gtk::Label {
-                            text: &self.model.entry.subscription().to_string(),
-                            ellipsize: EllipsizeMode::End,
-                            wrap: true,
-                            wrap_mode: WrapMode::Word,
-                            halign: Align::Start
-                        },
-                        #[name="label_platform"]
-                        gtk::Label {
-                            text: &("(".to_owned() + &self.model.entry.platform().to_string() + ")"),
-                            ellipsize: EllipsizeMode::End,
-                            wrap: true,
-                            wrap_mode: WrapMode::Word,
-                            halign: Align::Start
-                        },
-                    },
-                    #[name="label_date"]
-                    DateLabel(self.model.entry.uploaded().clone()) {}
-                },
-                #[name="button_watch_later"]
-                gtk::Button {
-                    clicked => FeedListItemMsg::WatchLater,
-                    image: Some(&gtk::Image::from_icon_name(Some("appointment-new-symbolic"), gtk::IconSize::LargeToolbar)),
-                }
-            }
-        }
+    pub fn update(&mut self) {
+        self._update = self._update.wrapping_add(1)
     }
 }
 
-pub struct FeedListItemObserver {
-    sender: Sender<FeedListItemMsg>,
+#[derive(FromUiResource, Debug)]
+pub struct VideoItemWidgets {
+    root: gtk::ListBoxRow,
+    box_content: gtk::Box,
+    playing: gtk::Image,
+    thumbnail: gtk::Image,
+    box_info: gtk::Box,
+    label_title: gtk::Label,
 }
 
-impl Observer<VideoEvent> for FeedListItemObserver {
-    fn notify(&mut self, message: VideoEvent) {
-        match message {
-            VideoEvent::Play => {
-                let _ = self.sender.send(FeedListItemMsg::SetPlaying(true));
-            }
-            VideoEvent::Stop => {
-                let _ = self.sender.send(FeedListItemMsg::SetPlaying(false));
-            }
+impl FactoryPrototype for VideoFactory {
+    type Factory = FactoryVec<Self>;
+    type Widgets = VideoItemWidgets;
+    type Root = gtk::ListBoxRow;
+    type View = gtk::ListBox;
+    type Msg = FeedPageMsg;
+
+    fn generate(&self, key: &usize, _sender: glib::Sender<FeedPageMsg>) -> Self::Widgets {
+        let widgets = VideoItemWidgets::from_resource("/ui/feed_item.ui");
+        self.update(key, &widgets);
+        widgets
+    }
+
+    fn position(&self, _key: &<Self::Factory as relm::factory::Factory<Self, Self::View>>::Key) {}
+
+    fn update(&self, _key: &usize, widgets: &Self::Widgets) {
+        widgets.label_title.set_text(&self.video.title());
+        widgets.playing.set_visible(self.video.playing());
+
+        if let Some(thumbnail) = &self.thumbnail {
+            widgets.thumbnail.set_from_file(thumbnail);
         }
+    }
+
+    fn get_root(widgets: &Self::Widgets) -> &Self::Root {
+        &widgets.root
     }
 }

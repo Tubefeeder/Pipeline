@@ -18,9 +18,9 @@
  *
  */
 
-mod date_label;
+// mod date_label;
 pub(crate) mod feed_item;
 mod feed_page;
-mod thumbnail;
+// mod thumbnail;
 
-pub use feed_page::{FeedPage, FeedPageMsg};
+pub use feed_page::{FeedPageModel, FeedPageMsg};

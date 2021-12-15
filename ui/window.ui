@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+
+  <object class="AdwApplicationWindow" id="window">
+    <property name="can-focus">False</property>
+    <property name="title">Tubefeeder</property>
+    <property name="height-request">800</property>
+    <property name="width-request">500</property>
+
+    <child>
+      <object class="GtkBox" id="view_switcher_box">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+
+        <child>
+          <object class="GtkBox" id="header_bar">
+            <property name="hexpand">True</property>
+            <property name="vexpand">False</property>
+            <property name="halign">GTK_ALIGN_FILL</property>
+            <property name="valign">GTK_ALIGN_FILL</property>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+            <child>
+              <object class="GtkBox" id="error_label"/>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="AdwViewStack" id="application_stack">
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">Feed</property>
+                <property name="title">Feed</property>
+                <property name="icon-name">go-home-symbolic</property>
+                <property name="child">
+                  <object class="GtkBox" id="feed_page">
+                    <property name="vexpand">True</property>
+                    <property name="valign">GTK_ALIGN_FILL</property>
+                    <property name="hexpand">True</property>
+                    <property name="halign">GTK_ALIGN_FILL</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">Watch Later</property>
+                <property name="title">Watch Later</property>
+                <property name="icon-name">alarm-symbolic</property>
+                <property name="child">
+                  <object class="GtkBox" id="watch_later_page"/>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">Filters</property>
+                <property name="title">Filters</property>
+                <property name="icon-name">funnel-symbolic</property>
+                <property name="child">
+                  <object class="GtkBox" id="filter_page"/>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">Subscriptions</property>
+                <property name="title">Subscriptions</property>
+                <property name="icon-name">library-artists-symbolic</property>
+                <property name="child">
+                  <object class="GtkBox" id="subscription_page"/>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class = "AdwViewSwitcher">
+              <property name="hexpand">True</property>
+              <property name="vexpand">False</property>
+              <property name="halign">GTK_ALIGN_FILL</property>
+              <property name="valign">GTK_ALIGN_END</property>
+              <property name="stack">application_stack</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
