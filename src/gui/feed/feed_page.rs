@@ -158,7 +158,7 @@ impl Widgets<FeedPageModel, AppModel> for FeedPageWidgets {
 
     fn init_view(
         _model: &FeedPageModel,
-        _parent_widgets: &AppWidgets,
+        _components: &FeedPageComponents,
         sender: relm::Sender<FeedPageMsg>,
     ) -> Self {
         let widgets = FeedPageWidgets::from_resource("/ui/feed_page.ui");
@@ -183,7 +183,6 @@ impl Widgets<FeedPageModel, AppModel> for FeedPageWidgets {
 impl Components<FeedPageModel> for FeedPageComponents {
     fn init_components(
         parent_model: &FeedPageModel,
-        _parent_widget: &FeedPageWidgets,
         parent_sender: relm::Sender<FeedPageMsg>,
     ) -> Self {
         FeedPageComponents {
@@ -191,6 +190,8 @@ impl Components<FeedPageModel> for FeedPageComponents {
             thumbnail: RelmMsgHandler::new(parent_model, parent_sender),
         }
     }
+
+    fn connect_parent(&mut self, _parent_widgets: &FeedPageWidgets) {}
 }
 
 pub struct FeedListItemObserver {

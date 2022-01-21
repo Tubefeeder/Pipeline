@@ -76,24 +76,24 @@ impl FactoryPrototype for VideoFactory {
     type View = gtk::ListBox;
     type Msg = FeedPageMsg;
 
-    fn generate(&self, key: &usize, _sender: glib::Sender<FeedPageMsg>) -> Self::Widgets {
+    fn init_view(&self, key: &usize, _sender: relm::Sender<FeedPageMsg>) -> Self::Widgets {
         let widgets = VideoItemWidgets::from_resource("/ui/feed_item.ui");
-        self.update(key, &widgets);
+        self.view(key, &widgets);
         widgets
     }
 
     fn position(&self, _key: &<Self::Factory as relm::factory::Factory<Self, Self::View>>::Key) {}
 
-    fn update(&self, _key: &usize, widgets: &Self::Widgets) {
+    fn view(&self, _key: &usize, widgets: &Self::Widgets) {
         widgets.label_title.set_text(&self.video.title());
         widgets.playing.set_visible(self.video.playing());
 
         if let Some(thumbnail) = &self.thumbnail {
-            widgets.thumbnail.set_from_file(thumbnail);
+            widgets.thumbnail.set_from_file(Some(thumbnail));
         }
     }
 
-    fn get_root(widgets: &Self::Widgets) -> &Self::Root {
+    fn root_widget(widgets: &Self::Widgets) -> &Self::Root {
         &widgets.root
     }
 }

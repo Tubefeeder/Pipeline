@@ -116,8 +116,8 @@ impl ComponentUpdate<AppModel> for HeaderBarModel {
         &mut self,
         msg: HeaderBarMsg,
         components: &(),
-        sender: glib::Sender<HeaderBarMsg>,
-        parent_sender: glib::Sender<<AppModel as Model>::Msg>,
+        sender: relm::Sender<HeaderBarMsg>,
+        parent_sender: relm::Sender<<AppModel as Model>::Msg>,
     ) {
         match msg {
             HeaderBarMsg::SetPage(p) => {
@@ -139,8 +139,8 @@ impl Widgets<HeaderBarModel, AppModel> for HeaderBarWidgets {
 
     fn init_view(
         _model: &HeaderBarModel,
-        _parent_widgets: &AppWidgets,
-        sender: glib::Sender<HeaderBarMsg>,
+        _parent_widgets: &(),
+        sender: relm::Sender<HeaderBarMsg>,
     ) -> Self {
         let widgets = HeaderBarWidgets::from_resource("/ui/header_bar.ui");
         widgets.btn_refresh.connect_clicked(move |_| {
@@ -156,7 +156,7 @@ impl Widgets<HeaderBarModel, AppModel> for HeaderBarWidgets {
         self.header_bar.clone()
     }
 
-    fn view(&mut self, model: &HeaderBarModel, sender: glib::Sender<HeaderBarMsg>) {
+    fn view(&mut self, model: &HeaderBarModel, sender: relm::Sender<HeaderBarMsg>) {
         // Unwrap is garanteed not to fail as `title_widget` was set in `init_view`.
         let label_opt: Result<gtk::Label, _> =
             self.header_bar.title_widget().unwrap().dynamic_cast();
@@ -164,8 +164,7 @@ impl Widgets<HeaderBarModel, AppModel> for HeaderBarWidgets {
             label.set_text(&String::from(model.page.clone()));
         }
         self.loading_spinner.set_visible(model.loading);
-        self.loading_spinner.set_spinning(model.loading);
-        self.image_refresh.set_visible(!model.loading);
+        self.btn_refresh.set_visible(!model.loading);
     }
 }
 

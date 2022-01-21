@@ -57,7 +57,7 @@ pub fn get_font_size() -> i32 {
 }
 
 fn init_icons<P: IsA<gdk::Display>>(display: &P) {
-    let icon_theme = gtk::IconTheme::for_display(display).unwrap();
+    let icon_theme = gtk::IconTheme::for_display(display);
 
     icon_theme.add_resource_path("/");
     icon_theme.add_resource_path("/org/gnome/design/IconLibrary/data/icons/");
@@ -154,7 +154,7 @@ impl AppUpdate for AppModel {
         &mut self,
         msg: Self::Msg,
         components: &Self::Components,
-        _sender: glib::Sender<Self::Msg>,
+        _sender: relm::Sender<Self::Msg>,
     ) -> bool {
         log::debug!("Got Message {:?}", msg);
         match msg {
@@ -173,9 +173,19 @@ impl AppUpdate for AppModel {
 impl Widgets<AppModel, ()> for AppWidgets {
     type Root = gtk::ApplicationWindow;
 
-    fn init_view(_model: &AppModel, _parent_widgets: &(), _sender: glib::Sender<AppMsg>) -> Self {
+    fn init_view(
+        _model: &AppModel,
+        components: &AppComponents,
+        _sender: relm::Sender<AppMsg>,
+    ) -> Self {
         let widgets = AppWidgets::from_resource("/ui/window.ui");
         init_icons(&widgets.window.display());
+
+        widgets
+            .header_bar
+            .append(components.header_bar.root_widget());
+        widgets.feed_page.append(components.feed_page.root_widget());
+
         widgets
     }
 
@@ -183,27 +193,20 @@ impl Widgets<AppModel, ()> for AppWidgets {
         self.window.clone()
     }
 
-    fn view(&mut self, _model: &AppModel, _sender: glib::Sender<AppMsg>) {
+    fn view(&mut self, _model: &AppModel, _sender: relm::Sender<AppMsg>) {
         // TODO
-    }
-
-    fn connect_components(&self, _model: &AppModel, components: &AppComponents) {
-        self.header_bar.append(components.header_bar.root_widget());
-        self.feed_page.append(components.feed_page.root_widget());
     }
 }
 
 impl Components<AppModel> for AppComponents {
-    fn init_components(
-        parent_model: &AppModel,
-        parent_widget: &AppWidgets,
-        parent_sender: glib::Sender<AppMsg>,
-    ) -> Self {
+    fn init_components(parent_model: &AppModel, parent_sender: relm::Sender<AppMsg>) -> Self {
         AppComponents {
-            header_bar: RelmComponent::new(parent_model, parent_widget, parent_sender.clone()),
-            feed_page: RelmComponent::new(parent_model, parent_widget, parent_sender),
+            header_bar: RelmComponent::new(parent_model, parent_sender.clone()),
+            feed_page: RelmComponent::new(parent_model, parent_sender),
         }
     }
+
+    fn connect_parent(&mut self, _parent_widgets: &AppWidgets) {}
 }
 
 impl AppModel {
