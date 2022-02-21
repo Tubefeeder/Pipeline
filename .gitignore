@@ -8,3 +8,4 @@ packaging/AppImage/libapprun_hooks.so
 packaging/AppImage/excludelist
 packaging/AppImage/appdir-lint.sh
 resources.gresource
+.cargo

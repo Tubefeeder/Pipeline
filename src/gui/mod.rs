@@ -18,14 +18,9 @@
  *
  */
 
-mod app;
-mod error_label;
-mod feed;
-mod filter;
-mod header_bar;
-mod lazy_list;
-mod playlist;
-mod subscriptions;
-
-pub use app::Win;
-use app::{get_font_size, FONT_RATIO};
+mod feed_item;
+mod feed_item_object;
+mod feed_page;
+mod thumbnail;
+mod watch_later;
+pub mod window;

@@ -18,18 +18,20 @@
  */
 
 use std::{
+    fmt::Display,
     process::{Command, Stdio},
     thread,
 };
 
-use tf_core::Video;
-use tf_join::AnyVideo;
-
-pub fn play(video: AnyVideo) {
+pub fn play<
+    S: 'static + AsRef<str> + Display + std::convert::AsRef<std::ffi::OsStr> + std::marker::Send,
+    F: Fn() + std::marker::Send + 'static,
+>(
+    url: S,
+    callback: F,
+) {
     thread::spawn(move || {
-        log::debug!("Playing video with title: {}", video.title());
-        log::debug!("Playing video with url: {}", video.url());
-        video.play();
+        log::debug!("Playing video with url: {}", url);
         let player_str = std::env::var("PLAYER").unwrap_or("mpv --ytdl".to_string());
 
         let mut player_iter = player_str.split(" ");
@@ -50,14 +52,14 @@ pub fn play(video: AnyVideo) {
 
         let _ = Command::new(&player)
             .args(args)
-            .arg(video.url())
+            .arg(url)
             .stdout(stdout)
             .stderr(stderr)
             .stdin(Stdio::null())
             .spawn()
             .unwrap()
             .wait();
-        log::debug!("Stopped video with title: {}", video.title());
-        video.stop();
+
+        callback();
     });
 }
