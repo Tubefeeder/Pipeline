@@ -20,7 +20,8 @@
 
 mod feed_item;
 mod feed_item_object;
-mod feed_page;
+mod feed_list;
 mod thumbnail;
+mod utility;
 mod watch_later;
 pub mod window;

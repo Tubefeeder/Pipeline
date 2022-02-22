@@ -78,7 +78,7 @@ pub mod imp {
 
     use crate::csv_file_manager::CsvFileManager;
     use crate::gui::feed_item_object::VideoObject;
-    use crate::gui::feed_page::FeedPage;
+    use crate::gui::feed_list::FeedList;
     use crate::gui::watch_later::WatchLaterPage;
 
     use super::setup_joiner;
@@ -93,7 +93,7 @@ pub mod imp {
         #[template_child]
         loading_spinner: TemplateChild<gtk::Spinner>,
         #[template_child]
-        pub(super) feed_page: TemplateChild<FeedPage>,
+        pub(super) feed_page: TemplateChild<FeedList>,
         #[template_child]
         pub(super) watchlater_page: TemplateChild<WatchLaterPage>,
 

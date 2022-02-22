@@ -12,16 +12,16 @@ use tf_playlist::PlaylistManager;
 
 use super::feed_item_object::VideoObject;
 
+const LOAD_COUNT: usize = 10;
+
 gtk::glib::wrapper! {
-    pub struct FeedPage(ObjectSubclass<imp::FeedPage>)
+    pub struct FeedList(ObjectSubclass<imp::FeedList>)
         @extends gtk::Box, gtk::Widget,
         @implements gtk::gio::ActionGroup, gtk::gio::ActionMap, gtk::Accessible, gtk::Buildable,
             gtk::ConstraintTarget;
 }
 
-const LOAD_COUNT: usize = 10;
-
-impl FeedPage {
+impl FeedList {
     fn add_actions(&self) {
         let action_more = SimpleAction::new("more", None);
 
@@ -106,8 +106,8 @@ pub mod imp {
     use crate::gui::feed_item_object::VideoObject;
 
     #[derive(CompositeTemplate, Default)]
-    #[template(resource = "/ui/feed_page.ui")]
-    pub struct FeedPage {
+    #[template(resource = "/ui/feed_list.ui")]
+    pub struct FeedList {
         #[template_child]
         pub(super) feed_list: TemplateChild<gtk::ListView>,
         #[template_child]
@@ -120,7 +120,7 @@ pub mod imp {
         pub(super) playlist_manager: RefCell<Option<PlaylistManager<String, AnyVideo>>>,
     }
 
-    impl FeedPage {
+    impl FeedList {
         pub(super) fn setup(&self) {
             let model = gtk::gio::ListStore::new(VideoObject::static_type());
             let selection_model = gtk::NoSelection::new(Some(&model));
@@ -159,9 +159,9 @@ pub mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for FeedPage {
-        const NAME: &'static str = "TFFeedPage";
-        type Type = super::FeedPage;
+    impl ObjectSubclass for FeedList {
+        const NAME: &'static str = "TFFeedList";
+        type Type = super::FeedList;
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
@@ -173,13 +173,13 @@ pub mod imp {
         }
     }
 
-    impl ObjectImpl for FeedPage {
+    impl ObjectImpl for FeedList {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
             obj.add_actions();
         }
     }
 
-    impl WidgetImpl for FeedPage {}
-    impl BoxImpl for FeedPage {}
+    impl WidgetImpl for FeedList {}
+    impl BoxImpl for FeedList {}
 }

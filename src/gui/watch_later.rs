@@ -37,13 +37,13 @@ pub mod imp {
     use tf_playlist::PlaylistManager;
 
     use crate::gui::feed_item_object::VideoObject;
-    use crate::gui::feed_page::FeedPage;
+    use crate::gui::feed_list::FeedList;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/ui/watch_later.ui")]
     pub struct WatchLaterPage {
         #[template_child]
-        pub(super) feed_page: TemplateChild<FeedPage>,
+        pub(super) feed_page: TemplateChild<FeedList>,
 
         pub(super) playlist_manager: RefCell<Option<PlaylistManager<String, AnyVideo>>>,
 

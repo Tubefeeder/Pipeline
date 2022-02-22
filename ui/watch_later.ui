@@ -9,7 +9,7 @@
     <property name="hexpand">True</property>
     <property name="halign">GTK_ALIGN_FILL</property>
     <child>
-      <object class="TFFeedPage" id="feed_page">
+      <object class="TFFeedList" id="feed_page">
       </object>
     </child>
   </template>

@@ -38,6 +38,7 @@ pub mod imp {
 
     use crate::gui::feed_item_object::VideoObject;
     use crate::gui::thumbnail::Thumbnail;
+    use crate::gui::utility::Utility;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/ui/feed_item.ui")]
@@ -87,6 +88,7 @@ pub mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
+            Utility::bind_template_callbacks(klass);
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {
@@ -117,69 +119,8 @@ pub mod imp {
                 "video" => {
                     let value: Option<VideoObject> =
                         value.get().expect("Property video of incorrect type");
-
-                    if let Some(video) = &value {
-                        video
-                            .bind_property("title", &self.label_title.get(), "label")
-                            .transform_to(|_, value| {
-                                let val: Option<String> =
-                                    value.get().expect("The title must be a optional string");
-                                Some(val.map(|v| v.replace("&", "&amp;")).to_value())
-                            })
-                            .flags(BindingFlags::SYNC_CREATE)
-                            .build();
-                        video
-                            .bind_property("author", &self.label_author.get(), "label")
-                            .transform_to(|_, value| {
-                                let val: Option<String> =
-                                    value.get().expect("The author must be a optional string");
-                                Some(
-                                    val.map(|v| {
-                                        format!("<small>{}</small>", v.replace("&", "&amp;"))
-                                    })
-                                    .to_value(),
-                                )
-                            })
-                            .flags(BindingFlags::SYNC_CREATE)
-                            .build();
-                        video
-                            .bind_property("platform", &self.label_platform.get(), "label")
-                            .transform_to(|_, value| {
-                                let val: Option<String> =
-                                    value.get().expect("The platform must be a optional string");
-                                Some(
-                                    val.map(|v| {
-                                        format!("<small>{}</small>", v.replace("&", "&amp;"))
-                                    })
-                                    .to_value(),
-                                )
-                            })
-                            .flags(BindingFlags::SYNC_CREATE)
-                            .build();
-                        video
-                            .bind_property("date", &self.label_date.get(), "label")
-                            .transform_to(|_, value| {
-                                let val: Option<String> =
-                                    value.get().expect("The date must be a optional string");
-                                Some(
-                                    val.map(|v| {
-                                        format!("<small>{}</small>", v.replace("&", "&amp;"))
-                                    })
-                                    .to_value(),
-                                )
-                            })
-                            .flags(BindingFlags::SYNC_CREATE)
-                            .build();
-                        video
-                            .bind_property("playing", &self.playing.get(), "visible")
-                            .flags(BindingFlags::SYNC_CREATE)
-                            .build();
-
-                        self.thumbnail.get().set_property("video", video);
-
-                        self.video.replace(value);
-                        self.bind_watch_later();
-                    }
+                    self.video.replace(value);
+                    self.bind_watch_later();
                 }
                 _ => unimplemented!(),
             }

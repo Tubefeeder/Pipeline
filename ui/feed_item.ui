@@ -11,10 +11,20 @@
     <child>
       <object class="GtkImage" id="playing">
         <property name="icon-name">media-playback-start-symbolic</property>
+        <binding name="visible">
+          <lookup name="playing">
+            <lookup name="video" type="TFFeedItem">
+            </lookup>
+          </lookup>
+        </binding>
       </object>
     </child>
     <child>
       <object class="TFThumbnail" id="thumbnail">
+        <binding name="video">
+          <lookup name="video" type="TFFeedItem">
+          </lookup>
+        </binding>
       </object>
     </child>
     <child>
@@ -25,17 +35,30 @@
         <property name="spacing">0</property>
         <child>
           <object class="GtkLabel" id="label_title">
+            <binding name="label">
+              <lookup name="title">
+                <lookup name="video" type="TFFeedItem">
+                </lookup>
+              </lookup>
+            </binding>
             <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
             <property name="wrap">true</property>
             <property name="wrap-mode">PANGO_WRAP_WORD</property>
             <property name="lines">2</property>
             <property name="justify">GTK_JUSTIFY_LEFT</property>
             <property name="halign">GTK_ALIGN_START</property>
-            <property name="use-markup">true</property>
           </object>
         </child>
         <child>
           <object class="GtkLabel" id="label_author">
+            <binding name="label">
+                <closure type="gchararray" function="small">
+                    <lookup name="author">
+                      <lookup name="video" type="TFFeedItem">
+                      </lookup>
+                    </lookup>
+                </closure>
+            </binding>
             <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
             <property name="wrap">true</property>
             <property name="wrap-mode">PANGO_WRAP_WORD</property>
@@ -47,6 +70,14 @@
         </child>
         <child>
           <object class="GtkLabel" id="label_platform">
+            <binding name="label">
+                <closure type="gchararray" function="small">
+                    <lookup name="platform">
+                      <lookup name="video" type="TFFeedItem">
+                      </lookup>
+                    </lookup>
+                </closure>
+            </binding>
             <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
             <property name="wrap">true</property>
             <property name="wrap-mode">PANGO_WRAP_WORD</property>
@@ -58,6 +89,14 @@
         </child>
         <child>
           <object class="GtkLabel" id="label_date">
+            <binding name="label">
+                <closure type="gchararray" function="small">
+                    <lookup name="date">
+                      <lookup name="video" type="TFFeedItem">
+                      </lookup>
+                    </lookup>
+                </closure>
+            </binding>
             <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
             <property name="wrap">true</property>
             <property name="wrap-mode">PANGO_WRAP_WORD</property>

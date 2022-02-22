@@ -21,8 +21,9 @@
 
             <property name="title-widget">
               <object class="AdwWindowTitle">
-                <!-- TODO: Change dynamically -->
-                <property name="title">Tubefeeder</property>
+                <binding name="title">
+                    <lookup name="visible-child-name">application_stack</lookup>
+                </binding>
               </object>
             </property>
 
@@ -58,7 +59,7 @@
                 <property name="title">Feed</property>
                 <property name="icon-name">go-home-symbolic</property>
                 <property name="child">
-                  <object class="TFFeedPage" id="feed_page">
+                  <object class="TFFeedList" id="feed_page">
                   </object>
                 </property>
               </object>
