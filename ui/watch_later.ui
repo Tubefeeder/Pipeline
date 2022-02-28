@@ -9,7 +9,26 @@
     <property name="hexpand">True</property>
     <property name="halign">GTK_ALIGN_FILL</property>
     <child>
-      <object class="TFFeedList" id="feed_page">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="AdwHeaderBar">
+            <property name="hexpand">True</property>
+            <property name="vexpand">False</property>
+            <property name="halign">GTK_ALIGN_FILL</property>
+            <property name="valign">GTK_ALIGN_START</property>
+
+            <property name="title-widget">
+              <object class="AdwWindowTitle">
+                <property name="title">Watch Later</property>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="TFFeedList" id="feed_page">
+          </object>
+        </child>
       </object>
     </child>
   </template>

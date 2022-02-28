@@ -91,7 +91,7 @@ pub mod imp {
     use gtk::CompositeTemplate;
     use once_cell::sync::Lazy;
 
-    use crate::gui::feed_item_object::VideoObject;
+    use crate::gui::feed::feed_item_object::VideoObject;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/ui/thumbnail.ui")]

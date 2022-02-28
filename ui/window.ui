@@ -13,45 +13,6 @@
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
-          <object class="AdwHeaderBar">
-            <property name="hexpand">True</property>
-            <property name="vexpand">False</property>
-            <property name="halign">GTK_ALIGN_FILL</property>
-            <property name="valign">GTK_ALIGN_START</property>
-
-            <property name="title-widget">
-              <object class="AdwWindowTitle">
-                <binding name="title">
-                    <lookup name="visible-child-name">application_stack</lookup>
-                </binding>
-              </object>
-            </property>
-
-            <child>
-              <object class="GtkBox" id="box_refresh">
-                <child>
-                  <object class="GtkButton" id="btn_reload">
-                    <property name="visible">True</property>
-                    <property name="action-name">win.reload</property>
-                    <child>
-                      <object class="GtkImage" id="image_refresh">
-                        <property name="icon-name">view-refresh-symbolic</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkSpinner" id="loading_spinner">
-                    <property name="visible">False</property>
-                    <property name="spinning">True</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-
-        <child>
           <object class="AdwViewStack" id="application_stack">
             <child>
               <object class="AdwViewStackPage">
@@ -59,7 +20,7 @@
                 <property name="title">Feed</property>
                 <property name="icon-name">go-home-symbolic</property>
                 <property name="child">
-                  <object class="TFFeedList" id="feed_page">
+                  <object class="TFFeedPage" id="feed_page">
                   </object>
                 </property>
               </object>
@@ -90,7 +51,7 @@
                 <property name="title">Subscriptions</property>
                 <property name="icon-name">library-artists-symbolic</property>
                 <property name="child">
-                  <object class="GtkBox" id="subscription_page"/>
+                  <object class="TFSubscriptionPage" id="subscription_page"/>
                 </property>
               </object>
             </child>

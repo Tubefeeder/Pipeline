@@ -115,14 +115,13 @@ mod imp {
 
         pub(super) video: RefCell<Option<AnyVideo>>,
     }
-    // The central trait for subclassing a GObject
+
     #[glib::object_subclass]
     impl ObjectSubclass for VideoObject {
         const NAME: &'static str = "TFVideoObject";
         type Type = super::VideoObject;
     }
 
-    // Trait shared by all GObjects
     impl ObjectImpl for VideoObject {
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {

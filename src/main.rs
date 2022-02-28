@@ -62,6 +62,8 @@ fn init_folders() {
 #[tokio::main]
 async fn main() {
     env_logger::init();
+    gtk::init().expect("Failed to initialize gtk");
+    libadwaita::init();
     let app = gtk::Application::builder()
         .application_id("de.schmidhuberj.tubefeeder")
         .build();

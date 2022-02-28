@@ -3,7 +3,7 @@ use std::cmp::min;
 use gdk::{
     gio::{SimpleAction, SimpleActionGroup},
     glib::clone,
-    prelude::{ActionMapExt, ListModelExt},
+    prelude::{ActionMapExt, ListModelExt, ObjectExt, ToValue},
     subclass::prelude::ObjectSubclassIsExt,
 };
 use gtk::traits::WidgetExt;
@@ -35,6 +35,8 @@ impl FeedList {
 
             model.splice(model.n_items(), 0, &items[*loaded_count..(loaded_count + to_load)]);
             imp.loaded_count.set(loaded_count + to_load);
+
+            s.set_more_available();
         }));
 
         let actions = SimpleActionGroup::new();
@@ -53,6 +55,8 @@ impl FeedList {
         loaded_count.set(0);
 
         let _ = self.activate_action("feed.more", None);
+
+        self.set_more_available();
     }
 
     pub fn prepend(&self, new_item: VideoObject) {
@@ -64,27 +68,42 @@ impl FeedList {
         let _ = items.borrow_mut().insert(0, new_item.clone());
         model.borrow_mut().insert(0, &new_item);
         loaded_count.set(loaded_count.get() + 1);
+
+        self.set_more_available();
     }
 
     pub fn remove(&self, new_item: VideoObject) {
-        let imp = self.imp();
-        let mut items = imp.items.borrow_mut();
-        let model = &imp.model;
-        let loaded_count = &imp.loaded_count;
+        // Extra block needed to end the mutable borrow of `items`.
+        {
+            let imp = self.imp();
+            let mut items = imp.items.borrow_mut();
+            let model = &imp.model;
+            let loaded_count = &imp.loaded_count;
 
-        if let Some(idx) = items.iter().position(|i| i.video() == new_item.video()) {
-            if idx < loaded_count.get() {
-                model.borrow().remove(idx as u32);
-                loaded_count.set(loaded_count.get() - 1);
+            if let Some(idx) = items.iter().position(|i| i.video() == new_item.video()) {
+                if idx < loaded_count.get() {
+                    model.borrow().remove(idx as u32);
+                    loaded_count.set(loaded_count.get() - 1);
+                }
+
+                items.remove(idx);
             }
-
-            items.remove(idx);
         }
+
+        self.set_more_available();
     }
 
     pub fn set_playlist_manager(&self, playlist_manager: PlaylistManager<String, AnyVideo>) {
         self.imp().playlist_manager.replace(Some(playlist_manager));
         self.imp().setup();
+    }
+
+    fn set_more_available(&self) {
+        let imp = self.imp();
+        let items_count = imp.items.borrow().len();
+        let loaded_count = imp.loaded_count.get();
+
+        self.set_property("more-available", (items_count != loaded_count).to_value());
     }
 }
 
@@ -92,6 +111,10 @@ pub mod imp {
     use std::cell::{Cell, RefCell};
 
     use gdk::gio::ListStore;
+    use gdk::glib::ParamFlags;
+    use gdk::glib::ParamSpec;
+    use gdk::glib::ParamSpecBoolean;
+    use gdk::glib::Value;
     use glib::subclass::InitializingObject;
     use gtk::glib;
     use gtk::prelude::*;
@@ -100,10 +123,12 @@ pub mod imp {
     use gtk::Widget;
 
     use gtk::CompositeTemplate;
+    use once_cell::sync::Lazy;
     use tf_join::AnyVideo;
     use tf_playlist::PlaylistManager;
 
-    use crate::gui::feed_item_object::VideoObject;
+    use crate::gui::feed::feed_item::FeedItem;
+    use crate::gui::feed::feed_item_object::VideoObject;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/ui/feed_list.ui")]
@@ -118,6 +143,8 @@ pub mod imp {
         pub(super) loaded_count: Cell<usize>,
 
         pub(super) playlist_manager: RefCell<Option<PlaylistManager<String, AnyVideo>>>,
+
+        pub(super) more_available: Cell<bool>,
     }
 
     impl FeedList {
@@ -135,7 +162,7 @@ pub mod imp {
                 .clone()
                 .expect("PlaylistManager should be set up");
             factory.connect_setup(move |_, list_item| {
-                let feed_item = crate::gui::feed_item::FeedItem::new(playlist_manager.clone());
+                let feed_item = FeedItem::new(playlist_manager.clone());
                 list_item.set_child(Some(&feed_item));
 
                 list_item
@@ -177,6 +204,38 @@ pub mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
             obj.add_actions();
+        }
+
+        fn properties() -> &'static [ParamSpec] {
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                vec![ParamSpecBoolean::new(
+                    "more-available",
+                    "more-available",
+                    "more-available",
+                    false,
+                    ParamFlags::READWRITE,
+                )]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+            match pspec.name() {
+                "more-available" => {
+                    let value: bool = value
+                        .get()
+                        .expect("Property more-available of incorrect type");
+                    self.more_available.replace(value);
+                }
+                _ => unimplemented!(),
+            }
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+            match pspec.name() {
+                "more-available" => self.more_available.get().to_value(),
+                _ => unimplemented!(),
+            }
         }
     }
 

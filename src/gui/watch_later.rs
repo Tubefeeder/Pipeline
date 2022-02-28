@@ -36,8 +36,8 @@ pub mod imp {
     use tf_playlist::PlaylistEvent;
     use tf_playlist::PlaylistManager;
 
-    use crate::gui::feed_item_object::VideoObject;
-    use crate::gui::feed_list::FeedList;
+    use crate::gui::feed::feed_item_object::VideoObject;
+    use crate::gui::feed::feed_list::FeedList;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/ui/watch_later.ui")]

@@ -18,10 +18,8 @@
  *
  */
 
-mod feed_item;
-mod feed_item_object;
-mod feed_list;
-mod thumbnail;
+mod feed;
+mod subscription;
 mod utility;
 mod watch_later;
 pub mod window;

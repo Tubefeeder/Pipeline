@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+
+  <template class="TFSubscriptionPage" parent="GtkBox">
+    <property name="vexpand">True</property>
+    <property name="valign">GTK_ALIGN_FILL</property>
+    <property name="hexpand">True</property>
+    <property name="halign">GTK_ALIGN_FILL</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="AdwHeaderBar">
+            <property name="hexpand">True</property>
+            <property name="vexpand">False</property>
+            <property name="halign">GTK_ALIGN_FILL</property>
+            <property name="valign">GTK_ALIGN_START</property>
+
+            <property name="title-widget">
+              <object class="AdwWindowTitle">
+                <property name="title">Subscriptions</property>
+              </object>
+            </property>
+
+            <child>
+              <object class="GtkButton" id="btn_toggle_add_subscription">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">list-add-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">8</property>
+            <binding name="visible">
+              <lookup name="add-visible" type="TFSubscriptionPage">
+              </lookup>
+            </binding>
+
+            <child>
+              <object class="GtkDropDown" id="dropdown_platform">
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="entry_url">
+                <binding name="visible">
+                  <closure function="url_visible" type="gboolean">
+                    <lookup name="selected-item">
+                      dropdown_platform
+                    </lookup>
+                  </closure>
+                </binding>
+                <property name="placeholder-text">Base URL</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="entry_name_id">
+                <binding name="visible">
+                  <closure function="name_visible" type="gboolean">
+                    <lookup name="selected-item">
+                      dropdown_platform
+                    </lookup>
+                  </closure>
+                </binding>
+                <property name="placeholder-text">Channel ID or Name</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_add_subscription">
+                <property name="icon-name">go-next-symbolic</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="TFSubscriptionList" id="subscription_list">
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

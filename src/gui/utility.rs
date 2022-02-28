@@ -11,4 +11,11 @@ impl Utility {
                 .expect("Expected string for argument")
         )
     }
+
+    #[template_callback]
+    fn not(#[rest] values: &[gtk::glib::Value]) -> bool {
+        !values[0]
+            .get::<bool>()
+            .expect("Expected boolean for argument")
+    }
 }

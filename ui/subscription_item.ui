@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+  <template class="TFSubscriptionItem" parent="GtkBox">
+    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+    <property name="spacing">8</property>
+    <property name="hexpand">True</property>
+    <property name="halign">GTK_ALIGN_FILL</property>
+
+    <child>
+      <object class="GtkButton" id="remove">
+          <property name="icon-name">list-remove-symbolic</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+        <property name="vexpand">True</property>
+        <property name="hexpand">True</property>
+        <property name="spacing">0</property>
+        <child>
+          <object class="GtkLabel" id="label_name">
+            <binding name="label">
+              <lookup name="name">
+                <lookup name="subscription" type="TFSubscriptionItem">
+                </lookup>
+              </lookup>
+            </binding>
+            <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
+            <property name="wrap">true</property>
+            <property name="wrap-mode">PANGO_WRAP_WORD</property>
+            <property name="lines">2</property>
+            <property name="justify">GTK_JUSTIFY_LEFT</property>
+            <property name="halign">GTK_ALIGN_START</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_platform">
+            <binding name="label">
+                <closure type="gchararray" function="small">
+                    <lookup name="platform">
+                      <lookup name="subscription" type="TFSubscriptionItem">
+                      </lookup>
+                    </lookup>
+                </closure>
+            </binding>
+            <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
+            <property name="wrap">true</property>
+            <property name="wrap-mode">PANGO_WRAP_WORD</property>
+            <property name="lines">2</property>
+            <property name="justify">GTK_JUSTIFY_LEFT</property>
+            <property name="halign">GTK_ALIGN_START</property>
+            <property name="use-markup">true</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

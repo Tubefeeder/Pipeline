@@ -22,7 +22,6 @@ pub mod imp {
     use std::cell::RefCell;
 
     use gdk::glib::clone;
-    use gdk::glib::BindingFlags;
     use gdk::glib::ParamSpecObject;
     use gdk::glib::Value;
     use glib::subclass::InitializingObject;
@@ -36,8 +35,8 @@ pub mod imp {
     use tf_join::AnyVideo;
     use tf_playlist::PlaylistManager;
 
-    use crate::gui::feed_item_object::VideoObject;
-    use crate::gui::thumbnail::Thumbnail;
+    use crate::gui::feed::feed_item_object::VideoObject;
+    use crate::gui::feed::thumbnail::Thumbnail;
     use crate::gui::utility::Utility;
 
     #[derive(CompositeTemplate, Default)]
