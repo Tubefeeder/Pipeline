@@ -40,6 +40,7 @@ pub mod imp {
     use tf_join::Joiner;
     use tf_playlist::PlaylistManager;
 
+    use crate::gui::feed::error_label::ErrorLabel;
     use crate::gui::feed::feed_item_object::VideoObject;
     use crate::gui::feed::feed_list::FeedList;
     use crate::gui::utility::Utility;
@@ -53,10 +54,14 @@ pub mod imp {
         #[template_child]
         pub(super) btn_reload: TemplateChild<gtk::Button>,
 
+        #[template_child]
+        pub(super) error_label: TemplateChild<ErrorLabel>,
+
         reloading: Cell<bool>,
 
         pub(super) playlist_manager: RefCell<Option<PlaylistManager<String, AnyVideo>>>,
         pub(super) joiner: RefCell<Option<Joiner>>,
+        error_store: RefCell<ErrorStore>,
     }
 
     impl FeedPage {
@@ -70,21 +75,22 @@ pub mod imp {
             let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
             let sender = sender.clone();
             let joiner = joiner.clone();
+            let error_store = self.error_store.borrow().clone();
 
-            self.btn_reload
-                .connect_clicked(clone!(@strong obj as s, @strong joiner => move |_| {
+            self.btn_reload.connect_clicked(
+                clone!(@strong obj as s, @strong joiner, @strong error_store => move |_| {
                     log::debug!("Reloading");
                     s.set_property("reloading", &true);
 
                     let sender = sender.clone();
                     let joiner = joiner.clone();
+                    let error_store = error_store.clone();
                     tokio::spawn(async move {
-                        let errors = ErrorStore::new();
-                        let videos = joiner.generate(&errors).await;
+                        let videos = joiner.generate(&error_store).await;
                         let _ = sender.send(videos);
-                        // TODO: Errors
                     });
-                }));
+                }),
+            );
             receiver.attach(
                 None,
                 clone!(@strong obj as s => @default-return Continue(false), move |videos| {
@@ -94,6 +100,10 @@ pub mod imp {
                     Continue(true)
                 }),
             );
+
+            // Setup Error Label
+            self.error_label
+                .set_error_store(self.error_store.borrow().clone());
 
             // Simulate reload on startup.
             self.btn_reload.emit_clicked();

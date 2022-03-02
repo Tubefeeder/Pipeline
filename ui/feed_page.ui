@@ -52,7 +52,11 @@
                 </child>
               </object>
             </child>
-        </object>
+          </object>
+        </child>
+        <child>
+          <object class="TFErrorLabel" id="error_label">
+          </object>
         </child>
         <child>
           <object class="TFFeedList" id="feed_list">

@@ -3,6 +3,7 @@
   <gresource prefix="/">
     <file alias="icon.png">packaging/tubefeeder.png</file>
 
+    <file preprocess="xml-stripblanks">ui/error_label.ui</file>
     <file preprocess="xml-stripblanks">ui/window.ui</file>
     <file preprocess="xml-stripblanks">ui/header_bar.ui</file>
     <file preprocess="xml-stripblanks">ui/feed_list.ui</file>
