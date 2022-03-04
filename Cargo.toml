@@ -1,5 +1,7 @@
 [package]
 name = "tubefeeder"
+description = "A Youtube-Client made for the Pinephone"
+homepage = "https://tubefeeder.de"
 version = "1.5.0"
 authors = ["Julian Schmidhuber <schmidhuberj2@protonmail.com>"]
 edition = "2021"

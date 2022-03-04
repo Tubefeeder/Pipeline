@@ -12,19 +12,10 @@
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <child>
-          <object class="AdwHeaderBar">
-            <property name="hexpand">True</property>
-            <property name="vexpand">False</property>
-            <property name="halign">GTK_ALIGN_FILL</property>
-            <property name="valign">GTK_ALIGN_START</property>
+          <object class="TFHeaderBar">
+            <property name="title">Subscriptions</property>
 
-            <property name="title-widget">
-              <object class="AdwWindowTitle">
-                <property name="title">Subscriptions</property>
-              </object>
-            </property>
-
-            <child>
+            <property name="child">
               <object class="GtkButton" id="btn_toggle_add_subscription">
                 <property name="visible">True</property>
                 <child>
@@ -33,7 +24,7 @@
                   </object>
                 </child>
               </object>
-            </child>
+            </property>
           </object>
         </child>
         <child>

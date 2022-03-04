@@ -19,6 +19,7 @@
  */
 
 mod feed;
+mod header_bar;
 mod subscription;
 mod utility;
 mod watch_later;

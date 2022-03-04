@@ -14,6 +14,8 @@ gtk::glib::wrapper! {
 
 impl Window {
     pub fn new(app: &gtk::Application) -> Self {
+        // Make sure HeaderBar is loaded.
+        let _ = super::header_bar::HeaderBar::new();
         Object::new(&[("application", app)]).expect("Failed to create Window")
     }
 

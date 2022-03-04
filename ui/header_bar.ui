@@ -3,39 +3,43 @@
   <requires lib="gtk+" version="3.24"/>
   <requires lib="libadwaita" version="1.0"/>
 
-  <template class="TFHeaderBar" parente="AdwHeaderBar">
+  <template class="TFHeaderBar" parent="GtkBox">
     <property name="hexpand">True</property>
-    <property name="vexpand">True</property>
+    <property name="vexpand">False</property>
     <property name="halign">GTK_ALIGN_FILL</property>
-    <property name="valign">GTK_ALIGN_FILL</property>
-
-    <property name="title-widget">
-      <object class="AdwWindowTitle">
-        <!-- TODO: Change dynamically -->
-        <property name="title">Tubefeeder</property>
-      </object>
-    </property>
-
+    <property name="valign">GTK_ALIGN_START</property>
     <child>
-      <object class="GtkBox" id="box_refresh">
+      <object class="AdwHeaderBar">
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="halign">GTK_ALIGN_FILL</property>
+        <property name="valign">GTK_ALIGN_FILL</property>
+        <property name="title-widget">
+          <object class="AdwWindowTitle">
+            <binding name="title">
+              <lookup name="title" type="TFHeaderBar"/>
+            </binding>
+          </object>
+        </property>
+
         <child>
-          <object class="GtkButton" id="btn_refresh">
-            <property name="visible">True</property>
-            <child>
-              <object class="GtkImage" id="image_refresh">
-                <property name="icon-name">view-refresh-symbolic</property>
-              </object>
-            </child>
+          <object class="GtkBox" id="child_box">
           </object>
         </child>
-        <child>
-          <object class="GtkSpinner" id="loading_spinner">
-          <property name="visible">False</property>
-            <property name="spinning">True</property>
+        <child type="end">
+          <object class="GtkMenuButton">
+              <property name="menu-model">menubar</property>
           </object>
         </child>
       </object>
     </child>
-    <!-- TODO: Other Buttons -->
   </template>
+  <menu id="menubar">
+    <section>
+      <item>
+        <attribute name="label">About</attribute>
+        <attribute name="action">win.about</attribute>
+      </item>
+    </section>
+  </menu>
 </interface>
