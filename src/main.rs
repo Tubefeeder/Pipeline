@@ -23,7 +23,7 @@ use gtk::glib::IsA;
 use gtk::traits::{GtkWindowExt, WidgetExt};
 
 mod csv_file_manager;
-// mod downloader;
+mod downloader;
 mod gui;
 mod player;
 

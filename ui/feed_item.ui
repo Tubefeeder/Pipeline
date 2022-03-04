@@ -20,6 +20,17 @@
       </object>
     </child>
     <child>
+      <object class="GtkImage" id="downloading">
+        <property name="icon-name">folder-download-symbolic</property>
+        <binding name="visible">
+          <lookup name="downloading">
+            <lookup name="video" type="TFFeedItem">
+            </lookup>
+          </lookup>
+        </binding>
+      </object>
+    </child>
+    <child>
       <object class="TFThumbnail" id="thumbnail">
         <binding name="video">
           <lookup name="video" type="TFFeedItem">
@@ -109,9 +120,26 @@
       </object>
     </child>
     <child>
+      <object class="GtkMenuButton">
+          <property name="menu-model">menu</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkButton" id="watch_later">
         <property name="icon-name">appointment-new-symbolic</property>
       </object>
     </child>
   </template>
+  <menu id="menu">
+    <section>
+      <item>
+        <attribute name="label">Download</attribute>
+        <attribute name="action">item.download</attribute>
+      </item>
+      <item>
+        <attribute name="label">Copy to Clipboard</attribute>
+        <attribute name="action">item.clipboard</attribute>
+      </item>
+    </section>
+  </menu>
 </interface>

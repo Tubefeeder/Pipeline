@@ -9,6 +9,7 @@ use gdk::{
 use tf_core::Video;
 use tf_join::AnyVideo;
 
+use crate::downloader::download;
 use crate::player::play;
 
 macro_rules! str_prop {
@@ -89,6 +90,24 @@ impl VideoObject {
             }),
         );
     }
+
+    pub fn download(&self) {
+        self.set_property("downloading", true);
+        let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
+        download(
+            self.property::<Option<String>>("url").unwrap_or_default(),
+            move || {
+                let _ = sender.send(());
+            },
+        );
+        receiver.attach(
+            None,
+            clone!(@weak self as s => @default-return Continue(false), move |_| {
+                s.set_property("downloading", false);
+                Continue(true)
+            }),
+        );
+    }
 }
 
 mod imp {
@@ -111,7 +130,9 @@ mod imp {
         date: RefCell<Option<String>>,
         url: RefCell<Option<String>>,
         thumbnail_url: RefCell<Option<String>>,
+
         playing: Cell<bool>,
+        downloading: Cell<bool>,
 
         pub(super) video: RefCell<Option<AnyVideo>>,
     }
@@ -139,6 +160,13 @@ mod imp {
                         false,
                         ParamFlags::READWRITE,
                     ),
+                    ParamSpecBoolean::new(
+                        "downloading",
+                        "downloading",
+                        "downloading",
+                        false,
+                        ParamFlags::READWRITE,
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -148,6 +176,11 @@ mod imp {
             if pspec.name() == "playing" {
                 self.playing
                     .set(value.get().expect("Expect 'playing' to be a boolean."));
+                return;
+            }
+            if pspec.name() == "downloading" {
+                self.downloading
+                    .set(value.get().expect("Expect 'downloading' to be a boolean."));
                 return;
             }
             prop_set_all!(
@@ -171,6 +204,9 @@ mod imp {
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
             if pspec.name() == "playing" {
                 return self.playing.get().to_value();
+            }
+            if pspec.name() == "downloading" {
+                return self.downloading.get().to_value();
             }
             prop_get_all!(
                 pspec,

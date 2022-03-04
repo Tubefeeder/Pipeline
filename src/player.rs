@@ -30,13 +30,25 @@ pub fn play<
     url: S,
     callback: F,
 ) {
-    thread::spawn(move || {
-        log::debug!("Playing video with url: {}", url);
-        let player_str = std::env::var("PLAYER").unwrap_or("mpv --ytdl".to_string());
+    log::debug!("Playing video with url: {}", url);
+    let player_str = std::env::var("PLAYER").unwrap_or("mpv --ytdl".to_string());
+    open_with(url, player_str, callback);
+}
 
-        let mut player_iter = player_str.split(" ");
-        let player = player_iter.next().unwrap_or("mpv");
-        let args: Vec<String> = player_iter.map(|s| s.to_string()).collect();
+pub fn open_with<
+    S: 'static + AsRef<str> + Display + std::convert::AsRef<std::ffi::OsStr> + std::marker::Send,
+    F: Fn() + std::marker::Send + 'static,
+>(
+    url: S,
+    command: String,
+    callback: F,
+) {
+    thread::spawn(move || {
+        let mut command_iter = command.split(" ");
+        let program = command_iter
+            .next()
+            .expect("The command should have a program");
+        let args: Vec<String> = command_iter.map(|s| s.to_string()).collect();
 
         let stdout = if log::log_enabled!(log::Level::Debug) {
             Stdio::inherit()
@@ -50,7 +62,7 @@ pub fn play<
             Stdio::null()
         };
 
-        let _ = Command::new(&player)
+        let _ = Command::new(&program)
             .args(args)
             .arg(url)
             .stdout(stdout)
