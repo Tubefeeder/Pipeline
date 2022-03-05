@@ -7,8 +7,8 @@
     <property name="valign">GTK_ALIGN_FILL</property>
     <property name="hexpand">False</property>
     <property name="vexpand">True</property>
-    <property name="height-request">90</property>
-    <property name="width-request">120</property>
+    <property name="height-request">60</property>
+    <property name="width-request">80</property>
     <child>
       <object class="GtkPicture" id="thumbnail">
       </object>
