@@ -39,8 +39,10 @@ pub mod imp {
     use libadwaita::subclass::prelude::AdwApplicationWindowImpl;
     use libadwaita::subclass::prelude::AdwWindowImpl;
 
+    use tf_filter::FilterEvent;
     use tf_join::AnySubscriptionList;
     use tf_join::AnyVideo;
+    use tf_join::AnyVideoFilter;
     use tf_join::Joiner;
     use tf_join::SubscriptionEvent;
     use tf_observer::Observable;
@@ -50,6 +52,7 @@ pub mod imp {
 
     use crate::csv_file_manager::CsvFileManager;
     use crate::gui::feed::feed_page::FeedPage;
+    use crate::gui::filter::filter_page::FilterPage;
     use crate::gui::subscription::subscription_page::SubscriptionPage;
     use crate::gui::watch_later::WatchLaterPage;
 
@@ -66,6 +69,8 @@ pub mod imp {
         #[template_child]
         pub(super) watchlater_page: TemplateChild<WatchLaterPage>,
         #[template_child]
+        pub(super) filter_page: TemplateChild<FilterPage>,
+        #[template_child]
         pub(super) subscription_page: TemplateChild<SubscriptionPage>,
 
         joiner: RefCell<Option<Joiner>>,
@@ -75,6 +80,8 @@ pub mod imp {
             RefCell<Option<Arc<Mutex<Box<dyn Observer<PlaylistEvent<AnyVideo>> + Send>>>>>,
         _subscription_file_manager:
             RefCell<Option<Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>>>,
+        _filter_file_manager:
+            RefCell<Option<Arc<Mutex<Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>>>>>,
     }
 
     impl Window {
@@ -148,7 +155,42 @@ pub mod imp {
                     .clone()
                     .expect("PlaylistManager should be set up"),
                 joiner,
-            )
+            );
+        }
+
+        fn setup_filter(&self) {
+            let joiner = self
+                .joiner
+                .borrow()
+                .clone()
+                .expect("Joiner should be set up");
+            let filters = joiner.filters();
+
+            let mut user_data_dir = gtk::glib::user_data_dir();
+            user_data_dir.push("tubefeeder");
+
+            let mut filters_file_path = user_data_dir.clone();
+            filters_file_path.push("filters.csv");
+
+            let _filter_file_manager = Arc::new(Mutex::new(Box::new(CsvFileManager::new(
+                &filters_file_path,
+                &mut |filter| {
+                    filters
+                        .lock()
+                        .expect("Filter Group to be lockable")
+                        .add(filter)
+                },
+            ))
+                as Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>));
+
+            filters
+                .lock()
+                .expect("Filter Group to be lockable")
+                .attach(Arc::downgrade(&_filter_file_manager));
+
+            self._filter_file_manager
+                .replace(Some(_filter_file_manager));
+            self.filter_page.get().set_filter_group(filters);
         }
     }
 
@@ -172,6 +214,7 @@ pub mod imp {
             self.parent_constructed(obj);
             self.setup_watch_later();
             self.setup_subscriptions();
+            self.setup_filter();
         }
     }
 

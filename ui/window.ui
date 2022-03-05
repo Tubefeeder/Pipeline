@@ -41,7 +41,7 @@
                 <property name="title">Filters</property>
                 <property name="icon-name">funnel-symbolic</property>
                 <property name="child">
-                  <object class="GtkBox" id="filter_page"/>
+                  <object class="TFFilterPage" id="filter_page"/>
                 </property>
               </object>
             </child>

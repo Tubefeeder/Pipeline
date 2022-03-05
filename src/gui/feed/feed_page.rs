@@ -85,6 +85,7 @@ pub mod imp {
                     let sender = sender.clone();
                     let joiner = joiner.clone();
                     let error_store = error_store.clone();
+                    error_store.clear();
                     tokio::spawn(async move {
                         let videos = joiner.generate(&error_store).await;
                         let _ = sender.send(videos);

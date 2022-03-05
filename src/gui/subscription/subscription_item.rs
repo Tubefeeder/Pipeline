@@ -105,8 +105,9 @@ pub mod imp {
         fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
             match pspec.name() {
                 "subscription" => {
-                    let value: Option<SubscriptionObject> =
-                        value.get().expect("Property video of incorrect type");
+                    let value: Option<SubscriptionObject> = value
+                        .get()
+                        .expect("Property subscription of incorrect type");
                     self.subscription.replace(value);
                     self.bind_remove();
                 }

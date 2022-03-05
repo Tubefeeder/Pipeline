@@ -19,6 +19,7 @@
  */
 
 mod feed;
+mod filter;
 mod header_bar;
 mod subscription;
 mod utility;
