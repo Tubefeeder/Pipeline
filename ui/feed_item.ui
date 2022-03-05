@@ -133,11 +133,11 @@
   <menu id="menu">
     <section>
       <item>
-        <attribute name="label">Download</attribute>
+        <attribute name="label" translatable="yes">Download</attribute>
         <attribute name="action">item.download</attribute>
       </item>
       <item>
-        <attribute name="label">Copy to Clipboard</attribute>
+        <attribute name="label" translatable="yes">Copy to Clipboard</attribute>
         <attribute name="action">item.clipboard</attribute>
       </item>
     </section>

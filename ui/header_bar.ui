@@ -37,7 +37,7 @@
   <menu id="menubar">
     <section>
       <item>
-        <attribute name="label">About</attribute>
+        <attribute name="label" translatable="yes">About</attribute>
         <attribute name="action">win.about</attribute>
       </item>
     </section>

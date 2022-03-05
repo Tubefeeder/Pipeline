@@ -32,7 +32,7 @@
                   <lookup name="more-available" type="TFFeedList">
                   </lookup>
                 </binding>
-                <property name="label">Load more</property>
+                <property name="label" translatable="yes">Load more</property>
                 <property name="vexpand">False</property>
                 <property name="valign">GTK_ALIGN_FILL</property>
                 <property name="hexpand">True</property>

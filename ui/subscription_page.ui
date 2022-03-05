@@ -13,7 +13,7 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="TFHeaderBar">
-            <property name="title">Subscriptions</property>
+            <property name="title" translatable="yes">Subscriptions</property>
 
             <property name="child">
               <object class="GtkButton" id="btn_toggle_add_subscription">
@@ -48,7 +48,7 @@
                     </lookup>
                   </closure>
                 </binding>
-                <property name="placeholder-text">Base URL</property>
+                <property name="placeholder-text" translatable="yes">Base URL</property>
               </object>
             </child>
             <child>
@@ -60,7 +60,7 @@
                     </lookup>
                   </closure>
                 </binding>
-                <property name="placeholder-text">Channel ID or Name</property>
+                <property name="placeholder-text" translatable="yes">Channel ID or Name</property>
               </object>
             </child>
             <child>

@@ -76,15 +76,14 @@ pub mod imp {
                     match error_event {
                         ErrorEvent::Add(_e) => {
                             let summary = error_store.summary();
-                            // TODO: Nice formatng
 
-                            // TODO: Some way to internationalize?
                             let message = if summary.network() > 0 {
-                                "Error connecting to the network".to_string()
+                                gettextrs::gettext("Error connecting to the network").to_string()
                             } else if summary.parse() > 0 {
-                                format!("Error parsing {} subscriptions", summary.parse())
+                                let msg = gettextrs::gettext("Error parsing {} subscriptions");
+                                msg.replace("{}", &summary.parse().to_string()).to_string()
                             } else {
-                                "Some error occured".to_string()
+                                gettextrs::gettext("Some error occured").to_string()
                             };
 
                             obj.set_property("error", &message);

@@ -16,8 +16,7 @@
           <object class="AdwViewStack" id="application_stack">
             <child>
               <object class="AdwViewStackPage">
-                <property name="name">Feed</property>
-                <property name="title">Feed</property>
+                <property name="title" translatable="yes">Feed</property>
                 <property name="icon-name">go-home-symbolic</property>
                 <property name="child">
                   <object class="TFFeedPage" id="feed_page">
@@ -27,8 +26,7 @@
             </child>
             <child>
               <object class="AdwViewStackPage">
-                <property name="name">Watch Later</property>
-                <property name="title">Watch Later</property>
+                <property name="title" translatable="yes">Watch Later</property>
                 <property name="icon-name">alarm-symbolic</property>
                 <property name="child">
                   <object class="TFWatchLaterPage" id="watchlater_page"/>
@@ -37,8 +35,7 @@
             </child>
             <child>
               <object class="AdwViewStackPage">
-                <property name="name">Filters</property>
-                <property name="title">Filters</property>
+                <property name="title" translatable="yes">Filters</property>
                 <property name="icon-name">funnel-symbolic</property>
                 <property name="child">
                   <object class="TFFilterPage" id="filter_page"/>
@@ -47,8 +44,7 @@
             </child>
             <child>
               <object class="AdwViewStackPage">
-                <property name="name">Subscriptions</property>
-                <property name="title">Subscriptions</property>
+                <property name="title" translatable="yes">Subscriptions</property>
                 <property name="icon-name">library-artists-symbolic</property>
                 <property name="child">
                   <object class="TFSubscriptionPage" id="subscription_page"/>

@@ -13,7 +13,7 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="TFHeaderBar">
-            <property name="title">Filters</property>
+            <property name="title" translatable="yes">Filters</property>
 
             <property name="child">
               <object class="GtkButton" id="btn_toggle_add_filter">
@@ -37,12 +37,12 @@
 
             <child>
               <object class="GtkEntry" id="entry_title">
-                <property name="placeholder-text">Title</property>
+                <property name="placeholder-text" translatable="yes">Title</property>
               </object>
             </child>
             <child>
               <object class="GtkEntry" id="entry_channel">
-                <property name="placeholder-text">Channel Name</property>
+                <property name="placeholder-text" translatable="yes">Channel Name</property>
               </object>
             </child>
             <child>

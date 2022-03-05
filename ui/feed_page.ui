@@ -13,7 +13,7 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="TFHeaderBar">
-            <property name="title">Feed</property>
+            <property name="title" translatable="yes">Feed</property>
 
             <property name="child">
               <object class="GtkBox" id="box_refresh">

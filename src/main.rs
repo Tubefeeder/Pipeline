@@ -59,8 +59,17 @@ fn init_folders() {
     }
 }
 
+fn init_internationalization() -> Result<(), Box<dyn std::error::Error>> {
+    gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
+    gettextrs::bindtextdomain("de.schmidhuberj.tubefeeder", "./po")?;
+    gettextrs::textdomain("de.schmidhuberj.tubefeeder")?;
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() {
+    init_internationalization().expect("Failed to initialize internationalization");
+
     env_logger::init();
     gtk::init().expect("Failed to initialize gtk");
     libadwaita::init();
