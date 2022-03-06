@@ -60,9 +60,10 @@ fn init_folders() {
 }
 
 fn init_internationalization() -> Result<(), Box<dyn std::error::Error>> {
-    gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
-    gettextrs::bindtextdomain("de.schmidhuberj.tubefeeder", "./po")?;
-    gettextrs::textdomain("de.schmidhuberj.tubefeeder")?;
+    gettextrs::TextDomain::new("de.schmidhuberj.tubefeeder")
+        .locale_category(gettextrs::LocaleCategory::LcAll)
+        .prepend("./po")
+        .init()?;
     Ok(())
 }
 

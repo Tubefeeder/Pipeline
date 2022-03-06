@@ -15,7 +15,7 @@ fn main() {
 
     println!("cargo:rerun-if-changed=po");
 
-    let paths = std::fs::read_dir("./po").unwrap();
+    let paths = std::fs::read_dir("./po/locale").unwrap();
 
     for path in paths {
         let path = path.unwrap();
@@ -29,7 +29,10 @@ fn main() {
             std::process::Command::new("msgfmt")
                 .arg(format!("{}/de.schmidhuberj.tubefeeder.po", pathname))
                 .arg("-o")
-                .arg(format!("{}/LC_MESSAGES/de.schmidhuberj.tubefeeder.mo", pathname))
+                .arg(format!(
+                    "{}/LC_MESSAGES/de.schmidhuberj.tubefeeder.mo",
+                    pathname
+                ))
                 .spawn()
                 .unwrap();
         }
