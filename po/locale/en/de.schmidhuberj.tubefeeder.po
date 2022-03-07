@@ -1,18 +1,17 @@
-# German translations for Tubefeeder package.
+# English translations for Tubefeeder package.
 # Copyright (C) 2022 THE Tubefeeder'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the Tubefeeder package.
-# Julian Schmidhuber <internationalization@schmiddi.anonaddy.com>, 2022.
+# Julian Schmidhuber <translation@schmiddi.anonaddy.com>, 2022.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.5.0\n"
+"Project-Id-Version: 1.5.0 VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-05 15:51+0100\n"
-"PO-Revision-Date: 2022-03-05 15:52+0100\n"
-"Last-Translator: Julian Schmidhuber <internationalization@schmiddi.anonaddy."
-"com>\n"
-"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
-"Language: de\n"
+"POT-Creation-Date: 2022-03-05 16:42+0100\n"
+"PO-Revision-Date: 2022-03-07 16:08+0100\n"
+"Last-Translator: Julian Schmidhuber <translation@schmiddi.anonaddy.com>\n"
+"Language-Team: English\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,62 +19,62 @@ msgstr ""
 
 #: ui/feed_item.ui:136
 msgid "Download"
-msgstr "Herunterladen"
+msgstr "Download"
 
 #: ui/feed_item.ui:140
 msgid "Copy to Clipboard"
-msgstr "Kopieren zum Clipboard"
+msgstr "Copy to Clipboard"
 
 #: ui/feed_list.ui:35
 msgid "Load more"
-msgstr "Lade mehr"
+msgstr "Load more"
 
-#: ui/feed_page.ui:16
+#: ui/feed_page.ui:16 ui/window.ui:19
 msgid "Feed"
 msgstr "Feed"
 
-#: ui/filter_page.ui:16
+#: ui/filter_page.ui:16 ui/window.ui:38
 msgid "Filters"
-msgstr "Filter"
+msgstr "Filters"
 
 #: ui/filter_page.ui:40
 msgid "Title"
-msgstr "Titel"
+msgstr "Title"
 
 #: ui/filter_page.ui:45
 msgid "Channel Name"
-msgstr "Kanal-Name"
+msgstr "Channel Name"
 
 #: ui/header_bar.ui:40
 msgid "About"
-msgstr "Über"
+msgstr "About"
 
-#: ui/subscription_page.ui:16
+#: ui/subscription_page.ui:16 ui/window.ui:47
 msgid "Subscriptions"
-msgstr "Abonnenten"
+msgstr "Subscriptions"
 
 #: ui/subscription_page.ui:51
 msgid "Base URL"
-msgstr "URL"
+msgstr "Base URL"
 
 #: ui/subscription_page.ui:63
 msgid "Channel ID or Name"
-msgstr "Kanal Name oder ID"
+msgstr "Channel ID or Name"
 
-#: ui/watch_later.ui:16
+#: ui/watch_later.ui:16 ui/window.ui:29
 msgid "Watch Later"
-msgstr "Später Ansehen"
+msgstr "Watch Later"
 
 #: src/gui/feed/error_label.rs:83
 msgid "Error connecting to the network"
-msgstr "Netzwerkfehler"
+msgstr "Error connecting to the network"
 
 #: src/gui/feed/error_label.rs:83
 msgid "Error parsing one subscription"
 msgid_plural "Error parsing {} subscriptions"
-msgstr[0] "Konnte ein Abbonnement nicht analysieren"
-msgstr[1] "Konnte {} Abonnements nicht analysieren"
+msgstr[0] "Error parsing one subscription"
+msgstr[1] "Error parsing {} subscriptions"
 
 #: src/gui/feed/error_label.rs:88
 msgid "Some error occured"
-msgstr "Ein Fehler ist aufgetreten"
+msgstr "Some error occured"

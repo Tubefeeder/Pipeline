@@ -80,7 +80,7 @@ pub mod imp {
                             let message = if summary.network() > 0 {
                                 gettextrs::gettext("Error connecting to the network").to_string()
                             } else if summary.parse() > 0 {
-                                let msg = gettextrs::gettext("Error parsing {} subscriptions");
+                                let msg = gettextrs::ngettext("Error parsing one subscription", "Error parsing {} subscriptions", summary.parse() as u32);
                                 msg.replace("{}", &summary.parse().to_string()).to_string()
                             } else {
                                 gettextrs::gettext("Some error occured").to_string()

@@ -6,16 +6,17 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-05 16:42+0100\n"
+"POT-Creation-Date: 2022-03-07 16:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: ui/feed_item.ui:136
 msgid "Download"
@@ -65,14 +66,16 @@ msgstr ""
 msgid "Watch Later"
 msgstr ""
 
-#: src/gui/feed/error_label.rs:83
+#: src/gui/feed/error_label.rs:81
 msgid "Error connecting to the network"
 msgstr ""
 
-#: src/gui/feed/error_label.rs:85
-msgid "Error parsing {} subscriptions"
-msgstr ""
+#: src/gui/feed/error_label.rs:83
+msgid "Error parsing one subscription"
+msgid_plural "Error parsing {} subscriptions"
+msgstr[0] ""
+msgstr[1] ""
 
-#: src/gui/feed/error_label.rs:88
+#: src/gui/feed/error_label.rs:86
 msgid "Some error occured"
 msgstr ""
