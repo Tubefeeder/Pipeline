@@ -61,7 +61,7 @@ impl VideoObject {
             ("thumbnail-url", &video.thumbnail_url()),
             ("author", &video.subscription().to_string()),
             ("platform", &video.platform().to_string()),
-            ("date", &video.uploaded().to_string()),
+            ("date", &video.uploaded().format(&gettextrs::gettext("%F %T")).to_string()),
             ("playing", &false),
         ])
         .expect("Failed to create `VideoObject`.");

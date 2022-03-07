@@ -79,3 +79,7 @@ msgstr[1] ""
 #: src/gui/feed/error_label.rs:86
 msgid "Some error occured"
 msgstr ""
+
+#: src/gui/feed/feed_item_object.rs:64
+msgid "%F %T"
+msgstr ""

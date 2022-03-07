@@ -79,3 +79,7 @@ msgstr[1] "Konnte {} Abonnements nicht analysieren"
 #: src/gui/feed/error_label.rs:88
 msgid "Some error occured"
 msgstr "Ein Fehler ist aufgetreten"
+
+#: src/gui/feed/feed_item_object.rs:64
+msgid "%F %T"
+msgstr "%x %T"

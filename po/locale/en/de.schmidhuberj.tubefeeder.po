@@ -78,3 +78,7 @@ msgstr[1] "Error parsing {} subscriptions"
 #: src/gui/feed/error_label.rs:88
 msgid "Some error occured"
 msgstr "Some error occured"
+
+#: src/gui/feed/feed_item_object.rs:64
+msgid "%F %T"
+msgstr "%F %T"
