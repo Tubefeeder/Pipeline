@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
