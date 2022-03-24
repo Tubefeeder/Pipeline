@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -18,9 +18,8 @@
  *
  */
 
-mod lazy_list_widget;
-mod list_element_builder;
-
-pub use lazy_list_widget::LazyList;
-pub use lazy_list_widget::LazyListMsg;
-pub use list_element_builder::ListElementBuilder;
+mod platform;
+pub(super) mod subscription_item;
+pub(super) mod subscription_item_object;
+pub(super) mod subscription_list;
+pub(super) mod subscription_page;

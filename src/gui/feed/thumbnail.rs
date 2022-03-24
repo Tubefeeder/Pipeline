@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -18,121 +18,167 @@
  *
  */
 
-use std::{
-    convert::TryInto,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc, Mutex,
-    },
+use gdk::{
+    glib::{clone, MainContext, PRIORITY_DEFAULT},
+    prelude::{Continue, ObjectExt},
+    subclass::prelude::ObjectSubclassIsExt,
 };
 
-use gdk_pixbuf::{Colorspace, Pixbuf};
-use gtk::prelude::*;
-use relm::{Channel, Relm, Widget};
-use relm_derive::{widget, Msg};
-use tf_core::Video;
-use tf_join::AnyVideo;
+async fn download(thumbnail_url: String) -> Option<image::DynamicImage> {
+    log::debug!("Getting thumbnail from url {}", thumbnail_url);
+    let response = reqwest::get(&thumbnail_url.clone()).await;
 
-const WIDTH: u32 = 120;
-const HEIGHT: u32 = 90;
+    if response.is_err() {
+        log::error!("Failed getting thumbnail for url {}, abort", thumbnail_url);
+        return None;
+    }
 
-pub fn default_pixbuf() -> Pixbuf {
-    let pixbuf = Pixbuf::new(
-        Colorspace::Rgb,
-        true,
-        8,
-        WIDTH.try_into().unwrap_or(1),
-        HEIGHT.try_into().unwrap_or(1),
-    )
-    .expect("Could not create empty");
-    pixbuf.fill(0);
+    let parsed = response.unwrap().bytes().await;
 
-    pixbuf
+    if parsed.is_err() {
+        log::error!("Failed getting thumbnail for url {}, abort", thumbnail_url);
+        return None;
+    }
+
+    let parsed_bytes = parsed.unwrap();
+
+    image::load_from_memory(&parsed_bytes).ok()
 }
 
-pub struct ThumbnailModel {
-    relm: Relm<Thumbnail>,
-    video: AnyVideo,
-    client: reqwest::Client,
-
-    deleted: Arc<Mutex<AtomicBool>>,
+gtk::glib::wrapper! {
+    pub struct Thumbnail(ObjectSubclass<imp::Thumbnail>)
+        @extends gtk::Box, gtk::Widget,
+        @implements gtk::gio::ActionGroup, gtk::gio::ActionMap, gtk::Accessible, gtk::Buildable,
+            gtk::ConstraintTarget;
 }
 
-impl Drop for ThumbnailModel {
-    fn drop(&mut self) {
-        self.deleted.lock().unwrap().store(true, Ordering::Relaxed);
+impl Thumbnail {
+    pub fn load_thumbnail(&self) {
+        let video = self.imp().video.borrow().clone();
+        let thumbnail = &self.imp().thumbnail.clone();
+
+        let thumbnail_url = video
+            .as_ref()
+            .map(|v| v.property::<Option<String>>("thumbnail-url"))
+            .flatten();
+        let url = video
+            .as_ref()
+            .map(|v| v.property::<Option<String>>("url"))
+            .flatten();
+        if let (Some(thumbnail_url), Some(url)) = (thumbnail_url, url) {
+            let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
+            tokio::spawn(async move {
+                let mut user_cache_dir = gtk::glib::user_cache_dir();
+                user_cache_dir.push("tubefeeder");
+                user_cache_dir.push(&format!("{}.jpeg", url.replace("/", "_")));
+                let path = user_cache_dir;
+
+                if !path.exists() {
+                    let image = download(thumbnail_url).await;
+                    if let Some(image) = image {
+                        if let Err(e) = image.save(&path) {
+                            log::error!("Failed to save thumbnail to path {:?}: {}", path, e);
+                        }
+                    }
+                }
+
+                let _ = sender.send(path);
+            });
+
+            receiver.attach(
+                None,
+                clone!(@strong thumbnail => @default-return Continue(false), move |path| {
+                    thumbnail.set_filename(Some(&path));
+                    Continue(true)
+                }),
+            );
+        }
     }
 }
 
-#[derive(Msg)]
-pub enum ThumbnailMsg {
-    SetImage,
-    SetImagePixbuf(Pixbuf),
-}
+pub mod imp {
+    use std::cell::RefCell;
 
-#[widget]
-impl Widget for Thumbnail {
-    fn model(relm: &Relm<Self>, (video, client): (AnyVideo, reqwest::Client)) -> ThumbnailModel {
-        ThumbnailModel {
-            relm: relm.clone(),
-            video,
-            client,
+    use gdk::glib::clone;
+    use gdk::glib::ParamSpecObject;
+    use gdk::glib::Value;
+    use glib::subclass::InitializingObject;
+    use glib::ParamFlags;
+    use glib::ParamSpec;
+    use gtk::glib;
+    use gtk::prelude::*;
+    use gtk::subclass::prelude::*;
+    use gtk::CompositeTemplate;
+    use once_cell::sync::Lazy;
 
-            deleted: Arc::new(Mutex::new(AtomicBool::new(false))),
+    use crate::gui::feed::feed_item_object::VideoObject;
+
+    #[derive(CompositeTemplate, Default)]
+    #[template(resource = "/ui/thumbnail.ui")]
+    pub struct Thumbnail {
+        #[template_child]
+        pub(super) thumbnail: TemplateChild<gtk::Picture>,
+        pub(super) video: RefCell<Option<VideoObject>>,
+    }
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for Thumbnail {
+        const NAME: &'static str = "TFThumbnail";
+        type Type = super::Thumbnail;
+        type ParentType = gtk::Box;
+
+        fn class_init(klass: &mut Self::Class) {
+            Self::bind_template(klass);
+        }
+
+        fn instance_init(obj: &InitializingObject<Self>) {
+            obj.init_template();
         }
     }
 
-    fn update(&mut self, event: ThumbnailMsg) {
-        match event {
-            ThumbnailMsg::SetImage => self.set_image(),
-            ThumbnailMsg::SetImagePixbuf(pixbuf) => {
-                self.set_image_pixbuf(pixbuf);
+    impl ObjectImpl for Thumbnail {
+        fn constructed(&self, obj: &Self::Type) {
+            self.parent_constructed(obj);
+            obj.connect_notify_local(
+                Some("video"),
+                clone!(@strong obj => move |_, _| {
+                    obj.load_thumbnail();
+                }),
+            );
+        }
+
+        fn properties() -> &'static [ParamSpec] {
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                vec![ParamSpecObject::new(
+                    "video",
+                    "video",
+                    "video",
+                    Option::<VideoObject>::static_type(),
+                    ParamFlags::READWRITE,
+                )]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+            match pspec.name() {
+                "video" => {
+                    let value: Option<VideoObject> =
+                        value.get().expect("Property video of incorrect type");
+                    self.video.replace(value);
+                }
+                _ => unimplemented!(),
+            }
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+            match pspec.name() {
+                "video" => self.video.borrow().to_value(),
+                _ => unimplemented!(),
             }
         }
     }
 
-    fn set_image(&mut self) {
-        let stream = self.model.relm.stream().clone();
-
-        let (_channel, sender) = Channel::new(move |path| {
-            stream.emit(ThumbnailMsg::SetImagePixbuf(
-                Pixbuf::from_file(path).unwrap_or_else(|_| default_pixbuf()),
-            ));
-        });
-
-        let video = self.model.video.clone();
-        let client = self.model.client.clone();
-        let deleted = self.model.deleted.clone();
-        tokio::spawn(async move {
-            let mut user_data_dir = glib::user_cache_dir();
-            user_data_dir.push("tubefeeder");
-            user_data_dir.push(&format!("{}.png", video.title()));
-            let path = user_data_dir;
-
-            if !path.exists() {
-                let image = video.thumbnail_with_client(&client).await;
-                let resized = image.resize(WIDTH, HEIGHT, image::imageops::FilterType::Triangle);
-                let _ = resized.save(&path);
-            }
-
-            if !deleted.lock().unwrap().load(Ordering::Relaxed) {
-                sender.send(path).expect("Could not send pixbuf");
-            }
-        });
-    }
-
-    fn set_image_pixbuf(&mut self, pixbuf: Pixbuf) {
-        self.widgets.image.set_from_pixbuf(Some(&pixbuf));
-    }
-
-    fn init_view(&mut self) {
-        self.widgets.image.set_from_pixbuf(Some(&default_pixbuf()));
-    }
-
-    view! {
-        gtk::Box {
-            #[name="image"]
-            gtk::Image {}
-        },
-    }
+    impl WidgetImpl for Thumbnail {}
+    impl BoxImpl for Thumbnail {}
 }

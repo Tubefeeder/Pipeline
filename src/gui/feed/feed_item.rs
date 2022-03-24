@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -18,262 +18,162 @@
  *
  */
 
-use std::sync::{Arc, Mutex};
-
-use crate::downloader::download;
-use crate::gui::feed::date_label::DateLabel;
-use crate::gui::feed::thumbnail::{Thumbnail, ThumbnailMsg};
-use crate::gui::{get_font_size, FONT_RATIO};
-use crate::player::play;
-
-use tf_core::{Video, VideoEvent};
+use gdk::subclass::prelude::ObjectSubclassIsExt;
+use gtk::glib::Object;
 use tf_join::AnyVideo;
-use tf_observer::{Observable, Observer};
 use tf_playlist::PlaylistManager;
 
-use gtk::prelude::*;
-use gtk::{Align, Justification, Orientation, PackType};
-use pango::{AttrList, Attribute, EllipsizeMode, WrapMode};
-use relm::{Channel, Relm, Sender, Widget};
-use relm_derive::{widget, Msg};
-
-#[derive(Msg)]
-pub enum FeedListItemMsg {
-    SetImage,
-    Clicked,
-    SetPlaying(bool),
-    WatchLater,
-    Expand,
-    Clipboard,
-    Download,
+gtk::glib::wrapper! {
+    pub struct FeedItem(ObjectSubclass<imp::FeedItem>)
+        @extends gtk::Box, gtk::Widget,
+        @implements gtk::gio::ActionGroup, gtk::gio::ActionMap, gtk::Accessible, gtk::Buildable,
+            gtk::ConstraintTarget;
 }
 
-pub struct FeedListItemModel {
-    entry: AnyVideo,
-    expanded: bool,
-    playing: bool,
-    relm: Relm<FeedListItem>,
-    observer: Arc<Mutex<Box<dyn Observer<VideoEvent> + Send>>>,
-    playlist_manager: PlaylistManager<String, AnyVideo>,
-
-    client: reqwest::Client,
+impl FeedItem {
+    pub fn new(playlist_manager: PlaylistManager<String, AnyVideo>) -> Self {
+        let s: Self = Object::new(&[]).expect("Failed to create FeedItem");
+        s.imp().playlist_manager.replace(Some(playlist_manager));
+        s
+    }
 }
 
-#[widget]
-impl Widget for FeedListItem {
-    fn model(
-        relm: &Relm<Self>,
-        (entry, client, playlist_manager): (
-            AnyVideo,
-            reqwest::Client,
-            PlaylistManager<String, AnyVideo>,
-        ),
-    ) -> FeedListItemModel {
-        let relm_clone = relm.clone();
-        let (_channel, sender) = Channel::new(move |msg| {
-            relm_clone.stream().emit(msg);
-        });
-        FeedListItemModel {
-            entry,
-            expanded: false,
-            playing: false,
-            relm: relm.clone(),
-            observer: Arc::new(Mutex::new(Box::new(FeedListItemObserver { sender }))),
-            playlist_manager,
+pub mod imp {
+    use std::cell::RefCell;
 
-            client,
-        }
+    use gdk::gio::SimpleAction;
+    use gdk::gio::SimpleActionGroup;
+    use gdk::glib::clone;
+    use gdk::glib::ParamSpecObject;
+    use gdk::glib::Value;
+    use glib::subclass::InitializingObject;
+    use glib::ParamFlags;
+    use glib::ParamSpec;
+    use gtk::glib;
+    use gtk::prelude::*;
+    use gtk::subclass::prelude::*;
+    use gtk::CompositeTemplate;
+    use once_cell::sync::Lazy;
+    use tf_core::Video;
+    use tf_join::AnyVideo;
+    use tf_playlist::PlaylistManager;
+
+    use crate::gui::feed::feed_item_object::VideoObject;
+    use crate::gui::feed::thumbnail::Thumbnail;
+    use crate::gui::utility::Utility;
+
+    #[derive(CompositeTemplate, Default)]
+    #[template(resource = "/ui/feed_item.ui")]
+    pub struct FeedItem {
+        #[template_child]
+        label_title: TemplateChild<gtk::Label>,
+        #[template_child]
+        label_author: TemplateChild<gtk::Label>,
+        #[template_child]
+        label_platform: TemplateChild<gtk::Label>,
+        #[template_child]
+        label_date: TemplateChild<gtk::Label>,
+
+        #[template_child]
+        playing: TemplateChild<gtk::Image>,
+        #[template_child]
+        thumbnail: TemplateChild<Thumbnail>,
+
+        #[template_child]
+        watch_later: TemplateChild<gtk::Button>,
+
+        video: RefCell<Option<VideoObject>>,
+        pub(super) playlist_manager: RefCell<Option<PlaylistManager<String, AnyVideo>>>,
     }
 
-    fn update(&mut self, event: FeedListItemMsg) {
-        match event {
-            FeedListItemMsg::SetImage => {
-                self.components.thumbnail.emit(ThumbnailMsg::SetImage);
-            }
-            FeedListItemMsg::SetPlaying(playing) => {
-                self.model.playing = playing;
-                self.widgets.box_content.show();
-            }
-            FeedListItemMsg::Clicked => {
-                play(self.model.entry.clone());
-            }
-            FeedListItemMsg::WatchLater => {
-                self.model
-                    .playlist_manager
-                    .toggle(&("WATCHLATER".to_string()), &self.model.entry);
-            }
-            FeedListItemMsg::Expand => {
-                self.model.expanded = !self.model.expanded;
-                let expand_icon_name = if self.model.expanded {
-                    "arrow1-right-symbolic"
-                } else {
-                    "arrow1-left-symbolic"
-                };
-                self.widgets
-                    .button_expand
-                    .set_image(Some(&gtk::Image::from_icon_name(
-                        Some(expand_icon_name),
-                        gtk::IconSize::LargeToolbar,
-                    )));
-            }
-            FeedListItemMsg::Clipboard => {
-                let clipboard = gtk::Clipboard::get(&gdk::Atom::intern("CLIPBOARD"));
+    impl FeedItem {
+        fn setup_actions(&self, obj: &super::FeedItem) {
+            let action_download = SimpleAction::new("download", None);
+            action_download.connect_activate(clone!(@strong self.video as video => move |_, _| {
+                video.borrow().as_ref().expect("Video should be set up").download();
+            }));
+            let action_clipboard = SimpleAction::new("clipboard", None);
+            action_clipboard.connect_activate(clone!(@strong self.video as video, @strong obj => move |_, _| {
+                let clipboard = obj.display().clipboard();
                 // Replace // with / because of simple bug I am too lazy to fix in the youtube-extractor.
-                clipboard.set_text(&self.model.entry.url().replace("//watch", "/watch"));
-                clipboard.store();
-            }
-            FeedListItemMsg::Download => download(self.model.entry.clone()),
+                clipboard.set_text(&video.borrow().as_ref().expect("Video should be set up").video().expect("Video should be set up").url().replace("//watch", "/watch"));
+            }));
+
+            let actions = SimpleActionGroup::new();
+            obj.insert_action_group("item", Some(&actions));
+            actions.add_action(&action_download);
+            actions.add_action(&action_clipboard);
         }
-    }
-
-    fn init_view(&mut self) {
-        self.model
-            .entry
-            .attach(Arc::downgrade(&self.model.observer));
-        self.widgets.box_content.set_child_packing(
-            &self.widgets.button_watch_later,
-            false,
-            true,
-            0,
-            PackType::End,
-        );
-
-        self.widgets.box_content.set_child_packing(
-            &self.widgets.box_info,
-            true,
-            true,
-            0,
-            PackType::Start,
-        );
-
-        let font_size = get_font_size();
-
-        let title_attr_list = AttrList::new();
-        title_attr_list.insert(Attribute::new_size(font_size * pango::SCALE));
-        self.widgets
-            .label_title
-            .set_attributes(Some(&title_attr_list));
-
-        let small_text_attr_list = AttrList::new();
-        small_text_attr_list.insert(Attribute::new_size(
-            (FONT_RATIO * (font_size * pango::SCALE) as f32) as i32,
-        ));
-
-        self.widgets
-            .label_author
-            .set_attributes(Some(&small_text_attr_list));
-        self.widgets
-            .label_platform
-            .set_attributes(Some(&small_text_attr_list));
-        self.widgets
-            .label_date
-            .set_attributes(Some(&small_text_attr_list));
-
-        self.widgets.playing.set_from_icon_name(
-            Some("media-playback-start-symbolic"),
-            gtk::IconSize::LargeToolbar,
-        );
-
-        self.model
-            .relm
-            .stream()
-            .emit(FeedListItemMsg::SetPlaying(self.model.entry.playing()));
-    }
-
-    view! {
-        #[name="root"]
-        gtk::ListBoxRow {
-            #[name="box_content"]
-            gtk::Box {
-                orientation: Orientation::Horizontal,
-                spacing: 8,
-
-                #[name="playing"]
-                gtk::Image {
-                    visible: self.model.playing
-                },
-
-                #[name="thumbnail"]
-                Thumbnail(self.model.entry.clone(), self.model.client.clone()),
-
-                #[name="box_info"]
-                gtk::Box {
-                    orientation: Orientation::Vertical,
-                    spacing: 4,
-
-                    #[name="label_title"]
-                    gtk::Label {
-                        text: &self.model.entry.title(),
-                        ellipsize: EllipsizeMode::End,
-                        wrap: true,
-                        wrap_mode: WrapMode::Word,
-                        lines: 2,
-                        justify: Justification::Left,
-                    },
-                    gtk::Box {
-                        spacing: 4,
-                        #[name="label_author"]
-                        gtk::Label {
-                            text: &self.model.entry.subscription().to_string(),
-                            ellipsize: EllipsizeMode::End,
-                            wrap: true,
-                            wrap_mode: WrapMode::Word,
-                            halign: Align::Start
-                        },
-                        #[name="label_platform"]
-                        gtk::Label {
-                            text: &("(".to_owned() + &self.model.entry.platform().to_string() + ")"),
-                            ellipsize: EllipsizeMode::End,
-                            wrap: true,
-                            wrap_mode: WrapMode::Word,
-                            halign: Align::Start
-                        },
-                    },
-                    #[name="label_date"]
-                    DateLabel(self.model.entry.uploaded().clone()) {}
-                },
-                #[name="button_expand"]
-                gtk::Button {
-                    clicked => FeedListItemMsg::Expand,
-                    image: Some(&gtk::Image::from_icon_name(Some("arrow1-left-symbolic"), gtk::IconSize::LargeToolbar)),
-                },
-                gtk::Box {
-                    visible: self.model.expanded,
-
-                    #[name="button_clipboard"]
-                    gtk::Button {
-                        clicked => FeedListItemMsg::Clipboard,
-                        image: Some(&gtk::Image::from_icon_name(Some("clipboard-symbolic"), gtk::IconSize::LargeToolbar)),
-                    },
-                    #[name="button_download"]
-                    gtk::Button {
-                        clicked => FeedListItemMsg::Download,
-                        image: Some(&gtk::Image::from_icon_name(Some("folder-download-symbolic"), gtk::IconSize::LargeToolbar)),
+        fn bind_watch_later(&self) {
+            let video = &self.video;
+            let playlist_manager = &self.playlist_manager;
+            self.watch_later.connect_clicked(
+                clone!(@strong video, @strong playlist_manager => move |_| {
+                    let video = video.borrow().as_ref().map(|v| v.video()).flatten();
+                    if let Some(video) = video {
+                        let mut playlist_manager = playlist_manager.borrow_mut();
+                        playlist_manager.as_mut().unwrap().toggle(&"WATCHLATER".to_owned(), &video);
                     }
-                },
-                #[name="button_watch_later"]
-                gtk::Button {
-                    clicked => FeedListItemMsg::WatchLater,
-                    image: Some(&gtk::Image::from_icon_name(Some("appointment-new-symbolic"), gtk::IconSize::LargeToolbar)),
+                }),
+            );
+        }
+    }
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for FeedItem {
+        const NAME: &'static str = "TFFeedItem";
+        type Type = super::FeedItem;
+        type ParentType = gtk::Box;
+
+        fn class_init(klass: &mut Self::Class) {
+            Self::bind_template(klass);
+            Utility::bind_template_callbacks(klass);
+        }
+
+        fn instance_init(obj: &InitializingObject<Self>) {
+            obj.init_template();
+        }
+    }
+
+    impl ObjectImpl for FeedItem {
+        fn constructed(&self, obj: &Self::Type) {
+            self.parent_constructed(obj);
+        }
+
+        fn properties() -> &'static [ParamSpec] {
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                vec![ParamSpecObject::new(
+                    "video",
+                    "video",
+                    "video",
+                    VideoObject::static_type(),
+                    ParamFlags::READWRITE,
+                )]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn set_property(&self, obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+            match pspec.name() {
+                "video" => {
+                    let value: Option<VideoObject> =
+                        value.get().expect("Property video of incorrect type");
+                    self.video.replace(value);
+                    self.bind_watch_later();
+                    self.setup_actions(obj);
                 }
+                _ => unimplemented!(),
+            }
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+            match pspec.name() {
+                "video" => self.video.borrow().to_value(),
+                _ => unimplemented!(),
             }
         }
     }
-}
 
-pub struct FeedListItemObserver {
-    sender: Sender<FeedListItemMsg>,
-}
-
-impl Observer<VideoEvent> for FeedListItemObserver {
-    fn notify(&mut self, message: VideoEvent) {
-        match message {
-            VideoEvent::Play => {
-                let _ = self.sender.send(FeedListItemMsg::SetPlaying(true));
-            }
-            VideoEvent::Stop => {
-                let _ = self.sender.send(FeedListItemMsg::SetPlaying(false));
-            }
-        }
-    }
+    impl WidgetImpl for FeedItem {}
+    impl BoxImpl for FeedItem {}
 }

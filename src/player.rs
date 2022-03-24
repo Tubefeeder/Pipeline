@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -18,23 +18,37 @@
  */
 
 use std::{
+    fmt::Display,
     process::{Command, Stdio},
     thread,
 };
 
-use tf_core::Video;
-use tf_join::AnyVideo;
+pub fn play<
+    S: 'static + AsRef<str> + Display + std::convert::AsRef<std::ffi::OsStr> + std::marker::Send,
+    F: Fn() + std::marker::Send + 'static,
+>(
+    url: S,
+    callback: F,
+) {
+    log::debug!("Playing video with url: {}", url);
+    let player_str = std::env::var("PLAYER").unwrap_or("mpv --ytdl".to_string());
+    open_with(url, player_str, callback);
+}
 
-pub fn play(video: AnyVideo) {
+pub fn open_with<
+    S: 'static + AsRef<str> + Display + std::convert::AsRef<std::ffi::OsStr> + std::marker::Send,
+    F: Fn() + std::marker::Send + 'static,
+>(
+    url: S,
+    command: String,
+    callback: F,
+) {
     thread::spawn(move || {
-        log::debug!("Playing video with title: {}", video.title());
-        log::debug!("Playing video with url: {}", video.url());
-        video.play();
-        let player_str = std::env::var("PLAYER").unwrap_or("mpv --ytdl".to_string());
-
-        let mut player_iter = player_str.split(" ");
-        let player = player_iter.next().unwrap_or("mpv");
-        let args: Vec<String> = player_iter.map(|s| s.to_string()).collect();
+        let mut command_iter = command.split(" ");
+        let program = command_iter
+            .next()
+            .expect("The command should have a program");
+        let args: Vec<String> = command_iter.map(|s| s.to_string()).collect();
 
         let stdout = if log::log_enabled!(log::Level::Debug) {
             Stdio::inherit()
@@ -48,16 +62,16 @@ pub fn play(video: AnyVideo) {
             Stdio::null()
         };
 
-        let _ = Command::new(&player)
+        let _ = Command::new(&program)
             .args(args)
-            .arg(video.url())
+            .arg(url)
             .stdout(stdout)
             .stderr(stderr)
             .stdin(Stdio::null())
             .spawn()
             .unwrap()
             .wait();
-        log::debug!("Stopped video with title: {}", video.title());
-        video.stop();
+
+        callback();
     });
 }

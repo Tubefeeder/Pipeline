@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -17,190 +17,181 @@
  * along with Tubefeeder.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-use crate::gui::filter::filter_item::FilterItem;
 
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
-use gtk::prelude::*;
-use gtk::Orientation::Vertical;
-use regex::Regex;
-use relm::{Channel, ContainerWidget, Relm, Sender, Widget};
-use relm_derive::{widget, Msg};
-use tf_filter::{FilterEvent, FilterGroup};
-use tf_join::{AnyVideoFilter, Platform};
-use tf_observer::{Observable, Observer};
+use gdk::subclass::prelude::ObjectSubclassIsExt;
+use tf_filter::FilterGroup;
+use tf_join::AnyVideoFilter;
 
-#[derive(Msg)]
-pub enum FilterPageMsg {
-    ToggleAddFilter,
-    AddFilter,
-    NewFilter(AnyVideoFilter),
-    RemoveFilter(AnyVideoFilter),
+gtk::glib::wrapper! {
+    pub struct FilterPage(ObjectSubclass<imp::FilterPage>)
+        @extends gtk::Box, gtk::Widget,
+        @implements gtk::gio::ActionGroup, gtk::gio::ActionMap, gtk::Accessible, gtk::Buildable,
+            gtk::ConstraintTarget;
 }
 
-pub struct FilterPageModel {
-    relm: Relm<FilterPage>,
-    add_filter_visible: bool,
-    filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
-    _filters_observer: Arc<Mutex<Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>>>,
-    filter_items: HashMap<AnyVideoFilter, relm::Component<FilterItem>>,
+impl FilterPage {
+    pub fn set_filter_group(&self, filter_group: Arc<Mutex<FilterGroup<AnyVideoFilter>>>) {
+        self.imp().filter_group.replace(Some(filter_group.clone()));
+        self.imp().filter_list.get().set_filter_group(filter_group);
+        self.imp().setup_add_filter(&self);
+    }
 }
 
-#[widget]
-impl Widget for FilterPage {
-    fn model(
-        relm: &Relm<Self>,
-        filters: Arc<Mutex<FilterGroup<AnyVideoFilter>>>,
-    ) -> FilterPageModel {
-        let relm_clone = relm.clone();
-        let (_channel, sender) = Channel::new(move |msg| relm_clone.stream().emit(msg));
+pub mod imp {
+    use std::cell::Cell;
+    use std::cell::RefCell;
+    use std::sync::Arc;
+    use std::sync::Mutex;
 
-        let observer = Arc::new(Mutex::new(Box::new(FilterPageObserver { sender })
-            as Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>));
+    use gdk::glib::clone;
+    use gdk::glib::ParamFlags;
+    use gdk::glib::ParamSpec;
+    use gdk::glib::ParamSpecBoolean;
+    use glib::subclass::InitializingObject;
+    use gtk::glib;
+    use gtk::prelude::*;
+    use gtk::subclass::prelude::*;
 
-        let filters_clone = filters.clone();
-        filters_clone
-            .lock()
-            .unwrap()
-            .iter()
-            .for_each(|s| relm.stream().emit(FilterPageMsg::NewFilter(s.clone())));
-        filters_clone
-            .lock()
-            .unwrap()
-            .attach(Arc::downgrade(&observer));
+    use gtk::CompositeTemplate;
+    use once_cell::sync::Lazy;
+    use regex::Regex;
+    use tf_filter::FilterGroup;
+    use tf_join::AnyVideoFilter;
 
-        FilterPageModel {
-            relm: relm.clone(),
-            add_filter_visible: false,
-            filters: filters_clone,
-            _filters_observer: observer,
-            filter_items: HashMap::new(),
-        }
+    use crate::gui::filter::filter_list::FilterList;
+
+    #[derive(CompositeTemplate, Default)]
+    #[template(resource = "/ui/filter_page.ui")]
+    pub struct FilterPage {
+        #[template_child]
+        pub(super) filter_list: TemplateChild<FilterList>,
+
+        #[template_child]
+        pub(super) btn_toggle_add_filter: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub(super) entry_title: TemplateChild<gtk::Entry>,
+        #[template_child]
+        pub(super) entry_channel: TemplateChild<gtk::Entry>,
+        #[template_child]
+        pub(super) btn_add_filter: TemplateChild<gtk::Button>,
+
+        pub(super) filter_group: RefCell<Option<Arc<Mutex<FilterGroup<AnyVideoFilter>>>>>,
+        add_visible: Cell<bool>,
     }
 
-    fn update(&mut self, event: FilterPageMsg) {
-        match event {
-            FilterPageMsg::ToggleAddFilter => {
-                self.model.add_filter_visible = !self.model.add_filter_visible;
-            }
-            FilterPageMsg::AddFilter => self.add_filter(),
-            FilterPageMsg::NewFilter(sub) => self.new_filter(sub),
-            FilterPageMsg::RemoveFilter(sub) => self.remove_filter(sub),
-        }
-    }
-
-    fn add_filter(&mut self) {
-        let title = self.widgets.title_entry.text();
-        let subscription = self.widgets.subscription_entry.text();
-
-        let title_opt = if title.is_empty() { None } else { Some(title) };
-        let subscription_opt = if subscription.is_empty() {
-            None
-        } else {
-            Some(subscription)
-        };
-
-        let title_regex = title_opt.map(|s| Regex::new(&s));
-        let subscription_regex = subscription_opt.map(|s| Regex::new(&s));
-
-        if let Some(Err(_)) = title_regex {
-            // TODO: Error Handling
-            return;
-        }
-        if let Some(Err(_)) = subscription_regex {
-            // TODO: Error Handling
-            return;
+    impl FilterPage {
+        fn setup_toggle_add_filter(&self, obj: &super::FilterPage) {
+            self.btn_toggle_add_filter
+                .connect_clicked(clone!(@strong obj as s => move |_| {
+                    s.set_property("add-visible", !s.property::<bool>("add-visible"));
+                }));
         }
 
-        self.widgets.title_entry.set_text("");
-        self.widgets.subscription_entry.set_text("");
-        self.model
-            .relm
-            .stream()
-            .emit(FilterPageMsg::ToggleAddFilter);
+        pub(super) fn setup_add_filter(&self, obj: &super::FilterPage) {
+            self.btn_add_filter.connect_clicked(clone!(@strong obj as s,
+                                                       @strong self.filter_group as filters
+                                                       @strong self.entry_title as in_title,
+                                                       @strong self.entry_channel as in_channel => move |_| {
+                s.set_property("add-visible", !s.property::<bool>("add-visible"));
+                let title = in_title.text();
+                let channel = in_channel.text();
 
-        self.model.filters.lock().unwrap().add(
-            AnyVideoFilter::new(
-                Some(Platform::Youtube),
-                title_regex.map(|r| r.unwrap()),
-                subscription_regex.map(|r| r.unwrap()),
-            )
-            .into(),
-        );
-    }
+                in_title.set_text("");
+                in_channel.set_text("");
 
-    fn new_filter(&mut self, filter: AnyVideoFilter) {
-        if self.model.filter_items.get(&filter).is_none() {
-            let filter_item = self
-                .widgets
-                .filter_list
-                .add_widget::<FilterItem>((filter.clone(), self.model.filters.clone()));
-            self.model.filter_items.insert(filter, filter_item);
-        }
-    }
+                let title_opt = if title.is_empty() {None} else {Some(title)};
+                let channel_opt = if channel.is_empty() {None} else {Some(channel)};
 
-    fn remove_filter(&mut self, filter: AnyVideoFilter) {
-        if let Some(filter_item) = self.model.filter_items.get(&filter) {
-            self.widgets.filter_list.remove(filter_item.widget());
-            self.model.filter_items.remove(&filter);
-        }
-    }
+                let title_regex = title_opt.map(|s| Regex::new(&s));
+                let channel_regex = channel_opt.map(|s| Regex::new(&s));
 
-    fn init_view(&mut self) {
-        self.widgets.filter_entry_box.hide();
-    }
-
-    view! {
-        gtk::Box {
-            orientation: Vertical,
-
-            #[name="filter_entry_box"]
-            gtk::Box {
-                visible: self.model.add_filter_visible,
-                #[name="title_entry"]
-                gtk::Entry {
-                    placeholder_text: Some("Title")
-                },
-                #[name="subscription_entry"]
-                gtk::Entry {
-                    placeholder_text: Some("Channel name")
-                },
-                gtk::Button {
-                    clicked => FilterPageMsg::AddFilter,
-                    image: Some(&gtk::Image::from_icon_name(Some("go-next-symbolic"), gtk::IconSize::LargeToolbar)),
+                if let Some(Err(_)) = title_regex {
+                    // TODO: Error Handling
+                    return;
                 }
-            },
-
-            gtk::ScrolledWindow {
-                hexpand: true,
-                vexpand: true,
-                gtk::Viewport {
-                    #[name="filter_list"]
-                    gtk::ListBox {
-                        selection_mode: gtk::SelectionMode::None
-
-                    }
+                if let Some(Err(_)) = channel_regex {
+                    // TODO: Error Handling
+                    return;
                 }
-            }
-        }
-    }
-}
-pub struct FilterPageObserver {
-    sender: Sender<FilterPageMsg>,
-}
 
-impl Observer<FilterEvent<AnyVideoFilter>> for FilterPageObserver {
-    fn notify(&mut self, message: FilterEvent<AnyVideoFilter>) {
-        match message {
-            FilterEvent::Add(filter) => {
-                let _ = self.sender.send(FilterPageMsg::NewFilter(filter));
+                filters
+                    .borrow()
+                    .as_ref()
+                    .expect("Filter List should be set up")
+                    .lock()
+                    .expect("Filter List should be lockable")
+                    .add(AnyVideoFilter::new(None,
+                                            title_regex.map(|r| r.unwrap()),
+                                            channel_regex.map(|r| r.unwrap())
+                                            ).into()
+                         );
+
+            }));
+        }
+    }
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for FilterPage {
+        const NAME: &'static str = "TFFilterPage";
+        type Type = super::FilterPage;
+        type ParentType = gtk::Box;
+
+        fn class_init(klass: &mut Self::Class) {
+            Self::bind_template(klass);
+        }
+
+        fn instance_init(obj: &InitializingObject<Self>) {
+            obj.init_template();
+        }
+    }
+
+    impl ObjectImpl for FilterPage {
+        fn constructed(&self, obj: &Self::Type) {
+            self.parent_constructed(obj);
+            self.setup_toggle_add_filter(obj);
+        }
+
+        fn properties() -> &'static [glib::ParamSpec] {
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                vec![ParamSpecBoolean::new(
+                    "add-visible",
+                    "add-visible",
+                    "add-visible",
+                    false,
+                    ParamFlags::READWRITE,
+                )]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn set_property(
+            &self,
+            _obj: &Self::Type,
+            _id: usize,
+            value: &glib::Value,
+            pspec: &glib::ParamSpec,
+        ) {
+            match pspec.name() {
+                "add-visible" => {
+                    let _ =
+                        self.add_visible.replace(value.get().expect(
+                            "The property 'add-visible' of TFFilterPage has to be boolean",
+                        ));
+                }
+                _ => unimplemented!(),
             }
-            FilterEvent::Remove(filter) => {
-                let _ = self.sender.send(FilterPageMsg::RemoveFilter(filter));
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "add-visible" => self.add_visible.get().to_value(),
+                _ => unimplemented!(),
             }
         }
     }
+
+    impl WidgetImpl for FilterPage {}
+    impl BoxImpl for FilterPage {}
 }

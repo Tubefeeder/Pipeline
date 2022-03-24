@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+
+  <template class="TFWindow" parent="AdwApplicationWindow">
+    <property name="can-focus">True</property>
+    <property name="title">Tubefeeder</property>
+    <property name="default-height">800</property>
+    <property name="default-width">500</property>
+
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="AdwViewStack" id="application_stack">
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="title" translatable="yes">Feed</property>
+                <property name="icon-name">go-home-symbolic</property>
+                <property name="child">
+                  <object class="TFFeedPage" id="feed_page">
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="title" translatable="yes">Watch Later</property>
+                <property name="icon-name">alarm-symbolic</property>
+                <property name="child">
+                  <object class="TFWatchLaterPage" id="watchlater_page"/>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="title" translatable="yes">Filters</property>
+                <property name="icon-name">funnel-symbolic</property>
+                <property name="child">
+                  <object class="TFFilterPage" id="filter_page"/>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="title" translatable="yes">Subscriptions</property>
+                <property name="icon-name">library-artists-symbolic</property>
+                <property name="child">
+                  <object class="TFSubscriptionPage" id="subscription_page"/>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class = "AdwViewSwitcher">
+              <property name="hexpand">True</property>
+              <property name="vexpand">False</property>
+              <property name="halign">GTK_ALIGN_FILL</property>
+              <property name="valign">GTK_ALIGN_END</property>
+              <property name="stack">application_stack</property>
+          </object>
+        </child>
+
+      </object>
+    </child>
+  </template>
+</interface>

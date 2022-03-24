@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+
+  <template class="TFFeedPage" parent="GtkBox">
+    <property name="vexpand">True</property>
+    <property name="valign">GTK_ALIGN_FILL</property>
+    <property name="hexpand">True</property>
+    <property name="halign">GTK_ALIGN_FILL</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="TFHeaderBar">
+            <property name="title" translatable="yes">Feed</property>
+
+            <property name="child">
+              <object class="GtkBox" id="box_refresh">
+                <child>
+                  <object class="GtkButton" id="btn_reload">
+                    <binding name="visible">
+                      <closure function="not" type="gboolean">
+                        <lookup name="reloading" type="TFFeedPage"></lookup>
+                      </closure>
+                    </binding>
+                    <child>
+                      <object class="GtkImage" id="image_refresh">
+                        <property name="icon-name">view-refresh-symbolic</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSpinner" id="loading_spinner">
+                    <binding name="visible">
+                      <lookup name="reloading" type="TFFeedPage"></lookup>
+                    </binding>
+                    <binding name="spinning">
+                      <lookup name="reloading" type="TFFeedPage"></lookup>
+                    </binding>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="TFErrorLabel" id="error_label">
+          </object>
+        </child>
+        <child>
+          <object class="TFFeedList" id="feed_list">
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

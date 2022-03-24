@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+
+  <template class="TFHeaderBar" parent="GtkBox">
+    <property name="hexpand">True</property>
+    <property name="vexpand">False</property>
+    <property name="halign">GTK_ALIGN_FILL</property>
+    <property name="valign">GTK_ALIGN_START</property>
+    <child>
+      <object class="AdwHeaderBar">
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="halign">GTK_ALIGN_FILL</property>
+        <property name="valign">GTK_ALIGN_FILL</property>
+        <property name="title-widget">
+          <object class="AdwWindowTitle">
+            <binding name="title">
+              <lookup name="title" type="TFHeaderBar"/>
+            </binding>
+          </object>
+        </property>
+
+        <child>
+          <object class="GtkBox" id="child_box">
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkMenuButton">
+              <property name="menu-model">menubar</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+  <menu id="menubar">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">About</attribute>
+        <attribute name="action">win.about</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

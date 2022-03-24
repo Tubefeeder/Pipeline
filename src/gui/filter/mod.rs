@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -19,6 +19,6 @@
  */
 
 mod filter_item;
-mod filter_page;
-
-pub use filter_page::{FilterPage, FilterPageMsg};
+mod filter_item_object;
+mod filter_list;
+pub(super) mod filter_page;

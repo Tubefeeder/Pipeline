@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -18,9 +18,9 @@
  *
  */
 
-mod date_label;
+mod error_label;
 pub(crate) mod feed_item;
-mod feed_page;
+pub(crate) mod feed_item_object;
+pub(crate) mod feed_list;
+pub(crate) mod feed_page;
 mod thumbnail;
-
-pub use feed_page::{FeedPage, FeedPageMsg};

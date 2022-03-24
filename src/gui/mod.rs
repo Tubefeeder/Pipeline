@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -18,14 +18,10 @@
  *
  */
 
-mod app;
-mod error_label;
 mod feed;
 mod filter;
 mod header_bar;
-mod lazy_list;
-mod playlist;
-mod subscriptions;
-
-pub use app::Win;
-use app::{get_font_size, FONT_RATIO};
+mod subscription;
+mod utility;
+mod watch_later;
+pub mod window;

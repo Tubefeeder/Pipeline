@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -18,19 +18,75 @@
  *
  */
 
+use gdk::prelude::{ApplicationExt, ApplicationExtManual};
+use gtk::glib::IsA;
+use gtk::traits::{GtkWindowExt, WidgetExt};
+
 mod csv_file_manager;
 mod downloader;
 mod gui;
 mod player;
 
-use crate::gui::Win;
+fn init_resources() {
+    let res_bytes = include_bytes!("../resources.gresource");
 
-use relm::Widget;
+    let gbytes = gtk::glib::Bytes::from_static(res_bytes.as_ref());
+    let resource = gtk::gio::Resource::from_data(&gbytes).unwrap();
+
+    gtk::gio::resources_register(&resource);
+}
+
+fn init_icons<P: IsA<gdk::Display>>(display: &P) {
+    let icon_theme = gtk::IconTheme::for_display(display);
+
+    icon_theme.add_resource_path("/");
+    icon_theme.add_resource_path("/org/gnome/design/IconLibrary/data/icons/");
+}
+
+fn init_folders() {
+    let mut user_cache_dir = gtk::glib::user_cache_dir();
+    user_cache_dir.push("tubefeeder");
+
+    if !user_cache_dir.exists() {
+        std::fs::create_dir_all(&user_cache_dir).expect("could not create user cache dir");
+    }
+
+    let mut user_data_dir = gtk::glib::user_data_dir();
+    user_data_dir.push("tubefeeder");
+
+    if !user_data_dir.exists() {
+        std::fs::create_dir_all(user_data_dir.clone()).expect("could not create user data dir");
+    }
+}
+
+fn init_internationalization() -> Result<(), Box<dyn std::error::Error>> {
+    gettextrs::TextDomain::new("de.schmidhuberj.tubefeeder")
+        .locale_category(gettextrs::LocaleCategory::LcAll)
+        .prepend("./po")
+        .init()?;
+    Ok(())
+}
 
 #[tokio::main]
 async fn main() {
-    env_logger::init();
-    let joiner = tf_join::Joiner::new();
+    init_internationalization().expect("Failed to initialize internationalization");
 
-    Win::run(joiner).unwrap();
+    env_logger::init();
+    gtk::init().expect("Failed to initialize gtk");
+    libadwaita::init();
+    let app = gtk::Application::builder()
+        .application_id("de.schmidhuberj.tubefeeder")
+        .build();
+
+    app.connect_activate(build_ui);
+    app.run();
+}
+
+fn build_ui(app: &gtk::Application) {
+    init_resources();
+    init_folders();
+    // Create new window and present it
+    let window = crate::gui::window::Window::new(app);
+    init_icons(&window.display());
+    window.present();
 }

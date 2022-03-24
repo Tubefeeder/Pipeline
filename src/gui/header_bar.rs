@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -18,104 +18,65 @@
  *
  */
 
-use crate::gui::app::AppMsg;
+use gdk::glib::Object;
 
-use std::convert::{From, Into};
-use std::str::FromStr;
-
-use gtk::prelude::*;
-use gtk::AboutDialogBuilder;
-use libhandy::traits::HeaderBarExt;
-use relm::{Relm, StreamHandle, Widget};
-use relm_derive::{widget, Msg};
-
-const STARTING_PAGE: Page = Page::Feed;
-
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Page {
-    Feed,
-    WatchLater,
-    Filters,
-    Subscriptions,
+gtk::glib::wrapper! {
+    pub struct HeaderBar(ObjectSubclass<imp::HeaderBar>)
+        @extends gtk::Box, gtk::Widget,
+        @implements gtk::gio::ActionGroup, gtk::gio::ActionMap, gtk::Accessible, gtk::Buildable,
+            gtk::ConstraintTarget;
 }
 
-impl Page {
-    fn get_all_values() -> Vec<Page> {
-        vec![
-            Page::Feed,
-            Page::WatchLater,
-            Page::Filters,
-            Page::Subscriptions,
-        ]
+impl HeaderBar {
+    pub fn new() -> Self {
+        Object::new(&[]).expect("Failed to create HeaderBar")
     }
 }
 
-impl FromStr for Page {
-    type Err = ();
+pub mod imp {
+    use std::cell::RefCell;
 
-    fn from_str(string: &str) -> Result<Page, Self::Err> {
-        let all_values = Page::get_all_values();
-        let owned = string.to_owned();
+    use gdk::gio::SimpleAction;
+    use gdk::gio::SimpleActionGroup;
+    use gdk::glib::clone;
+    use gdk::glib::Object;
+    use gdk::glib::ParamFlags;
+    use gdk::glib::ParamSpec;
+    use gdk::glib::ParamSpecObject;
+    use gdk::glib::ParamSpecString;
+    use gdk::glib::Value;
+    use glib::subclass::InitializingObject;
+    use gtk::builders::AboutDialogBuilder;
+    use gtk::glib;
+    use gtk::prelude::*;
+    use gtk::subclass::prelude::*;
+    use gtk::Widget;
 
-        for val in &all_values {
-            let val_str: String = val.clone().into();
-            if val_str == owned {
-                return Ok(val.clone());
-            }
-        }
+    use gtk::CompositeTemplate;
+    use once_cell::sync::Lazy;
 
-        Err(())
-    }
-}
+    #[derive(CompositeTemplate, Default)]
+    #[template(resource = "/ui/header_bar.ui")]
+    pub struct HeaderBar {
+        #[template_child]
+        child_box: TemplateChild<gtk::Box>,
 
-impl From<Page> for String {
-    fn from(page: Page) -> Self {
-        match page {
-            Page::WatchLater => "Watch Later".to_string(),
-            _ => format!("{:?}", page),
-        }
-    }
-}
-
-#[derive(Msg)]
-pub enum HeaderBarMsg {
-    SetPage(Page),
-    AddSubscription,
-    AddFilter,
-    Reload,
-    About,
-}
-
-pub struct HeaderBarModel {
-    app_stream: StreamHandle<AppMsg>,
-    page: Page,
-    title: String,
-    relm: Relm<HeaderBar>,
-}
-
-#[widget]
-impl Widget for HeaderBar {
-    fn model(relm: &Relm<Self>, app_stream: StreamHandle<AppMsg>) -> HeaderBarModel {
-        HeaderBarModel {
-            app_stream,
-            page: STARTING_PAGE,
-            title: STARTING_PAGE.into(),
-            relm: relm.clone(),
-        }
+        title: RefCell<Option<String>>,
+        child: RefCell<Option<Object>>,
     }
 
-    fn update(&mut self, event: HeaderBarMsg) {
-        match event {
-            HeaderBarMsg::SetPage(page) => self.set_page(page),
-            HeaderBarMsg::Reload => self.model.app_stream.emit(AppMsg::Reload),
-            HeaderBarMsg::AddSubscription => {
-                self.model.app_stream.emit(AppMsg::ToggleAddSubscription)
-            }
-            HeaderBarMsg::AddFilter => self.model.app_stream.emit(AppMsg::ToggleAddFilter),
-            HeaderBarMsg::About => {
+    impl HeaderBar {
+        fn setup_actions(&self, obj: &super::HeaderBar) {
+            let action_about = SimpleAction::new("about", None);
+            action_about.connect_activate(|_, _| {
                 let about_dialog = AboutDialogBuilder::new()
-                    .authors(vec!["Julian Schmidhuber".to_string()])
-                    .comments("A Youtube-Client made for the Pinephone")
+                    .authors(
+                        env!("CARGO_PKG_AUTHORS")
+                            .split(";")
+                            .map(|s| s.to_string())
+                            .collect(),
+                    )
+                    .comments(env!("CARGO_PKG_DESCRIPTION"))
                     .copyright(
                         include_str!("../../NOTICE")
                             .to_string()
@@ -126,63 +87,89 @@ impl Widget for HeaderBar {
                     .license_type(gtk::License::Gpl30)
                     .logo_icon_name("icon")
                     .program_name("Tubefeeder")
-                    .version("1.5.0")
-                    .website("https://www.tubefeeder.de")
+                    .version(env!("CARGO_PKG_VERSION"))
+                    .website(env!("CARGO_PKG_HOMEPAGE"))
                     .build();
                 about_dialog.show();
+            });
+
+            let actions = SimpleActionGroup::new();
+            obj.insert_action_group("win", Some(&actions));
+            actions.add_action(&action_about);
+        }
+    }
+
+    #[glib::object_subclass]
+    impl ObjectSubclass for HeaderBar {
+        const NAME: &'static str = "TFHeaderBar";
+        type Type = super::HeaderBar;
+        type ParentType = gtk::Box;
+
+        fn class_init(klass: &mut Self::Class) {
+            Self::bind_template(klass);
+        }
+
+        fn instance_init(obj: &InitializingObject<Self>) {
+            obj.init_template();
+        }
+    }
+
+    impl ObjectImpl for HeaderBar {
+        fn constructed(&self, obj: &Self::Type) {
+            self.parent_constructed(obj);
+            self.setup_actions(obj);
+            obj.connect_notify_local(
+                Some("child"),
+                clone!(@strong self.child_box as b => move |obj, _| {
+                    let widget = obj.property::<Option<Object>>("child");
+                    if let Some(widget) = widget {
+                        b.append(&widget.dynamic_cast::<Widget>().expect("Child has to be a widget"));
+                    }
+                }),
+            );
+        }
+
+        fn properties() -> &'static [ParamSpec] {
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                vec![
+                    ParamSpecString::new("title", "title", "title", None, ParamFlags::READWRITE),
+                    ParamSpecObject::new(
+                        "child",
+                        "child",
+                        "child",
+                        Widget::static_type(),
+                        ParamFlags::READWRITE,
+                    ),
+                ]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+            match pspec.name() {
+                "title" => {
+                    let value: Option<String> =
+                        value.get().expect("Property title of incorrect type");
+                    self.title.replace(value);
+                }
+                "child" => {
+                    let value: Option<Object> =
+                        value.get().expect("Property child of incorrect type");
+                    self.child.replace(value);
+                }
+                _ => unimplemented!(),
+            }
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+            match pspec.name() {
+                "title" => self.title.borrow().to_value(),
+                "child" => self.child.borrow().to_value(),
+                _ => unimplemented!(),
             }
         }
     }
 
-    fn set_page(&mut self, page: Page) {
-        self.model.page = page.clone();
-        self.model.title = page.into();
-    }
-
-    fn init_view(&mut self) {
-        let menu_button = gtk::MenuButton::new();
-        menu_button.set_image(Some(&gtk::Image::from_icon_name(
-            Some("open-menu-symbolic"),
-            gtk::IconSize::LargeToolbar,
-        )));
-
-        let menu = gtk::Menu::new();
-        let about_item = gtk::MenuItem::with_label("About");
-        relm::connect!(
-            self.model.relm,
-            about_item,
-            connect_activate(_),
-            HeaderBarMsg::About
-        );
-        menu.append(&about_item);
-        menu.show_all();
-        menu_button.set_popup(Some(&menu));
-
-        self.widgets.header_bar.pack_end(&menu_button);
-        self.widgets.header_bar.show_all();
-    }
-
-    view! {
-        #[name="header_bar"]
-        libhandy::HeaderBar {
-            title: Some(&self.model.title),
-            show_close_button: true,
-
-            gtk::Button {
-                image: Some(&gtk::Image::from_icon_name(Some("view-refresh-symbolic"), gtk::IconSize::LargeToolbar)),
-                clicked => HeaderBarMsg::Reload,
-                visible: self.model.page == Page::Feed
-            },
-            gtk::Button {
-                image: Some(&gtk::Image::from_icon_name(Some("list-add-symbolic"), gtk::IconSize::LargeToolbar)),
-                clicked => HeaderBarMsg::AddFilter,
-                visible: self.model.page == Page::Filters
-            },
-            gtk::Button {
-                image: Some(&gtk::Image::from_icon_name(Some("list-add-symbolic"), gtk::IconSize::LargeToolbar)),
-                clicked => HeaderBarMsg::AddSubscription,
-                visible: self.model.page == Page::Subscriptions
-            },
-        }
-    }
+    impl WidgetImpl for HeaderBar {}
+    impl BoxImpl for HeaderBar {}
 }

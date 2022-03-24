@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Julian Schmidhuber <github@schmiddi.anonaddy.com>
+ * Copyright 2021 - 2022 Julian Schmidhuber <github@schmiddi.anonaddy.com>
  *
  * This file is part of Tubefeeder.
  *
@@ -17,50 +17,21 @@
  * along with Tubefeeder.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use std::{
-    process::{Command, Stdio},
-    thread,
-};
+use std::fmt::Display;
 
-use tf_core::Video;
-use tf_join::AnyVideo;
+use crate::player::open_with;
 
-pub fn download(video: AnyVideo) {
-    thread::spawn(move || {
-        log::debug!("Downloading video with title: {}", video.title());
-        log::debug!("Downloading video with url: {}", video.url());
-        video.play();
-        let download_dir = std::env::var("XDG_DOWNLOAD_DIR")
-            .unwrap_or("$HOME/Downloads/%(title)s-%(id)s.%(ext)s".to_string());
-        let downloader_str =
-            std::env::var("DOWNLOADER").unwrap_or(format!("youtube-dl --output {}", download_dir));
-
-        let mut downloader_iter = downloader_str.split(" ");
-        let downloader = downloader_iter.next().unwrap_or("youtube-dl");
-        let args: Vec<String> = downloader_iter.map(|s| s.to_string()).collect();
-
-        let stdout = if log::log_enabled!(log::Level::Debug) {
-            Stdio::inherit()
-        } else {
-            Stdio::null()
-        };
-
-        let stderr = if log::log_enabled!(log::Level::Error) {
-            Stdio::inherit()
-        } else {
-            Stdio::null()
-        };
-
-        let _ = Command::new(&downloader)
-            .args(args)
-            .arg(video.url())
-            .stdout(stdout)
-            .stderr(stderr)
-            .stdin(Stdio::null())
-            .spawn()
-            .unwrap()
-            .wait();
-        log::debug!("Stopped downloading with title: {}", video.title());
-        video.stop();
-    });
+pub fn download<
+    S: 'static + AsRef<str> + Display + std::convert::AsRef<std::ffi::OsStr> + std::marker::Send,
+    F: Fn() + std::marker::Send + 'static,
+>(
+    url: S,
+    callback: F,
+) {
+    log::debug!("Downloading video with url: {}", url);
+    let download_dir = std::env::var("XDG_DOWNLOAD_DIR")
+        .unwrap_or("$HOME/Downloads/%(title)s-%(id)s.%(ext)s".to_string());
+    let downloader_str =
+        std::env::var("DOWNLOADER").unwrap_or(format!("youtube-dl --output {}", download_dir));
+    open_with(url, downloader_str, callback);
 }

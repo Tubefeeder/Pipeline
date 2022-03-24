@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+  <template class="TFErrorLabel" parent="GtkBox">
+    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+    <property name="spacing">8</property>
+    <property name="hexpand">True</property>
+    <property name="halign">GTK_ALIGN_CENTER</property>
+
+    <child>
+      <object class="GtkLabel" id="label_title">
+        <binding name="label">
+          <lookup name="error" type="TFErrorLabel">
+          </lookup>
+        </binding>
+        <binding name="visible">
+          <closure function="not" type="gboolean">
+            <closure function="is_empty" type="gboolean">
+              <lookup name="error" type="TFErrorLabel">
+              </lookup>
+            </closure>
+          </closure>
+        </binding>
+        <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
+        <property name="wrap">true</property>
+        <property name="wrap-mode">PANGO_WRAP_WORD</property>
+        <property name="lines">2</property>
+        <property name="justify">GTK_JUSTIFY_CENTER</property>
+      </object>
+    </child>
+  </template>
+</interface>

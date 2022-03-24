@@ -18,32 +18,27 @@
  *
  */
 
-use std::sync::{Arc, Mutex};
-
 use gdk::subclass::prelude::ObjectSubclassIsExt;
 use gtk::glib::Object;
-use tf_filter::FilterGroup;
-use tf_join::AnyVideoFilter;
+use tf_join::AnySubscriptionList;
 
 gtk::glib::wrapper! {
-    pub struct FilterItem(ObjectSubclass<imp::FilterItem>)
+    pub struct SubscriptionItem(ObjectSubclass<imp::SubscriptionItem>)
         @extends gtk::Box, gtk::Widget,
         @implements gtk::gio::ActionGroup, gtk::gio::ActionMap, gtk::Accessible, gtk::Buildable,
             gtk::ConstraintTarget;
 }
 
-impl FilterItem {
-    pub fn new(filter_group: Arc<Mutex<FilterGroup<AnyVideoFilter>>>) -> Self {
-        let s: Self = Object::new(&[]).expect("Failed to create FilterItem");
-        s.imp().filter_group.replace(Some(filter_group));
+impl SubscriptionItem {
+    pub fn new(subscription_list: AnySubscriptionList) -> Self {
+        let s: Self = Object::new(&[]).expect("Failed to create SubscriptionItem");
+        s.imp().subscription_list.replace(Some(subscription_list));
         s
     }
 }
 
 pub mod imp {
     use std::cell::RefCell;
-    use std::sync::Arc;
-    use std::sync::Mutex;
 
     use gdk::glib::clone;
     use gdk::glib::ParamSpecObject;
@@ -56,45 +51,45 @@ pub mod imp {
     use gtk::subclass::prelude::*;
     use gtk::CompositeTemplate;
     use once_cell::sync::Lazy;
-    use tf_filter::FilterGroup;
-    use tf_join::AnyVideoFilter;
+    use tf_join::AnySubscriptionList;
 
-    use crate::gui::filter::filter_item_object::FilterObject;
+    use crate::gui::subscription::subscription_item_object::SubscriptionObject;
     use crate::gui::utility::Utility;
 
     #[derive(CompositeTemplate, Default)]
-    #[template(resource = "/ui/filter_item.ui")]
-    pub struct FilterItem {
+    #[template(resource = "/ui/subscription_item.ui")]
+    pub struct SubscriptionItem {
         #[template_child]
-        label_title: TemplateChild<gtk::Label>,
+        label_name: TemplateChild<gtk::Label>,
         #[template_child]
-        label_channel: TemplateChild<gtk::Label>,
+        label_platform: TemplateChild<gtk::Label>,
         #[template_child]
         remove: TemplateChild<gtk::Button>,
 
-        filter: RefCell<Option<FilterObject>>,
-        pub(super) filter_group: RefCell<Option<Arc<Mutex<FilterGroup<AnyVideoFilter>>>>>,
+        subscription: RefCell<Option<SubscriptionObject>>,
+        pub(super) subscription_list: RefCell<Option<AnySubscriptionList>>,
     }
 
-    impl FilterItem {
+    impl SubscriptionItem {
         fn bind_remove(&self) {
-            let filter = &self.filter;
-            let filter_group = &self.filter_group.clone();
-            self.remove
-                .connect_clicked(clone!(@strong filter, @strong filter_group => move |_| {
-                    let filter = filter.borrow().as_ref().map(|s| s.filter()).flatten();
-                    if let Some(filter) = filter {
-                        let filter_group = filter_group.borrow();
-                        filter_group.as_ref().expect("FilterGroup to be set up").lock().expect("FilterGroup to be lockable").remove(&filter);
+            let subscription = &self.subscription;
+            let subscription_list = &self.subscription_list;
+            self.remove.connect_clicked(
+                clone!(@strong subscription, @strong subscription_list => move |_| {
+                    let subscription = subscription.borrow().as_ref().map(|s| s.subscription()).flatten();
+                    if let Some(subscription) = subscription {
+                        let mut subscription_list = subscription_list.borrow_mut();
+                        subscription_list.as_mut().unwrap().remove(subscription);
                     }
-                }));
+                }),
+            );
         }
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for FilterItem {
-        const NAME: &'static str = "TFFilterItem";
-        type Type = super::FilterItem;
+    impl ObjectSubclass for SubscriptionItem {
+        const NAME: &'static str = "TFSubscriptionItem";
+        type Type = super::SubscriptionItem;
         type ParentType = gtk::Box;
 
         fn class_init(klass: &mut Self::Class) {
@@ -107,7 +102,9 @@ pub mod imp {
         }
     }
 
-    impl ObjectImpl for FilterItem {
+    impl SubscriptionItem {}
+
+    impl ObjectImpl for SubscriptionItem {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
         }
@@ -115,10 +112,10 @@ pub mod imp {
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![ParamSpecObject::new(
-                    "filter",
-                    "filter",
-                    "filter",
-                    FilterObject::static_type(),
+                    "subscription",
+                    "subscription",
+                    "subscription",
+                    SubscriptionObject::static_type(),
                     ParamFlags::READWRITE,
                 )]
             });
@@ -127,10 +124,11 @@ pub mod imp {
 
         fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
             match pspec.name() {
-                "filter" => {
-                    let value: Option<FilterObject> =
-                        value.get().expect("Property filter of incorrect type");
-                    self.filter.replace(value);
+                "subscription" => {
+                    let value: Option<SubscriptionObject> = value
+                        .get()
+                        .expect("Property subscription of incorrect type");
+                    self.subscription.replace(value);
                     self.bind_remove();
                 }
                 _ => unimplemented!(),
@@ -139,12 +137,12 @@ pub mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
             match pspec.name() {
-                "filter" => self.filter.borrow().to_value(),
+                "subscription" => self.subscription.borrow().to_value(),
                 _ => unimplemented!(),
             }
         }
     }
 
-    impl WidgetImpl for FilterItem {}
-    impl BoxImpl for FilterItem {}
+    impl WidgetImpl for SubscriptionItem {}
+    impl BoxImpl for SubscriptionItem {}
 }

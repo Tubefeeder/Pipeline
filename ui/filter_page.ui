@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <requires lib="libadwaita" version="1.0"/>
+
+  <template class="TFFilterPage" parent="GtkBox">
+    <property name="vexpand">True</property>
+    <property name="valign">GTK_ALIGN_FILL</property>
+    <property name="hexpand">True</property>
+    <property name="halign">GTK_ALIGN_FILL</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="TFHeaderBar">
+            <property name="title" translatable="yes">Filters</property>
+
+            <property name="child">
+              <object class="GtkButton" id="btn_toggle_add_filter">
+                <property name="visible">True</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">list-add-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">8</property>
+            <binding name="visible">
+              <lookup name="add-visible" type="TFFilterPage">
+              </lookup>
+            </binding>
+
+            <child>
+              <object class="GtkEntry" id="entry_title">
+                <property name="placeholder-text" translatable="yes">Title</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="entry_channel">
+                <property name="placeholder-text" translatable="yes">Channel Name</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_add_filter">
+                <property name="icon-name">go-next-symbolic</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="TFFilterList" id="filter_list">
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
