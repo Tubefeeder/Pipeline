@@ -133,7 +133,7 @@ pub mod imp {
                         // -- Add case here
                     };
                     if let Some(subscription) = subscription {
-                        let _ = sender.send(subscription);
+                        sender.send(subscription).expect("Failed to send message about subscription");
                     } else {
                         // TODO: Better Error Handling
                         log::error!("Failed to get subscription with supplied data");
@@ -146,7 +146,7 @@ pub mod imp {
                 clone!(@strong self.any_subscription_list as list =>
                        move |sub| {
                            list.borrow().as_ref().expect("SubscriptionList should be set up").add(sub);
-                           Continue(false)
+                           Continue(true)
                        }
                 )
             );
