@@ -1518,9 +1518,9 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "piped"
-version = "0.0.1"
+version = "0.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d63f1f13e917f0ef427475c0e8f604563ce31cd90514e160a52a194218ac6ebf"
+checksum = "c29ef6b3e30e1a0615ee5edd2bfc50c463bd8006eb32a04f80b5f701453bb005"
 dependencies = [
  "reqwest",
  "serde",
@@ -2009,9 +2009,9 @@ dependencies = [
 
 [[package]]
 name = "tf_join"
-version = "0.1.2"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8053a896a192abb16fce51fe9e14cf17cca5de759e38911ae4deafde4d34cde9"
+checksum = "735c895a121d1e76ef1f21cdd9ff8e3c9cf780f9bcb5ab2a368a501e0c698181"
 dependencies = [
  "async-trait",
  "chrono",
@@ -2061,9 +2061,9 @@ dependencies = [
 
 [[package]]
 name = "tf_platform_youtube"
-version = "0.1.2"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5d8cdae6e6e8e181cf47e76e3efdb4fdb13ae75fdac9f093947bcdbd683cae6"
+checksum = "b7e6d557290e96629aed83dbffdc1690bc6a6a4966d3e2f97a9ca51e84e83764"
 dependencies = [
  "async-trait",
  "chrono",
