@@ -10,6 +10,11 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
+	  <release version="v1.6.3" date="2022-04-22">
+		  <description>
+                      <p>Fix some subscription names not showing and some icons not theming correctly.</p>
+		  </description>
+	  </release>
 	  <release version="v1.6.2" date="2022-04-09">
 		  <description>
                       <p>Fix for some subscriptions not loading</p>
