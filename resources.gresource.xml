@@ -18,11 +18,8 @@
     <file preprocess="xml-stripblanks">ui/thumbnail.ui</file>
     <file preprocess="xml-stripblanks">ui/watch_later.ui</file>
   </gresource>
-  <gresource prefix="/org/gnome/design/IconLibrary/">
-    <file preprocess="xml-stripblanks">data/icons/funnel-symbolic.svg</file>
-    <file preprocess="xml-stripblanks">data/icons/library-artists-symbolic.svg</file>
-    <file preprocess="xml-stripblanks">data/icons/clipboard-symbolic.svg</file>
-    <file preprocess="xml-stripblanks">data/icons/arrow1-left-symbolic.svg</file>
-    <file preprocess="xml-stripblanks">data/icons/arrow1-right-symbolic.svg</file>
+  <gresource prefix="/de/schmidhuberj/tubefeeder/icons/">
+    <file preprocess="xml-stripblanks" alias="scalable/actions/funnel-symbolic.svg">data/icons/funnel-symbolic.svg</file>
+    <file preprocess="xml-stripblanks" alias="scalable/actions/library-artists-symbolic.svg">data/icons/library-artists-symbolic.svg</file>
   </gresource>
 </gresources>

@@ -19,8 +19,7 @@
  */
 
 use gdk::prelude::{ApplicationExt, ApplicationExtManual};
-use gtk::glib::IsA;
-use gtk::traits::{GtkWindowExt, WidgetExt};
+use gtk::traits::GtkWindowExt;
 
 mod csv_file_manager;
 mod downloader;
@@ -34,13 +33,6 @@ fn init_resources() {
     let resource = gtk::gio::Resource::from_data(&gbytes).unwrap();
 
     gtk::gio::resources_register(&resource);
-}
-
-fn init_icons<P: IsA<gdk::Display>>(display: &P) {
-    let icon_theme = gtk::IconTheme::for_display(display);
-
-    icon_theme.add_resource_path("/");
-    icon_theme.add_resource_path("/org/gnome/design/IconLibrary/data/icons/");
 }
 
 fn init_folders() {
@@ -87,6 +79,5 @@ fn build_ui(app: &gtk::Application) {
     init_folders();
     // Create new window and present it
     let window = crate::gui::window::Window::new(app);
-    init_icons(&window.display());
     window.present();
 }

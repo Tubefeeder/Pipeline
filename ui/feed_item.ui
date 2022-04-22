@@ -62,13 +62,14 @@
         </child>
         <child>
           <object class="GtkLabel" id="label_author">
+            <style>
+              <class name="caption"/>
+            </style>
             <binding name="label">
-                <closure type="gchararray" function="small">
-                    <lookup name="author">
-                      <lookup name="video" type="TFFeedItem">
-                      </lookup>
-                    </lookup>
-                </closure>
+              <lookup name="author">
+                <lookup name="video" type="TFFeedItem">
+                </lookup>
+              </lookup>
             </binding>
             <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
             <property name="wrap">true</property>
@@ -76,18 +77,18 @@
             <property name="lines">2</property>
             <property name="justify">GTK_JUSTIFY_LEFT</property>
             <property name="halign">GTK_ALIGN_START</property>
-            <property name="use-markup">true</property>
           </object>
         </child>
         <child>
           <object class="GtkLabel" id="label_platform">
+            <style>
+              <class name="caption"/>
+            </style>
             <binding name="label">
-                <closure type="gchararray" function="small">
-                    <lookup name="platform">
-                      <lookup name="video" type="TFFeedItem">
-                      </lookup>
-                    </lookup>
-                </closure>
+              <lookup name="platform">
+                <lookup name="video" type="TFFeedItem">
+                </lookup>
+              </lookup>
             </binding>
             <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
             <property name="wrap">true</property>
@@ -95,18 +96,18 @@
             <property name="lines">2</property>
             <property name="justify">GTK_JUSTIFY_LEFT</property>
             <property name="halign">GTK_ALIGN_START</property>
-            <property name="use-markup">true</property>
           </object>
         </child>
         <child>
           <object class="GtkLabel" id="label_date">
+            <style>
+              <class name="caption"/>
+            </style>
             <binding name="label">
-                <closure type="gchararray" function="small">
-                    <lookup name="date">
-                      <lookup name="video" type="TFFeedItem">
-                      </lookup>
-                    </lookup>
-                </closure>
+                <lookup name="date">
+                  <lookup name="video" type="TFFeedItem">
+                  </lookup>
+                </lookup>
             </binding>
             <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
             <property name="wrap">true</property>
@@ -114,7 +115,6 @@
             <property name="lines">2</property>
             <property name="justify">GTK_JUSTIFY_LEFT</property>
             <property name="halign">GTK_ALIGN_START</property>
-            <property name="use-markup">true</property>
           </object>
         </child>
       </object>
