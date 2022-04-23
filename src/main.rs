@@ -52,18 +52,31 @@ fn init_folders() {
 }
 
 fn init_internationalization() -> Result<(), Box<dyn std::error::Error>> {
-    gettextrs::TextDomain::new("de.schmidhuberj.tubefeeder")
+    if let Ok(loc) = gettextrs::TextDomain::new("de.schmidhuberj.tubefeeder")
         .locale_category(gettextrs::LocaleCategory::LcAll)
         .prepend("./po")
-        .init()?;
+        .init()
+    {
+        log::debug!(
+            "Locale {:?} sucessfully loaded.",
+            loc.as_ref().map(|l| String::from_utf8_lossy(l))
+        );
+    } else {
+        log::warn!("Translation for current locale not found. Falling back to en_US");
+        gettextrs::TextDomain::new("de.schmidhuberj.tubefeeder")
+            .locale_category(gettextrs::LocaleCategory::LcAll)
+            .locale("en_US")
+            .prepend("./po")
+            .init()?;
+    }
     Ok(())
 }
 
 #[tokio::main]
 async fn main() {
+    env_logger::init();
     init_internationalization().expect("Failed to initialize internationalization");
 
-    env_logger::init();
     gtk::init().expect("Failed to initialize gtk");
     libadwaita::init();
     let app = gtk::Application::builder()
