@@ -25,8 +25,7 @@ msgstr "Download"
 msgid "Copy to Clipboard"
 msgstr "Copia negli appunti"
 
-#: ui/feed_list.ui:35
-msgid "Load more"
+#: ui/feed_list.ui:35 msgid "Load more"
 msgstr "Carica di più"
 
 #: ui/feed_page.ui:16 ui/window.ui:19
@@ -73,7 +72,7 @@ msgstr "Errore durante la connessione alla rete"
 msgid "Error parsing one subscription"
 msgid_plural "Error parsing {} subscriptions"
 msgstr[0] "Errore durante l'analisi di una iscrizione"
-msgstr[1] ""Errore durante l'analisi di {} iscrizioni"
+msgstr[1] "Errore durante l'analisi di {} iscrizioni"
 
 #: src/gui/feed/error_label.rs:86
 msgid "Some error occured"
@@ -81,4 +80,4 @@ msgstr "Si è verificato un errore"
 
 #: src/gui/feed/feed_item_object.rs:64
 msgid "%F %T"
-msgstr ""
+msgstr "%F %T"
