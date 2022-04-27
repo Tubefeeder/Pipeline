@@ -25,7 +25,8 @@ msgstr "Download"
 msgid "Copy to Clipboard"
 msgstr "Copia negli appunti"
 
-#: ui/feed_list.ui:35 msgid "Load more"
+#: ui/feed_list.ui:35
+msgid "Load more"
 msgstr "Carica di più"
 
 #: ui/feed_page.ui:16 ui/window.ui:19
