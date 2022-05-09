@@ -19,7 +19,7 @@ msgstr ""
 
 #: ui/feed_item.ui:136
 msgid "Download"
-msgstr "Download"
+msgstr "Scaricati"
 
 #: ui/feed_item.ui:140
 msgid "Copy to Clipboard"
@@ -43,7 +43,7 @@ msgstr "Titolo"
 
 #: ui/filter_page.ui:45
 msgid "Channel Name"
-msgstr "Nome canale"
+msgstr "Nome del canale"
 
 #: ui/header_bar.ui:40
 msgid "About"
@@ -59,7 +59,7 @@ msgstr "URL di base"
 
 #: ui/subscription_page.ui:63
 msgid "Channel ID or Name"
-msgstr "ID canale o nome"
+msgstr "ID o nome del canale"
 
 #: ui/watch_later.ui:16 ui/window.ui:29
 msgid "Watch Later"
