@@ -166,9 +166,13 @@ pub mod imp {
                 .replace(Some(subscription_list.clone()));
             self._subscription_file_manager
                 .replace(Some(_subscription_file_manager));
-            self.subscription_page
-                .get()
-                .set_subscription_list(subscription_list.clone());
+            self.subscription_page.get().set_subscription_list(
+                subscription_list.clone(),
+                self.playlist_manager
+                    .borrow()
+                    .clone()
+                    .expect("PlaylistManager should be set up"),
+            );
             self.feed_page.get().setup(
                 self.playlist_manager
                     .borrow()

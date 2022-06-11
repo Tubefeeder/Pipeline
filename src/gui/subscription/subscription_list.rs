@@ -81,6 +81,7 @@ pub mod imp {
     use gdk::glib::MainContext;
     use gdk::glib::Sender;
     use gdk::glib::PRIORITY_DEFAULT;
+    use gdk_pixbuf::glib::subclass::Signal;
     use glib::subclass::InitializingObject;
     use gtk::glib;
     use gtk::prelude::*;
@@ -89,6 +90,7 @@ pub mod imp {
     use gtk::Widget;
 
     use gtk::CompositeTemplate;
+    use once_cell::sync::Lazy;
     use tf_join::AnySubscriptionList;
     use tf_join::SubscriptionEvent;
     use tf_observer::Observable;
@@ -168,16 +170,25 @@ pub mod imp {
                 .borrow()
                 .clone()
                 .expect("AnySubscriptionList should be set up");
-            factory.connect_setup(move |_, list_item| {
+            let instance = self.instance();
+            factory.connect_setup(clone!(@strong instance => move |_, list_item| {
                 let subscription_item = SubscriptionItem::new(any_subscription_list.clone());
                 list_item.set_child(Some(&subscription_item));
+
+                subscription_item.connect_local("go-to-videos", false, clone!(@strong instance => move |args| {
+                    let sub = args[1]
+                        .get::<SubscriptionObject>()
+                        .expect("The value needs to be of type `SubscriptionObject`.");
+                    instance.emit_by_name::<()>("go-to-videos", &[&sub]);
+                    None
+                }));
 
                 list_item.property_expression("item").bind(
                     &subscription_item,
                     "subscription",
                     Widget::NONE,
                 );
-            });
+            }));
             self.subscription_list.set_factory(Some(&factory));
         }
     }
@@ -200,6 +211,18 @@ pub mod imp {
     impl ObjectImpl for SubscriptionList {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+        }
+
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
+                vec![Signal::builder(
+                    "go-to-videos",
+                    &[SubscriptionObject::static_type().into()],
+                    <()>::static_type().into(),
+                )
+                .build()]
+            });
+            SIGNALS.as_ref()
         }
     }
 

@@ -14,6 +14,12 @@
       </object>
     </child>
     <child>
+      <object class="GtkButton" id="go-to-videos">
+          <property name="icon-name">go-last-symbolic</property>
+          <signal name="clicked" handler="handle_go_to_videos" swapped="true"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkBox">
         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
         <property name="vexpand">True</property>
