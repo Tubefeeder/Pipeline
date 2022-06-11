@@ -10,7 +10,10 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
-	  <release version="v1.6.7" date="2022-06-w11">
+	  <release version="v1.7.1" date="2022-06-11">
+		  <description>Fix flatpak build</description>
+	  </release>
+	  <release version="v1.7.0" date="2022-06-11">
 		  <description>Look at the videos of a single subscription using a dedicated button in the subscriptions list</description>
 	  </release>
 	  <release version="v1.6.6" date="2022-04-27">
