@@ -43,6 +43,7 @@ pub mod imp {
     use gdk::glib::clone;
     use gdk::glib::ParamSpecObject;
     use gdk::glib::Value;
+    use gdk_pixbuf::glib::subclass::Signal;
     use glib::subclass::InitializingObject;
     use glib::ParamFlags;
     use glib::ParamSpec;
@@ -70,6 +71,7 @@ pub mod imp {
         pub(super) subscription_list: RefCell<Option<AnySubscriptionList>>,
     }
 
+    #[gtk::template_callbacks]
     impl SubscriptionItem {
         fn bind_remove(&self) {
             let subscription = &self.subscription;
@@ -84,6 +86,13 @@ pub mod imp {
                 }),
             );
         }
+
+        #[template_callback]
+        fn handle_go_to_videos(&self) {
+            if let Some(sub) = self.subscription.borrow().as_ref() {
+                self.instance().emit_by_name::<()>("go-to-videos", &[&sub]);
+            }
+        }
     }
 
     #[glib::object_subclass]
@@ -94,6 +103,7 @@ pub mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
+            Self::bind_template_callbacks(klass);
             Utility::bind_template_callbacks(klass);
         }
 
@@ -140,6 +150,20 @@ pub mod imp {
                 "subscription" => self.subscription.borrow().to_value(),
                 _ => unimplemented!(),
             }
+        }
+
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
+                vec![Signal::builder(
+                    "go-to-videos",
+                    // Types of the values which will be sent to the signal handler
+                    &[SubscriptionObject::static_type().into()],
+                    // Type of the value the signal handler sends back
+                    <()>::static_type().into(),
+                )
+                .build()]
+            });
+            SIGNALS.as_ref()
         }
     }
 

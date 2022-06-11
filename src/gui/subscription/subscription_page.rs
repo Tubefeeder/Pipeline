@@ -19,7 +19,8 @@
  */
 
 use gdk::subclass::prelude::ObjectSubclassIsExt;
-use tf_join::AnySubscriptionList;
+use tf_join::{AnySubscriptionList, AnyVideo};
+use tf_playlist::PlaylistManager;
 
 gtk::glib::wrapper! {
     pub struct SubscriptionPage(ObjectSubclass<imp::SubscriptionPage>)
@@ -29,7 +30,11 @@ gtk::glib::wrapper! {
 }
 
 impl SubscriptionPage {
-    pub fn set_subscription_list(&self, subscription_list: AnySubscriptionList) {
+    pub fn set_subscription_list(
+        &self,
+        subscription_list: AnySubscriptionList,
+        playlist_manager: PlaylistManager<String, AnyVideo>,
+    ) {
         self.imp()
             .any_subscription_list
             .replace(Some(subscription_list.clone()));
@@ -37,6 +42,10 @@ impl SubscriptionPage {
             .subscription_list
             .get()
             .set_subscription_list(subscription_list);
+        self.imp()
+            .subscription_video_list
+            .get()
+            .set_playlist_manager(playlist_manager);
         self.imp().setup_add_subscription(&self);
     }
 }
@@ -62,13 +71,17 @@ pub mod imp {
 
     use gtk::CompositeTemplate;
     use once_cell::sync::Lazy;
+    use tf_core::Generator;
     use tf_join::AnySubscriptionList;
     use tf_join::Platform;
     use tf_lbry::LbrySubscription;
     use tf_pt::PTSubscription;
     use tf_yt::YTSubscription;
 
+    use crate::gui::feed::feed_item_object::VideoObject;
+    use crate::gui::feed::feed_list::FeedList;
     use crate::gui::subscription::platform::PlatformObject;
+    use crate::gui::subscription::subscription_item_object::SubscriptionObject;
     use crate::gui::subscription::subscription_list::SubscriptionList;
 
     #[derive(CompositeTemplate, Default)]
@@ -87,6 +100,11 @@ pub mod imp {
         pub(super) entry_name_id: TemplateChild<gtk::Entry>,
         #[template_child]
         pub(super) btn_add_subscription: TemplateChild<gtk::Button>,
+
+        #[template_child]
+        pub(super) subscription_stack: TemplateChild<gtk::Stack>,
+        #[template_child]
+        pub(super) subscription_video_list: TemplateChild<FeedList>,
 
         pub(super) any_subscription_list: RefCell<Option<AnySubscriptionList>>,
         add_visible: Cell<bool>,
@@ -173,9 +191,49 @@ pub mod imp {
         }
     }
 
-    #[gtk::template_callbacks(functions)]
+    #[gtk::template_callbacks]
     impl SubscriptionPage {
         #[template_callback]
+        fn handle_go_to_videos_page(&self, subscription: SubscriptionObject) {
+            log::debug!(
+                "Going to videos of subscription {}",
+                subscription
+                    .subscription()
+                    .expect("SubscriptionObject to have value")
+            );
+            self.subscription_stack.set_visible_child_name("page-vid");
+            let joiner = tf_join::Joiner::new();
+            joiner.subscription_list().add(
+                subscription
+                    .subscription()
+                    .expect("SubscriptionObject to have value"),
+            );
+
+            let error_store = tf_core::ErrorStore::new();
+
+            let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
+            tokio::spawn(async move {
+                let videos = joiner.generate(&error_store).await;
+                let _ = sender.send(videos);
+            });
+            let obj = self.instance();
+            receiver.attach(
+                None,
+                clone!(@strong obj as s => @default-return Continue(false), move |videos| {
+                    let video_objects = videos.into_iter().map(VideoObject::new).collect::<Vec<_>>();
+                    s.imp().subscription_video_list.get().set_items(video_objects);
+                    Continue(true)
+                }),
+            );
+        }
+
+        #[template_callback]
+        fn handle_go_to_subscriptions_page(&self) {
+            log::debug!("Going back to the subscriptions page",);
+            self.subscription_stack.set_visible_child_name("page-sub");
+        }
+
+        #[template_callback(function)]
         fn url_visible(#[rest] values: &[gtk::glib::Value]) -> bool {
             let platform: Option<PlatformObject> = values[0]
                 .get::<Option<Object>>()
@@ -184,7 +242,7 @@ pub mod imp {
             platform.as_ref().map(PlatformObject::platform).flatten() == Some(Platform::Peertube)
         }
 
-        #[template_callback]
+        #[template_callback(function)]
         fn name_visible(#[rest] _values: &[gtk::glib::Value]) -> bool {
             true
         }
