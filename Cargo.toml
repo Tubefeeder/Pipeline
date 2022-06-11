@@ -2,7 +2,7 @@
 name = "tubefeeder"
 description = "A Youtube, Lbry and Peertube client made for the Pinephone"
 homepage = "https://tubefeeder.de"
-version = "1.6.6"
+version = "1.7.0"
 authors = ["Julian Schmidhuber <schmidhuberj2@protonmail.com>"]
 edition = "2021"
 

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/">
-    <file alias="icon.png">packaging/tubefeeder.png</file>
-
     <file preprocess="xml-stripblanks">ui/error_label.ui</file>
     <file preprocess="xml-stripblanks">ui/window.ui</file>
     <file preprocess="xml-stripblanks">ui/header_bar.ui</file>
@@ -19,6 +17,7 @@
     <file preprocess="xml-stripblanks">ui/watch_later.ui</file>
   </gresource>
   <gresource prefix="/de/schmidhuberj/tubefeeder/icons/">
+    <file alias="icon.png">packaging/tubefeeder.png</file>
     <file preprocess="xml-stripblanks" alias="scalable/actions/funnel-symbolic.svg">data/icons/funnel-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="scalable/actions/library-artists-symbolic.svg">data/icons/library-artists-symbolic.svg</file>
   </gresource>

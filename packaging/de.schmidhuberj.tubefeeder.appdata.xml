@@ -10,6 +10,9 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
+	  <release version="v1.6.7" date="2022-06-w11">
+		  <description>Look at the videos of a single subscription using a dedicated button in the subscriptions list</description>
+	  </release>
 	  <release version="v1.6.6" date="2022-04-27">
 		  <description>
                       <p>Minor fix with the italic translation preventing packaging</p>
