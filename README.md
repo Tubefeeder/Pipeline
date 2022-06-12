@@ -33,8 +33,7 @@ A Youtube, Lbry and PeerTube-Client made for the Pinephone
       <a href='https://flathub.org/apps/details/de.schmidhuberj.tubefeeder'><img width='130' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
     </td>
     <td>
-      - <a href='https://aur.archlinux.org/packages/tubefeeder'>Stable</a>
-      - <a href='https://aur.archlinux.org/packages/tubefeeder-git'>Git</a>
+      <a href='https://aur.archlinux.org/packages/tubefeeder'>Stable</a> - <a href='https://aur.archlinux.org/packages/tubefeeder-git'>Git</a>
     </td>
   </tr>
 </table>
@@ -42,7 +41,7 @@ A Youtube, Lbry and PeerTube-Client made for the Pinephone
 # What it can do
 - Show the feed of your subscribed channels
 - Play the video with mpv (or any other video player)
-- Subscribe to a channel in the app
+- Subscribe to a channel in the application
 - Filtering out unwanted videos in the feed
 - A watch-later list
 
@@ -58,7 +57,7 @@ Tell me what features you want to be included by opening an [issue](https://gith
 - PeerTube
 - Lbry
 
-Suggest any other platform, it it has a good-enough API, I will consider adding it.
+Suggest any other platform, if it has a good-enough API, I will consider adding it.
 
 # Wiki
 Please also take a look at the [wiki](http://www.tubefeeder.de/wiki/) if you have any problems (e.g. mpv being slow on the PinePhone) or don't know how to do something (e.g. subscribing to a channel)
