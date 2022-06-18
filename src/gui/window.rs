@@ -34,8 +34,6 @@ gtk::glib::wrapper! {
 
 impl Window {
     pub fn new(app: &gtk::Application) -> Self {
-        // Make sure HeaderBar is loaded.
-        let _ = super::header_bar::HeaderBar::new();
         Object::new(&[("application", app)]).expect("Failed to create Window")
     }
 
@@ -82,7 +80,10 @@ pub mod imp {
     #[template(resource = "/ui/window.ui")]
     pub struct Window {
         #[template_child]
-        application_stack: TemplateChild<libadwaita::ViewStack>,
+        pub(in crate::gui) application_stack: TemplateChild<libadwaita::ViewStack>,
+
+        #[template_child]
+        pub(in crate::gui) application_stack_bar: TemplateChild<libadwaita::ViewSwitcherBar>,
 
         #[template_child]
         pub(super) feed_page: TemplateChild<FeedPage>,
@@ -225,6 +226,8 @@ pub mod imp {
         type ParentType = libadwaita::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
+            // Make sure HeaderBar is loaded.
+            crate::gui::header_bar::HeaderBar::ensure_type();
             Self::bind_template(klass);
         }
 

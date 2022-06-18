@@ -14,13 +14,17 @@
         <property name="vexpand">True</property>
         <property name="halign">GTK_ALIGN_FILL</property>
         <property name="valign">GTK_ALIGN_FILL</property>
-        <property name="title-widget">
-          <object class="AdwWindowTitle">
-            <binding name="title">
-              <lookup name="title" type="TFHeaderBar"/>
-            </binding>
+        <child type="title">
+          <object class="GtkBox">
+            <child>
+              <object class="AdwViewSwitcherTitle" id="titlebar">
+                <binding name="title">
+                  <lookup name="title" type="TFHeaderBar"/>
+                </binding>
+              </object>
+            </child>
           </object>
-        </property>
+        </child>
 
         <child>
           <object class="GtkBox" id="child_box">
