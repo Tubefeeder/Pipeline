@@ -60,6 +60,8 @@ pub mod imp {
     pub struct HeaderBar {
         #[template_child]
         child_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        titlebar: TemplateChild<libadwaita::ViewSwitcherTitle>,
 
         title: RefCell<Option<String>>,
         child: RefCell<Option<Object>>,
@@ -118,6 +120,21 @@ pub mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
             self.setup_actions(obj);
+
+            obj.connect_root_notify(clone!(@strong self.titlebar as titlebar => move |o| {
+                if let Some(root) = o.root() {
+                    let window = root
+                        .downcast::<crate::gui::window::Window>()
+                        .expect("Root to be window");
+                    window.connect_realize(clone!(@strong titlebar => move |w| {
+                        let stack = &w.imp().application_stack;
+                        let stack_switcher = &w.imp().application_stack_bar;
+                        titlebar
+                            .set_stack(Some(stack));
+                        titlebar.bind_property("title-visible", &stack_switcher.get(), "reveal").build();
+                    }));
+                }
+            }));
             obj.connect_notify_local(
                 Some("child"),
                 clone!(@strong self.child_box as b => move |obj, _| {

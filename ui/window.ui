@@ -55,7 +55,7 @@
         </child>
 
         <child>
-          <object class = "AdwViewSwitcher">
+          <object class="AdwViewSwitcherBar" id="application_stack_bar">
               <property name="hexpand">True</property>
               <property name="vexpand">False</property>
               <property name="halign">GTK_ALIGN_FILL</property>
