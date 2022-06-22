@@ -1,5 +1,10 @@
+<img align="left" style="vertical-align: middle" width="128" height="128" src="/packaging/de.schmidhuberj.tubefeeder.svg">
+
 # Tubefeeder
-A Youtube, Lbry and PeerTube-Client made for the Pinephone
+
+A Youtube, Lbry and PeerTube-Client that designed for phones and computers
+
+###
 
 [![Matrix](https://img.shields.io/badge/Matrix-Join-brightgreen)](https://matrix.to/#/%23tubefeeder:matrix.org?via=matrix.org)
 
