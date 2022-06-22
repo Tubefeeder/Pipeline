@@ -17,7 +17,7 @@
     <file preprocess="xml-stripblanks">ui/watch_later.ui</file>
   </gresource>
   <gresource prefix="/de/schmidhuberj/tubefeeder/icons/">
-    <file alias="icon.svg">packaging/tubefeeder.svg</file>
+    <file alias="icon.svg">packaging/de.schmidhuberj.tubefeeder.svg</file>
     <file preprocess="xml-stripblanks" alias="scalable/actions/funnel-symbolic.svg">data/icons/funnel-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="scalable/actions/library-artists-symbolic.svg">data/icons/library-artists-symbolic.svg</file>
   </gresource>
