@@ -1,4 +1,4 @@
-<img align="left" style="vertical-align: middle" width="128" height="128" src="/packaging/de.schmidhuberj.tubefeeder.svg">
+<img align="left" style="vertical-align: middle" width="120" height="120" src="/packaging/de.schmidhuberj.tubefeeder.svg">
 
 # Tubefeeder
 
