@@ -117,6 +117,18 @@
             <property name="halign">GTK_ALIGN_START</property>
           </object>
         </child>
+        <child>
+          <object class="GtkImage" id="is-local">
+            <property name="halign">GTK_ALIGN_START</property>
+            <property name="icon-name">folder-download-symbolic</property>
+            <binding name="visible">
+              <lookup name="is-local">
+                <lookup name="video" type="TFFeedItem">
+                </lookup>
+              </lookup>
+            </binding>
+          </object>
+        </child>
       </object>
     </child>
     <child>

@@ -103,7 +103,8 @@ impl VideoObject {
         self.set_property("playing", true);
         let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
         play(
-            self.property::<Option<String>>("url").unwrap_or_default(),
+            self.property::<Option<String>>("local-path")
+                .unwrap_or_else(|| self.property::<Option<String>>("url").unwrap_or_default()),
             move || {
                 let _ = sender.send(());
             },
@@ -122,14 +123,16 @@ impl VideoObject {
         let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
         download(
             self.property::<Option<String>>("url").unwrap_or_default(),
-            move || {
-                let _ = sender.send(());
+            move |local_path| {
+                let _ = sender.send(local_path);
             },
         );
         receiver.attach(
             None,
-            clone!(@weak self as s => @default-return Continue(false), move |_| {
+            clone!(@weak self as s => @default-return Continue(false), move |local_path| {
                 s.set_property("downloading", false);
+                s.set_property("local-path", local_path);
+                s.notify("is-local");
                 Continue(true)
             }),
         );
@@ -156,6 +159,7 @@ mod imp {
         date: RefCell<Option<String>>,
         url: RefCell<Option<String>>,
         thumbnail_url: RefCell<Option<String>>,
+        local_path: RefCell<Option<String>>,
 
         playing: Cell<bool>,
         downloading: Cell<bool>,
@@ -179,6 +183,7 @@ mod imp {
                     str_prop!("author"),
                     str_prop!("platform"),
                     str_prop!("date"),
+                    str_prop!("local-path"),
                     ParamSpecBoolean::new(
                         "playing",
                         "playing",
@@ -192,6 +197,13 @@ mod imp {
                         "downloading",
                         false,
                         ParamFlags::READWRITE,
+                    ),
+                    ParamSpecBoolean::new(
+                        "is-local",
+                        "is-local",
+                        "is-local",
+                        false,
+                        ParamFlags::READABLE,
                     ),
                 ]
             });
@@ -223,7 +235,9 @@ mod imp {
                 "platform",
                 self.platform,
                 "date",
-                self.date
+                self.date,
+                "local-path",
+                self.local_path
             );
         }
 
@@ -233,6 +247,9 @@ mod imp {
             }
             if pspec.name() == "downloading" {
                 return self.downloading.get().to_value();
+            }
+            if pspec.name() == "is-local" {
+                return self.local_path.borrow().is_some().to_value();
             }
             prop_get_all!(
                 pspec,
@@ -247,7 +264,9 @@ mod imp {
                 "platform",
                 self.platform,
                 "date",
-                self.date
+                self.date,
+                "local-path",
+                self.local_path
             )
         }
     }

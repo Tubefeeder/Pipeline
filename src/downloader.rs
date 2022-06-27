@@ -17,13 +17,11 @@
  * along with Tubefeeder.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use std::fmt::Display;
-
-use crate::player::open_with;
+use std::{fmt::Display, process::Command, thread};
 
 pub fn download<
     S: 'static + AsRef<str> + Display + std::convert::AsRef<std::ffi::OsStr> + std::marker::Send,
-    F: Fn() + std::marker::Send + 'static,
+    F: Fn(Option<String>) + std::marker::Send + 'static + std::marker::Sync,
 >(
     url: S,
     callback: F,
@@ -33,5 +31,34 @@ pub fn download<
         .unwrap_or("$HOME/Downloads/%(title)s-%(id)s.%(ext)s".to_string());
     let downloader_str =
         std::env::var("DOWNLOADER").unwrap_or(format!("youtube-dl --output {}", download_dir));
-    open_with(url, downloader_str, callback);
+    open_with_output(url, downloader_str, move |output| {
+        callback(
+            output
+                .lines()
+                .into_iter()
+                .find(|s| s.starts_with("[Merger] Merging formats into "))
+                .and_then(|s| s.split('"').nth(1).map(|s| s.to_owned())),
+        )
+    });
+}
+
+pub fn open_with_output<
+    S: 'static + AsRef<str> + Display + std::convert::AsRef<std::ffi::OsStr> + std::marker::Send,
+    F: Fn(String) + std::marker::Send + 'static,
+>(
+    url: S,
+    command: String,
+    callback: F,
+) {
+    thread::spawn(move || {
+        let mut command_iter = command.split(" ");
+        let program = command_iter
+            .next()
+            .expect("The command should have a program");
+        let args: Vec<String> = command_iter.map(|s| s.to_string()).collect();
+
+        let out = Command::new(&program).args(args).arg(url).output();
+
+        callback(String::from_utf8_lossy(&out.map(|o| o.stdout).unwrap_or_default()).to_string());
+    });
 }
