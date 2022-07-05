@@ -10,6 +10,9 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
+	  <release version="v1.8.3" date="2022-07-05">
+		  <description>Allow for custom Piped URLs, view local videos</description>
+	  </release>
 	  <release version="v1.8.2" date="2022-06-25">
 		  <description>Russian translation, symbolic app icon</description>
 	  </release>
