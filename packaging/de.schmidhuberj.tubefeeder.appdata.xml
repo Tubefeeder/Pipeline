@@ -10,6 +10,9 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
+	  <release version="v1.8.4" date="2022-07-16">
+		  <description>Fix playing local videos for some video formats</description>
+	  </release>
 	  <release version="v1.8.3" date="2022-07-05">
 		  <description>Allow for custom Piped URLs, view local videos</description>
 	  </release>
