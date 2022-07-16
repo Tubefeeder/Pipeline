@@ -19,6 +19,9 @@
 
 use std::{fmt::Display, process::Command, thread};
 
+const DOWNLOAD_MERGE: &str = "[Merger] Merging formats into ";
+const DOWNLOAD_DESTINATION: &str = "[download] Destination: ";
+
 pub fn download<
     S: 'static + AsRef<str> + Display + std::convert::AsRef<std::ffi::OsStr> + std::marker::Send,
     F: Fn(Option<String>) + std::marker::Send + 'static + std::marker::Sync,
@@ -36,8 +39,11 @@ pub fn download<
             output
                 .lines()
                 .into_iter()
-                .find(|s| s.starts_with("[Merger] Merging formats into "))
-                .and_then(|s| s.split('"').nth(1).map(|s| s.to_owned())),
+                .rev()
+                .find(|s| s.starts_with(DOWNLOAD_MERGE) || s.starts_with(DOWNLOAD_DESTINATION))
+                .map(|s| s.strip_prefix(DOWNLOAD_MERGE).unwrap_or(s))
+                .map(|s| s.strip_prefix(DOWNLOAD_DESTINATION).unwrap_or(s))
+                .map(|s| s.trim_matches('"').to_owned()),
         )
     });
 }
