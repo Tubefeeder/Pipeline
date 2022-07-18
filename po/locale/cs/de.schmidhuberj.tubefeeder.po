@@ -1,0 +1,84 @@
+# Czech translations
+# This file is distributed under the same license as the PACKAGE package.
+# vikdevelop <super-vik1@protonmail.com>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.5.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-07-17 22:20+0100\n"
+"PO-Revision-Date: 2022-07-17 22:20+0100\n"
+"Last-Translator: vikdevelop <super-vik1@protonmail.com>\n"
+"Language-Team: CZECH\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ui/feed_item.ui:136
+msgid "Download"
+msgstr "Stáhnout"
+
+#: ui/feed_item.ui:140
+msgid "Copy to Clipboard"
+msgstr "Kopírovat do schránky"
+
+#: ui/feed_list.ui:35
+msgid "Load more"
+msgstr "Načíst více"
+
+#: ui/feed_page.ui:16 ui/window.ui:19
+msgid "Feed"
+msgstr "Feed"
+
+#: ui/filter_page.ui:16 ui/window.ui:38
+msgid "Filters"
+msgstr "Filtry"
+
+#: ui/filter_page.ui:40
+msgid "Title"
+msgstr "Titulek"
+
+#: ui/filter_page.ui:45
+msgid "Channel Name"
+msgstr "Název kanálu"
+
+#: ui/header_bar.ui:40
+msgid "About"
+msgstr "O programu"
+
+#: ui/subscription_page.ui:16 ui/window.ui:47
+msgid "Subscriptions"
+msgstr "Odběry"
+
+#: ui/subscription_page.ui:51
+msgid "Base URL"
+msgstr "Základní adresa URL"
+
+#: ui/subscription_page.ui:63
+msgid "Channel ID or Name"
+msgstr "ID nebo název kanálu"
+
+#: ui/watch_later.ui:16 ui/window.ui:29
+msgid "Watch Later"
+msgstr "Podívat se později"
+
+#: src/gui/feed/error_label.rs:81
+msgid "Error connecting to the network"
+msgstr "Chyba připojení k síti"
+
+#: src/gui/feed/error_label.rs:83
+msgid "Error parsing one subscription"
+msgid_plural "Error parsing {} subscriptions"
+msgstr[0] "Chyba při analýze jednoho odběru"
+msgstr[1] "Chyba při zpracování {} odběrů"
+
+#: src/gui/feed/error_label.rs:86
+msgid "Some error occured"
+msgstr "Došlo k nějaké chybě"
+
+#: src/gui/feed/feed_item_object.rs:64
+msgid "%F %T"
+msgstr "%F %T"
