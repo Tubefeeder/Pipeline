@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-17 22:20+0100\n"
+"POT-Creation-Date: 2022-08-01 17:19+0200\n"
 "PO-Revision-Date: 2022-07-17 22:20+0100\n"
 "Last-Translator: vikdevelop <super-vik1@protonmail.com>\n"
 "Language-Team: CZECH\n"
@@ -17,68 +17,69 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: ui/feed_item.ui:136
+#: data/resources/ui/feed_item.ui:148
 msgid "Download"
 msgstr "Stáhnout"
 
-#: ui/feed_item.ui:140
+#: data/resources/ui/feed_item.ui:152
 msgid "Copy to Clipboard"
 msgstr "Kopírovat do schránky"
 
-#: ui/feed_list.ui:35
+#: data/resources/ui/feed_list.ui:35
 msgid "Load more"
 msgstr "Načíst více"
 
-#: ui/feed_page.ui:16 ui/window.ui:19
+#: data/resources/ui/feed_page.ui:16 data/resources/ui/window.ui:19
 msgid "Feed"
 msgstr "Feed"
 
-#: ui/filter_page.ui:16 ui/window.ui:38
+#: data/resources/ui/filter_page.ui:16 data/resources/ui/window.ui:38
 msgid "Filters"
 msgstr "Filtry"
 
-#: ui/filter_page.ui:40
+#: data/resources/ui/filter_page.ui:40
 msgid "Title"
 msgstr "Titulek"
 
-#: ui/filter_page.ui:45
+#: data/resources/ui/filter_page.ui:45
 msgid "Channel Name"
 msgstr "Název kanálu"
 
-#: ui/header_bar.ui:40
+#: data/resources/ui/header_bar.ui:44
 msgid "About"
 msgstr "O programu"
 
-#: ui/subscription_page.ui:16 ui/window.ui:47
+#: data/resources/ui/subscription_page.ui:21
+#: data/resources/ui/subscription_page.ui:95 data/resources/ui/window.ui:47
 msgid "Subscriptions"
 msgstr "Odběry"
 
-#: ui/subscription_page.ui:51
+#: data/resources/ui/subscription_page.ui:56
 msgid "Base URL"
 msgstr "Základní adresa URL"
 
-#: ui/subscription_page.ui:63
+#: data/resources/ui/subscription_page.ui:68
 msgid "Channel ID or Name"
 msgstr "ID nebo název kanálu"
 
-#: ui/watch_later.ui:16 ui/window.ui:29
+#: data/resources/ui/watch_later.ui:16 data/resources/ui/window.ui:29
 msgid "Watch Later"
 msgstr "Podívat se později"
 
-#: src/gui/feed/error_label.rs:81
+#: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
 msgstr "Chyba připojení k síti"
 
-#: src/gui/feed/error_label.rs:83
+#: src/gui/feed/error_label.rs:103
 msgid "Error parsing one subscription"
 msgid_plural "Error parsing {} subscriptions"
 msgstr[0] "Chyba při analýze jednoho odběru"
 msgstr[1] "Chyba při zpracování {} odběrů"
 
-#: src/gui/feed/error_label.rs:86
+#: src/gui/feed/error_label.rs:106
 msgid "Some error occured"
 msgstr "Došlo k nějaké chybě"
 
-#: src/gui/feed/feed_item_object.rs:64
+#: src/gui/feed/feed_item_object.rs:88
 msgid "%F %T"
 msgstr "%F %T"

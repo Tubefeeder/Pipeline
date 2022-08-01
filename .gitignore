@@ -1,12 +1,3 @@
-.idea
 /target
 *~*
-packaging/AppImage/Tubefeeder-latest-*.AppImage
-packaging/AppImage/AppDir
-packaging/AppImage/appimage-builder-cache
-packaging/AppImage/libapprun_hooks.so
-packaging/AppImage/excludelist
-packaging/AppImage/appdir-lint.sh
-resources.gresource
-.cargo
-LC_MESSAGES
+src/config.rs

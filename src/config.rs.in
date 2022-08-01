@@ -1,0 +1,6 @@
+pub const APP_ID: &str = @APP_ID@;
+pub const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
+pub const LOCALEDIR: &str = @LOCALEDIR@;
+// pub const PROFILE: &str = @PROFILE@;
+// pub const VERSION: &str = @VERSION@;
+pub const RESOURCES_BYTES: &[u8] = include_bytes!(concat!(@BUILD_DIR@, "/data/resources/resources.gresource"));

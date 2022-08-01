@@ -1,4 +1,4 @@
-<img align="left" style="vertical-align: middle" width="120" height="120" src="/packaging/de.schmidhuberj.tubefeeder.svg">
+<img align="left" style="vertical-align: middle" width="120" height="120" src="/data/icons/de.schmidhuberj.tubefeeder.svg">
 
 # Tubefeeder
 
@@ -12,16 +12,16 @@ A Youtube, Lbry and PeerTube-Client that designed for phones and computers
 <table>
   <tr>
     <td>
-      <img src="/screenshots/tubefeeder_screenshot_feed.png" alt="Feed" width="400"/>
+      <img src="/data/screenshots/tubefeeder_screenshot_feed.png" alt="Feed" width="400"/>
     </td>
     <td>
-      <img src="/screenshots/tubefeeder_screenshot_watch_later.png" alt="Feed" width="400"/>
+      <img src="/data/screenshots/tubefeeder_screenshot_watch_later.png" alt="Feed" width="400"/>
     </td>
     <td>
-      <img src="/screenshots/tubefeeder_screenshot_filters.png" alt="Feed" width="400"/>
+      <img src="/data/screenshots/tubefeeder_screenshot_filters.png" alt="Feed" width="400"/>
     </td>
     <td>
-      <img src="/screenshots/tubefeeder_screenshot_subscriptions.png" alt="Subscriptions" width="400"/>
+      <img src="/data/screenshots/tubefeeder_screenshot_subscriptions.png" alt="Subscriptions" width="400"/>
     </td>
     <tr>
 </table>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-05 15:51+0100\n"
+"POT-Creation-Date: 2022-08-01 17:19+0200\n"
 "PO-Revision-Date: 2022-03-05 15:52+0100\n"
 "Last-Translator: Julian Schmidhuber <internationalization@schmiddi.anonaddy."
 "com>\n"
@@ -18,68 +18,69 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ui/feed_item.ui:136
+#: data/resources/ui/feed_item.ui:148
 msgid "Download"
 msgstr "Herunterladen"
 
-#: ui/feed_item.ui:140
+#: data/resources/ui/feed_item.ui:152
 msgid "Copy to Clipboard"
 msgstr "Kopieren zum Clipboard"
 
-#: ui/feed_list.ui:35
+#: data/resources/ui/feed_list.ui:35
 msgid "Load more"
 msgstr "Lade mehr"
 
-#: ui/feed_page.ui:16
+#: data/resources/ui/feed_page.ui:16 data/resources/ui/window.ui:19
 msgid "Feed"
 msgstr "Feed"
 
-#: ui/filter_page.ui:16
+#: data/resources/ui/filter_page.ui:16 data/resources/ui/window.ui:38
 msgid "Filters"
 msgstr "Filter"
 
-#: ui/filter_page.ui:40
+#: data/resources/ui/filter_page.ui:40
 msgid "Title"
 msgstr "Titel"
 
-#: ui/filter_page.ui:45
+#: data/resources/ui/filter_page.ui:45
 msgid "Channel Name"
 msgstr "Kanal-Name"
 
-#: ui/header_bar.ui:40
+#: data/resources/ui/header_bar.ui:44
 msgid "About"
 msgstr "Über"
 
-#: ui/subscription_page.ui:16
+#: data/resources/ui/subscription_page.ui:21
+#: data/resources/ui/subscription_page.ui:95 data/resources/ui/window.ui:47
 msgid "Subscriptions"
 msgstr "Abonnenten"
 
-#: ui/subscription_page.ui:51
+#: data/resources/ui/subscription_page.ui:56
 msgid "Base URL"
 msgstr "URL"
 
-#: ui/subscription_page.ui:63
+#: data/resources/ui/subscription_page.ui:68
 msgid "Channel ID or Name"
 msgstr "Kanal Name oder ID"
 
-#: ui/watch_later.ui:16
+#: data/resources/ui/watch_later.ui:16 data/resources/ui/window.ui:29
 msgid "Watch Later"
 msgstr "Später Ansehen"
 
-#: src/gui/feed/error_label.rs:83
+#: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
 msgstr "Netzwerkfehler"
 
-#: src/gui/feed/error_label.rs:83
+#: src/gui/feed/error_label.rs:103
 msgid "Error parsing one subscription"
 msgid_plural "Error parsing {} subscriptions"
 msgstr[0] "Konnte ein Abbonnement nicht analysieren"
 msgstr[1] "Konnte {} Abonnements nicht analysieren"
 
-#: src/gui/feed/error_label.rs:88
+#: src/gui/feed/error_label.rs:106
 msgid "Some error occured"
 msgstr "Ein Fehler ist aufgetreten"
 
-#: src/gui/feed/feed_item_object.rs:64
+#: src/gui/feed/feed_item_object.rs:88
 msgid "%F %T"
 msgstr "%x %T"
