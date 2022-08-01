@@ -21,15 +21,16 @@
 use gdk::prelude::{ApplicationExt, ApplicationExtManual};
 use gtk::traits::GtkWindowExt;
 
+mod config;
+use self::config::{APP_ID, GETTEXT_PACKAGE, LOCALEDIR, RESOURCES_BYTES};
+
 mod csv_file_manager;
 mod downloader;
 mod gui;
 mod player;
 
 fn init_resources() {
-    let res_bytes = include_bytes!("../resources.gresource");
-
-    let gbytes = gtk::glib::Bytes::from_static(res_bytes.as_ref());
+    let gbytes = gtk::glib::Bytes::from_static(RESOURCES_BYTES);
     let resource = gtk::gio::Resource::from_data(&gbytes).unwrap();
 
     gtk::gio::resources_register(&resource);
@@ -52,23 +53,9 @@ fn init_folders() {
 }
 
 fn init_internationalization() -> Result<(), Box<dyn std::error::Error>> {
-    if let Ok(loc) = gettextrs::TextDomain::new("de.schmidhuberj.tubefeeder")
-        .locale_category(gettextrs::LocaleCategory::LcAll)
-        .prepend("./po")
-        .init()
-    {
-        log::debug!(
-            "Locale {:?} sucessfully loaded.",
-            loc.as_ref().map(|l| String::from_utf8_lossy(l))
-        );
-    } else {
-        log::warn!("Translation for current locale not found. Falling back to en_US");
-        gettextrs::TextDomain::new("de.schmidhuberj.tubefeeder")
-            .locale_category(gettextrs::LocaleCategory::LcAll)
-            .locale("en_US")
-            .prepend("./po")
-            .init()?;
-    }
+    gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
+    gettextrs::bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR)?;
+    gettextrs::textdomain(GETTEXT_PACKAGE)?;
     Ok(())
 }
 
@@ -80,7 +67,7 @@ async fn main() {
     gtk::init().expect("Failed to initialize gtk");
     libadwaita::init();
     let app = gtk::Application::builder()
-        .application_id("de.schmidhuberj.tubefeeder")
+        .application_id(APP_ID)
         .build();
 
     app.connect_activate(build_ui);
