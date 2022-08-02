@@ -8,3 +8,14 @@ option(
   value: 'default',
   description: 'The build profile for Tubefeeder. One of "default" or "development".'
 )
+
+option(
+  'flatpak',
+  type: 'combo',
+  choices: [
+    'true',
+    'false',
+  ],
+  value: 'false',
+  description: 'Is the build a flatpak build. One of "true" or "false".'
+)

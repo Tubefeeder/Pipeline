@@ -55,6 +55,8 @@ pub mod imp {
     use gtk::CompositeTemplate;
     use once_cell::sync::Lazy;
 
+    use crate::gui::preferences_window::PreferencesWindow;
+
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/ui/header_bar.ui")]
     pub struct HeaderBar {
@@ -69,6 +71,12 @@ pub mod imp {
 
     impl HeaderBar {
         fn setup_actions(&self, obj: &super::HeaderBar) {
+            let action_settings = SimpleAction::new("settings", None);
+            action_settings.connect_activate(|_, _| {
+                let settings = PreferencesWindow::new();
+                settings.show();
+            });
+
             let action_about = SimpleAction::new("about", None);
             action_about.connect_activate(|_, _| {
                 let about_dialog = AboutDialogBuilder::new()
@@ -98,6 +106,7 @@ pub mod imp {
             let actions = SimpleActionGroup::new();
             obj.insert_action_group("win", Some(&actions));
             actions.add_action(&action_about);
+            actions.add_action(&action_settings);
         }
     }
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schemalist>
+  <schema path="/de/schmidhuberj/tubefeeder/" id="de.schmidhuberj.tubefeeder" gettext-domain="tubefeeder">
+    <key name="window-width" type="i">
+      <default>500</default>
+      <summary>Window width</summary>
+    </key>
+    <key name="window-height" type="i">
+      <default>800</default>
+      <summary>Window height</summary>
+    </key>
+    <key name="is-maximized" type="b">
+      <default>false</default>
+      <summary>Window maximized state</summary>
+    </key>
+
+    <key name="player" type="s">
+      <default>"mpv"</default>
+      <summary>The player to use</summary>
+    </key>
+    <key name="downloader" type="s">
+      <default>"youtube-dl"</default>
+      <summary>The downloader to use</summary>
+    </key>
+    <key name="piped-url" type="s">
+      <default>"https://pipedapi.kavin.rocks"</default>
+      <summary>The piped api url</summary>
+    </key>
+  </schema>
+</schemalist>

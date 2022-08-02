@@ -47,6 +47,7 @@ else
   version_suffix = ''
   application_id = base_id
 endif
+flatpak = get_option('flatpak')
 
 meson.add_dist_script(
   'build-aux/dist-vendor.sh',
@@ -60,6 +61,6 @@ subdir('src')
 
 gnome.post_install(
   gtk_update_icon_cache: true,
-  glib_compile_schemas: false,
+  glib_compile_schemas: true,
   update_desktop_database: true,
 )

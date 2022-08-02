@@ -63,7 +63,6 @@
               <property name="stack">application_stack</property>
           </object>
         </child>
-
       </object>
     </child>
   </template>
