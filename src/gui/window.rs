@@ -18,7 +18,12 @@
  *
  */
 
-use gtk::{glib::Object, traits::WidgetExt};
+use gdk::subclass::prelude::ObjectSubclassIsExt;
+use gdk_pixbuf::prelude::SettingsExt;
+use gtk::{
+    glib::Object,
+    traits::{GtkWindowExt, WidgetExt},
+};
 
 fn setup_joiner() -> tf_join::Joiner {
     let joiner = tf_join::Joiner::new();
@@ -40,9 +45,39 @@ impl Window {
     pub fn reload(&self) {
         let _ = self.activate_action("win.reload", None);
     }
+
+    fn save_window_size(&self) -> Result<(), gtk::glib::BoolError> {
+        let imp = self.imp();
+
+        let (width, height) = self.default_size();
+
+        imp.settings.set_int("window-width", width)?;
+        imp.settings.set_int("window-height", height)?;
+
+        imp.settings
+            .set_boolean("is-maximized", self.is_maximized())?;
+
+        Ok(())
+    }
+
+    fn load_window_size(&self) {
+        let imp = self.imp();
+
+        let width = imp.settings.int("window-width");
+        let height = imp.settings.int("window-height");
+        let is_maximized = imp.settings.boolean("is-maximized");
+
+        self.set_default_size(width, height);
+
+        if is_maximized {
+            self.maximize();
+        }
+    }
 }
 
 pub mod imp {
+    use crate::config::{APP_ID, PROFILE};
+
     use std::cell::RefCell;
     use std::sync::Arc;
     use std::sync::Mutex;
@@ -76,7 +111,7 @@ pub mod imp {
 
     use super::setup_joiner;
 
-    #[derive(CompositeTemplate, Default)]
+    #[derive(CompositeTemplate)]
     #[template(resource = "/ui/window.ui")]
     pub struct Window {
         #[template_child]
@@ -84,6 +119,8 @@ pub mod imp {
 
         #[template_child]
         pub(in crate::gui) application_stack_bar: TemplateChild<libadwaita::ViewSwitcherBar>,
+
+        pub settings: gtk::gio::Settings,
 
         #[template_child]
         pub(super) feed_page: TemplateChild<FeedPage>,
@@ -103,6 +140,26 @@ pub mod imp {
             RefCell<Option<Arc<Mutex<Box<dyn Observer<SubscriptionEvent> + Send>>>>>,
         _filter_file_manager:
             RefCell<Option<Arc<Mutex<Box<dyn Observer<FilterEvent<AnyVideoFilter>> + Send>>>>>,
+    }
+
+    impl Default for Window {
+        fn default() -> Self {
+            Self {
+                settings: gtk::gio::Settings::new(APP_ID),
+                application_stack: Default::default(),
+                application_stack_bar: Default::default(),
+                feed_page: Default::default(),
+                watchlater_page: Default::default(),
+                filter_page: Default::default(),
+                subscription_page: Default::default(),
+                joiner: Default::default(),
+                playlist_manager: Default::default(),
+                any_subscription_list: Default::default(),
+                _watchlater_file_manager: Default::default(),
+                _subscription_file_manager: Default::default(),
+                _filter_file_manager: Default::default(),
+            }
+        }
     }
 
     impl Window {
@@ -242,12 +299,17 @@ pub mod imp {
             self.setup_watch_later();
             self.setup_subscriptions();
             self.setup_filter();
+
+            if PROFILE == "Devel" {
+                obj.add_css_class("devel");
+            }
+            obj.load_window_size();
         }
     }
 
     impl WidgetImpl for Window {}
     impl WindowImpl for Window {
-        fn close_request(&self, _obj: &Self::Type) -> Inhibit {
+        fn close_request(&self, obj: &Self::Type) -> Inhibit {
             let mut user_cache_dir = glib::user_cache_dir();
             user_cache_dir.push("tubefeeder");
 
@@ -255,7 +317,11 @@ pub mod imp {
                 std::fs::remove_dir_all(user_cache_dir).unwrap_or(());
             }
 
-            Inhibit(false)
+            if let Err(err) = obj.save_window_size() {
+                log::warn!("Failed to save window state, {}", &err);
+            }
+
+            self.parent_close_request(obj)
         }
     }
     impl ApplicationWindowImpl for Window {}

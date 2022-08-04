@@ -6,6 +6,7 @@ global_conf.set_quoted('VERSION', version + version_suffix)
 global_conf.set_quoted('GETTEXT_PACKAGE', gettext_package)
 global_conf.set_quoted('LOCALEDIR', localedir)
 global_conf.set_quoted('BUILD_DIR', meson.project_build_root())
+global_conf.set('FLATPAK', flatpak)
 config = configure_file(
   input: 'config.rs.in',
   output: 'config.rs',

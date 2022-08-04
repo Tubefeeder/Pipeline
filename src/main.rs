@@ -19,6 +19,7 @@
  */
 
 use gdk::prelude::{ApplicationExt, ApplicationExtManual};
+use gdk_pixbuf::{gio::Settings, prelude::SettingsExt};
 use gtk::traits::GtkWindowExt;
 
 mod config;
@@ -28,6 +29,19 @@ mod csv_file_manager;
 mod downloader;
 mod gui;
 mod player;
+
+fn init_setting(env: &'static str, value: &str) {
+    if std::env::var_os(env).is_none() {
+        std::env::set_var(env, value);
+    }
+}
+
+fn init_settings() {
+    let settings = Settings::new(APP_ID);
+    init_setting("PLAYER", &settings.string("player"));
+    init_setting("DOWNLOADER", &settings.string("downloader"));
+    init_setting("PIPED_API_URL", &settings.string("piped-url"));
+}
 
 fn init_resources() {
     let gbytes = gtk::glib::Bytes::from_static(RESOURCES_BYTES);
@@ -66,9 +80,7 @@ async fn main() {
 
     gtk::init().expect("Failed to initialize gtk");
     libadwaita::init();
-    let app = gtk::Application::builder()
-        .application_id(APP_ID)
-        .build();
+    let app = gtk::Application::builder().application_id(APP_ID).build();
 
     app.connect_activate(build_ui);
     app.run();
@@ -77,6 +89,7 @@ async fn main() {
 fn build_ui(app: &gtk::Application) {
     init_resources();
     init_folders();
+    init_settings();
     // Create new window and present it
     let window = crate::gui::window::Window::new(app);
     window.present();

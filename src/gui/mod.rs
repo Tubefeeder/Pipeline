@@ -21,6 +21,7 @@
 mod feed;
 mod filter;
 mod header_bar;
+mod preferences_window;
 mod subscription;
 mod utility;
 mod watch_later;
