@@ -131,7 +131,7 @@ pub mod imp {
         #[template_child]
         pub(super) subscription_page: TemplateChild<SubscriptionPage>,
 
-        joiner: RefCell<Option<Joiner>>,
+        pub(in crate::gui) joiner: RefCell<Option<Joiner>>,
         playlist_manager: RefCell<Option<PlaylistManager<String, AnyVideo>>>,
         any_subscription_list: RefCell<Option<AnySubscriptionList>>,
         _watchlater_file_manager:

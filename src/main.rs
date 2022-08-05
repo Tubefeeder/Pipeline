@@ -28,6 +28,7 @@ use self::config::{APP_ID, GETTEXT_PACKAGE, LOCALEDIR, RESOURCES_BYTES};
 mod csv_file_manager;
 mod downloader;
 mod gui;
+mod import;
 mod player;
 
 fn init_setting(env: &'static str, value: &str) {
