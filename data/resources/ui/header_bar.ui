@@ -45,6 +45,10 @@
         <attribute name="action">win.settings</attribute>
       </item>
       <item>
+        <attribute name="label" translatable="yes">Import</attribute>
+        <attribute name="action">win.import</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">About</attribute>
         <attribute name="action">win.about</attribute>
       </item>

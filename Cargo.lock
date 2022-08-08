@@ -2275,6 +2275,8 @@ dependencies = [
  "pango",
  "regex",
  "reqwest",
+ "serde",
+ "serde_json",
  "tf_core",
  "tf_filter",
  "tf_join",

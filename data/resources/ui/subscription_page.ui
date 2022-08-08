@@ -22,6 +22,9 @@
 
                     <property name="child">
                       <object class="GtkButton" id="btn_toggle_add_subscription">
+                        <style>
+                          <class name="flat"/>
+                        </style>
                         <property name="visible">True</property>
                         <child>
                           <object class="GtkImage">

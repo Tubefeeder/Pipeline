@@ -55,6 +55,7 @@ pub mod imp {
     use gtk::CompositeTemplate;
     use once_cell::sync::Lazy;
 
+    use crate::gui::import_window::ImportWindow;
     use crate::gui::preferences_window::PreferencesWindow;
 
     #[derive(CompositeTemplate, Default)]
@@ -76,6 +77,16 @@ pub mod imp {
                 let settings = PreferencesWindow::new();
                 settings.show();
             });
+            let action_import = SimpleAction::new("import", None);
+            action_import.connect_activate(clone!(@weak obj => move |_, _| {
+                let root = obj
+                    .root()
+                    .expect("HeaderBar to have root")
+                    .downcast::<crate::gui::window::Window>()
+                    .expect("Root to be window");
+                let import = ImportWindow::new(&root);
+                import.show();
+            }));
 
             let action_about = SimpleAction::new("about", None);
             action_about.connect_activate(|_, _| {
@@ -105,8 +116,9 @@ pub mod imp {
 
             let actions = SimpleActionGroup::new();
             obj.insert_action_group("win", Some(&actions));
-            actions.add_action(&action_about);
+            actions.add_action(&action_import);
             actions.add_action(&action_settings);
+            actions.add_action(&action_about);
         }
     }
 
