@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-05 17:15+0200\n"
+"POT-Creation-Date: 2022-08-08 12:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: David Lapshin <ddaudix@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,11 +38,11 @@ msgstr "Лента"
 msgid "Filters"
 msgstr "Фильтры"
 
-#: data/resources/ui/filter_page.ui:40
+#: data/resources/ui/filter_page.ui:43
 msgid "Title"
 msgstr "Название"
 
-#: data/resources/ui/filter_page.ui:45
+#: data/resources/ui/filter_page.ui:48
 msgid "Channel Name"
 msgstr "Название канала"
 
@@ -81,9 +81,8 @@ msgid "Player"
 msgstr ""
 
 #: data/resources/ui/preferences_window.ui:25
-#, fuzzy
 msgid "Downloader"
-msgstr "Скачать"
+msgstr ""
 
 #: data/resources/ui/preferences_window.ui:36
 msgid "APIs"
@@ -100,15 +99,15 @@ msgid "Piped API"
 msgstr ""
 
 #: data/resources/ui/subscription_page.ui:21
-#: data/resources/ui/subscription_page.ui:95 data/resources/ui/window.ui:47
+#: data/resources/ui/subscription_page.ui:98 data/resources/ui/window.ui:47
 msgid "Subscriptions"
 msgstr "Подписки"
 
-#: data/resources/ui/subscription_page.ui:56
+#: data/resources/ui/subscription_page.ui:59
 msgid "Base URL"
 msgstr "Базовый URL"
 
-#: data/resources/ui/subscription_page.ui:68
+#: data/resources/ui/subscription_page.ui:71
 msgid "Channel ID or Name"
 msgstr "ID Канала или имя"
 
@@ -133,6 +132,10 @@ msgstr "Произошла какая-то ошибка"
 #: src/gui/feed/feed_item_object.rs:88
 msgid "%F %T"
 msgstr "%F %T"
+
+#: src/gui/import_window.rs:83 src/gui/import_window.rs:114
+msgid "Failure to import subscriptions"
+msgstr ""
 
 #: src/gui/preferences_window.rs:49
 msgid ""

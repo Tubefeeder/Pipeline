@@ -78,7 +78,13 @@ pub mod imp {
                                 log::trace!("User picked file to import from");
                                 let file = chooser.file();
                                 if let Some(file) = file {
-                                    crate::import::import_newpipe(&obj.imp().joiner.borrow().as_ref().expect("Joiner to be set up"), file);
+                                    if let Err(e) = crate::import::import_newpipe(&obj.imp().joiner.borrow().as_ref().expect("Joiner to be set up"), file) {
+                                        let dialog = gtk::MessageDialog::builder()
+                                            .text(&gettextrs::gettext("Failure to import subscriptions"))
+                                            .secondary_text(&format!("{}", e))
+                                            .message_type(gtk::MessageType::Error).build();
+                                        dialog.show();
+                                    }
                                 }
                             } else {
                                 log::trace!("User did not choose anything to import from");
@@ -103,7 +109,13 @@ pub mod imp {
                                 log::trace!("User picked file to import from");
                                 let file = chooser.file();
                                 if let Some(file) = file {
-                                    crate::import::import_youtube(&obj.imp().joiner.borrow().as_ref().expect("Joiner to be set up"), file);
+                                    if let Err(e) = crate::import::import_youtube(&obj.imp().joiner.borrow().as_ref().expect("Joiner to be set up"), file) {
+                                        let dialog = gtk::MessageDialog::builder()
+                                            .text(&gettextrs::gettext("Failure to import subscriptions"))
+                                            .secondary_text(&format!("{}", e))
+                                            .message_type(gtk::MessageType::Error).build();
+                                        dialog.show();
+                                    }
                                 }
                             } else {
                                 log::trace!("User did not choose anything to import from");

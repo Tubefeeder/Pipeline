@@ -15,17 +15,11 @@ struct NewPipeSubscription {
     url: String,
 }
 
-pub fn import_newpipe(joiner: &Joiner, file: gio::File) {
-    // TODO: Error handling
-    let content: String = String::from_utf8(
-        file.load_contents(gio::Cancellable::NONE)
-            .expect("Loadable file contents")
-            .0,
-    )
-    .expect("File to be string");
+// TODO: Better error handling
+pub fn import_newpipe(joiner: &Joiner, file: gio::File) -> Result<(), Box<dyn std::error::Error>> {
+    let content: String = String::from_utf8(file.load_contents(gio::Cancellable::NONE)?.0)?;
 
-    let deserialized: NewPipeBase =
-        serde_json::from_str(content.as_str()).expect("File to be json");
+    let deserialized: NewPipeBase = serde_json::from_str(content.as_str())?;
 
     let subscription_list = joiner.subscription_list();
     let available_subscriptions: HashSet<String> = subscription_list
@@ -56,16 +50,12 @@ pub fn import_newpipe(joiner: &Joiner, file: gio::File) {
         let sub = YTSubscription::new(&uuid).into();
         subscription_list.add(sub);
     }
+    Ok(())
 }
 
-pub fn import_youtube(joiner: &Joiner, file: gio::File) {
-    // TODO: Error handling
-    let content: String = String::from_utf8(
-        file.load_contents(gio::Cancellable::NONE)
-            .expect("Loadable file contents")
-            .0,
-    )
-    .expect("File to be string");
+// TODO: Better error handling
+pub fn import_youtube(joiner: &Joiner, file: gio::File) -> Result<(), Box<dyn std::error::Error>> {
+    let content: String = String::from_utf8(file.load_contents(gio::Cancellable::NONE)?.0)?;
 
     let subscription_list = joiner.subscription_list();
     let available_subscriptions: HashSet<String> = subscription_list
@@ -96,4 +86,5 @@ pub fn import_youtube(joiner: &Joiner, file: gio::File) {
         let sub = YTSubscription::new(&uuid).into();
         subscription_list.add(sub);
     }
+    Ok(())
 }

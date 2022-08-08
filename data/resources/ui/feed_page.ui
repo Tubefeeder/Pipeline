@@ -19,6 +19,9 @@
               <object class="GtkBox" id="box_refresh">
                 <child>
                   <object class="GtkButton" id="btn_reload">
+                    <style>
+                      <class name="flat"/>
+                    </style>
                     <binding name="visible">
                       <closure function="not" type="gboolean">
                         <lookup name="reloading" type="TFFeedPage"></lookup>
