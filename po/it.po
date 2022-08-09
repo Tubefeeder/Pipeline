@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-08 12:47+0200\n"
-"PO-Revision-Date: 2022-04-22 15:10+0100\n"
+"PO-Revision-Date: 2022-08-08 21:10+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: ITALIAN <LL@li.org>\n"
 "Language: it\n"
@@ -47,11 +47,11 @@ msgstr "Nome del canale"
 
 #: data/resources/ui/header_bar.ui:44
 msgid "Settings"
-msgstr ""
+msgstr "Impostazioni"
 
 #: data/resources/ui/header_bar.ui:48 data/resources/ui/import_window.ui:8
 msgid "Import"
-msgstr ""
+msgstr "Importa"
 
 #: data/resources/ui/header_bar.ui:52
 msgid "About"
@@ -62,45 +62,49 @@ msgid ""
 "This will import your subscriptions from exported data from NewPipe or "
 "Youtube."
 msgstr ""
+"Questo importerà le tue iscrizioni dai dati esportati da NewPipe o "
+"Youtube."
 
 #: data/resources/ui/import_window.ui:44
 msgid "Cancel"
-msgstr ""
+msgstr "Cancella"
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
-msgstr ""
+msgstr "Generale"
 
 #: data/resources/ui/preferences_window.ui:13
 msgid "Programs"
-msgstr ""
+msgstr "Programmi"
 
 #: data/resources/ui/preferences_window.ui:16
 msgid "Player"
-msgstr ""
+msgstr "Player"
 
 #: data/resources/ui/preferences_window.ui:25
 msgid "Downloader"
-msgstr ""
+msgstr "Downloader"
 
 #: data/resources/ui/preferences_window.ui:36
 msgid "APIs"
-msgstr ""
+msgstr "API"
 
 #: data/resources/ui/preferences_window.ui:37
 msgid ""
 "For a list of public APIs, see https://github.com/TeamPiped/Piped/wiki/"
 "Instances."
 msgstr ""
+"Per un elenco di API pubbliche, vedere https://github.com/TeamPiped/Piped/wiki/"
+"Istanze."
 
 #: data/resources/ui/preferences_window.ui:40
 msgid "Piped API"
-msgstr ""
+msgstr "API convogliata"
 
 #: data/resources/ui/subscription_page.ui:21
 #: data/resources/ui/subscription_page.ui:98 data/resources/ui/window.ui:47
 msgid "Subscriptions"
-msgstr "Iscrizioni"
+msgstr "Abbonamenti"
 
 #: data/resources/ui/subscription_page.ui:59
 msgid "Base URL"
@@ -134,14 +138,16 @@ msgstr "%F %T"
 
 #: src/gui/import_window.rs:83 src/gui/import_window.rs:114
 msgid "Failure to import subscriptions"
-msgstr ""
+msgstr "Impossibile importare gli abbonamenti"
 
 #: src/gui/preferences_window.rs:49
 msgid ""
 "Note that on Flatpak, there are some more steps required when using a player "
 "external to the Flatpak. For more information, please consult the wiki."
 msgstr ""
+"Nota che su Flatpak, sono necessari alcuni passaggi in più quando si utilizza un lettore "
+"esterno al Flatpak. Per ulteriori informazioni, consultare il wiki."
 
 #: src/gui/preferences_window.rs:74
 msgid "Overwritten by environmental variable."
-msgstr ""
+msgstr "Sovrascritto dalla variabile dell'ambiente."
