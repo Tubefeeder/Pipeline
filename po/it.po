@@ -1,15 +1,15 @@
 # ITALIAN TRANSLATION FOR TUBEFEEDER.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# ALBANO BATTISTELLA <ALBANO_BATTISTELLA@HOTMAIL.COM>, 2022.
+# Michael Moroni <michaelmoroni@disroot.org>, 2022.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-08 12:47+0200\n"
+"POT-Creation-Date: 2022-08-09 08:14+0100\n"
 "PO-Revision-Date: 2022-04-22 15:10+0100\n"
-"Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
+"Last-Translator: Michael Moroni <michaelmoroni@disroot.org>\n"
 "Language-Team: ITALIAN <LL@li.org>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
@@ -47,11 +47,11 @@ msgstr "Nome del canale"
 
 #: data/resources/ui/header_bar.ui:44
 msgid "Settings"
-msgstr ""
+msgstr "Impostazioni"
 
 #: data/resources/ui/header_bar.ui:48 data/resources/ui/import_window.ui:8
 msgid "Import"
-msgstr ""
+msgstr "Importa"
 
 #: data/resources/ui/header_bar.ui:52
 msgid "About"
@@ -62,40 +62,44 @@ msgid ""
 "This will import your subscriptions from exported data from NewPipe or "
 "Youtube."
 msgstr ""
+"Verranno importate le tue iscrizioni dai dati esportati da NewPipe o "
+"da Youtube."
 
 #: data/resources/ui/import_window.ui:44
 msgid "Cancel"
-msgstr ""
+msgstr "Annulla"
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
-msgstr ""
+msgstr "Generale"
 
 #: data/resources/ui/preferences_window.ui:13
 msgid "Programs"
-msgstr ""
+msgstr "Programmi"
 
 #: data/resources/ui/preferences_window.ui:16
 msgid "Player"
-msgstr ""
+msgstr "Lettore"
 
 #: data/resources/ui/preferences_window.ui:25
 msgid "Downloader"
-msgstr ""
+msgstr "Scaricatore"
 
 #: data/resources/ui/preferences_window.ui:36
 msgid "APIs"
-msgstr ""
+msgstr "API"
 
 #: data/resources/ui/preferences_window.ui:37
 msgid ""
 "For a list of public APIs, see https://github.com/TeamPiped/Piped/wiki/"
 "Instances."
 msgstr ""
+"Per una lista delle API pubbliche, leggi https://github.com/TeamPiped/Piped/wiki/"
+"Instances."
 
 #: data/resources/ui/preferences_window.ui:40
 msgid "Piped API"
-msgstr ""
+msgstr "API di Piped"
 
 #: data/resources/ui/subscription_page.ui:21
 #: data/resources/ui/subscription_page.ui:98 data/resources/ui/window.ui:47
@@ -112,7 +116,7 @@ msgstr "ID o nome del canale"
 
 #: data/resources/ui/watch_later.ui:16 data/resources/ui/window.ui:29
 msgid "Watch Later"
-msgstr "Guarda in seguito"
+msgstr "Guarda dopo"
 
 #: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
@@ -134,14 +138,16 @@ msgstr "%F %T"
 
 #: src/gui/import_window.rs:83 src/gui/import_window.rs:114
 msgid "Failure to import subscriptions"
-msgstr ""
+msgstr "Importazione delle iscrizioni fallita"
 
 #: src/gui/preferences_window.rs:49
 msgid ""
 "Note that on Flatpak, there are some more steps required when using a player "
 "external to the Flatpak. For more information, please consult the wiki."
 msgstr ""
+"Nota che su Flatpak, ci sono più passaggi necessari per usare un lettore "
+"esterno a Flatpak. Per maggiori informazioni, per favore consulta la wiki."
 
 #: src/gui/preferences_window.rs:74
 msgid "Overwritten by environmental variable."
-msgstr ""
+msgstr "Sovrascritto da una variabile ambiente."
