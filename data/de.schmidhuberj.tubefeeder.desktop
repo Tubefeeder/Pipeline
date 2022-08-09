@@ -2,6 +2,8 @@
 Type=Application
 Icon=de.schmidhuberj.tubefeeder
 Name=Tubefeeder
+Comment=A Youtube, Lbry and Peertube client made for the Pinephone
+Comment[it]=Un client per Youtube, Lbry e Peertube creato per i Pinephone
 StartupWMClass=Tubefeeder
 Exec=/app/bin/tubefeeder
 Categories=Video;AudioVideo
