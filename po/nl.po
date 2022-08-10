@@ -8,26 +8,27 @@ msgstr ""
 "Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-08 12:47+0200\n"
-"PO-Revision-Date: 2022-04-22 15:10+0100\n"
-"Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
-"Language-Team: ITALIAN <LL@li.org>\n"
+"PO-Revision-Date: 2022-08-10 17:34+0200\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
+"Language-Team: Dutch <vistausss@fastmail.com>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.1.1\n"
 
 #: data/resources/ui/feed_item.ui:148
 msgid "Download"
-msgstr "Scaricati"
+msgstr "Downloaden"
 
 #: data/resources/ui/feed_item.ui:152
 msgid "Copy to Clipboard"
-msgstr "Copia negli appunti"
+msgstr "Kopiëren naar klembord"
 
 #: data/resources/ui/feed_list.ui:35
 msgid "Load more"
-msgstr "Carica di più"
+msgstr "Meer laden"
 
 #: data/resources/ui/feed_page.ui:16 data/resources/ui/window.ui:19
 msgid "Feed"
@@ -35,98 +36,101 @@ msgstr "Feed"
 
 #: data/resources/ui/filter_page.ui:16 data/resources/ui/window.ui:38
 msgid "Filters"
-msgstr "Filtri"
+msgstr "Filters"
 
 #: data/resources/ui/filter_page.ui:43
 msgid "Title"
-msgstr "Titolo"
+msgstr "Titel"
 
 #: data/resources/ui/filter_page.ui:48
 msgid "Channel Name"
-msgstr "Nome del canale"
+msgstr "Kanaalnaam"
 
 #: data/resources/ui/header_bar.ui:44
 msgid "Settings"
-msgstr ""
+msgstr "Instellingen"
 
 #: data/resources/ui/header_bar.ui:48 data/resources/ui/import_window.ui:8
 msgid "Import"
-msgstr ""
+msgstr "Importeren"
 
 #: data/resources/ui/header_bar.ui:52
 msgid "About"
-msgstr "Informazioni"
+msgstr "Over"
 
 #: data/resources/ui/import_window.ui:17
 msgid ""
 "This will import your subscriptions from exported data from NewPipe or "
 "Youtube."
 msgstr ""
+"Hiermee worden al je abonnementen geïmporteerd uit de geëxporteerde gegevens."
 
 #: data/resources/ui/import_window.ui:44
 msgid "Cancel"
-msgstr ""
+msgstr "Annuleren"
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
-msgstr ""
+msgstr "Algemeen"
 
 #: data/resources/ui/preferences_window.ui:13
 msgid "Programs"
-msgstr ""
+msgstr "Apps"
 
 #: data/resources/ui/preferences_window.ui:16
 msgid "Player"
-msgstr ""
+msgstr "Speler"
 
 #: data/resources/ui/preferences_window.ui:25
 msgid "Downloader"
-msgstr ""
+msgstr "Downloader"
 
 #: data/resources/ui/preferences_window.ui:36
 msgid "APIs"
-msgstr ""
+msgstr "Api's"
 
 #: data/resources/ui/preferences_window.ui:37
 msgid ""
 "For a list of public APIs, see https://github.com/TeamPiped/Piped/wiki/"
 "Instances."
 msgstr ""
+"De lijst met openbare api's is te vinden op https://github.com/TeamPiped/"
+"Piped/wiki/Instances"
 
 #: data/resources/ui/preferences_window.ui:40
 msgid "Piped API"
-msgstr ""
+msgstr "Piped-api"
 
 #: data/resources/ui/subscription_page.ui:21
 #: data/resources/ui/subscription_page.ui:98 data/resources/ui/window.ui:47
 msgid "Subscriptions"
-msgstr "Iscrizioni"
+msgstr "Abonnementen"
 
 #: data/resources/ui/subscription_page.ui:59
 msgid "Base URL"
-msgstr "URL di base"
+msgstr "Hoofdurl"
 
 #: data/resources/ui/subscription_page.ui:71
 msgid "Channel ID or Name"
-msgstr "ID o nome del canale"
+msgstr "Kanaalid of -naam"
 
 #: data/resources/ui/watch_later.ui:16 data/resources/ui/window.ui:29
 msgid "Watch Later"
-msgstr "Guarda in seguito"
+msgstr "Later bekijken"
 
 #: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
-msgstr "Errore durante la connessione alla rete"
+msgstr "Er kan geen verbindingen worden gemaakt met het internet"
 
 #: src/gui/feed/error_label.rs:103
 msgid "Error parsing one subscription"
 msgid_plural "Error parsing {} subscriptions"
-msgstr[0] "Errore durante l'analisi di una iscrizione"
-msgstr[1] "Errore durante l'analisi di {} iscrizioni"
+msgstr[0] "Eén abonnement kan niet worden verwerkt"
+msgstr[1] "{} abonnementen kunnen niet worden verwerkt"
 
 #: src/gui/feed/error_label.rs:106
 msgid "Some error occured"
-msgstr "Si è verificato un errore"
+msgstr "Er is een fout opgetreden"
 
 #: src/gui/feed/feed_item_object.rs:88
 msgid "%F %T"
@@ -134,14 +138,16 @@ msgstr "%F %T"
 
 #: src/gui/import_window.rs:83 src/gui/import_window.rs:114
 msgid "Failure to import subscriptions"
-msgstr ""
+msgstr "De abonnementen kunnen niet worden geïmporteerd"
 
 #: src/gui/preferences_window.rs:49
 msgid ""
 "Note that on Flatpak, there are some more steps required when using a player "
 "external to the Flatpak. For more information, please consult the wiki."
 msgstr ""
+"Let op: de flatpakversie vereist meer stappen bij gebruik van een externe "
+"speler. Bekijk voor meer informatie de wiki."
 
 #: src/gui/preferences_window.rs:74
 msgid "Overwritten by environmental variable."
-msgstr ""
+msgstr "Overschreven door een omgevingsvariabele."
