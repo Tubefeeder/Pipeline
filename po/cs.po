@@ -134,14 +134,16 @@ msgstr "%F %T"
 
 #: src/gui/import_window.rs:83 src/gui/import_window.rs:114
 msgid "Failure to import subscriptions"
-msgstr ""
+msgstr "Neúspěšný import odběrů"
 
 #: src/gui/preferences_window.rs:49
 msgid ""
 "Note that on Flatpak, there are some more steps required when using a player "
 "external to the Flatpak. For more information, please consult the wiki."
 msgstr ""
+""Všimněte si, že v případě Flatpaku je při použití přehrávače externího "
+"k Flatpaku nutné provést několik dalších kroků. Další informace naleznete na wiki.""
 
 #: src/gui/preferences_window.rs:74
 msgid "Overwritten by environmental variable."
-msgstr ""
+msgstr "Přepsáno proměnnou prostředí."
