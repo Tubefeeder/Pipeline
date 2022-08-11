@@ -141,7 +141,7 @@ msgid ""
 "Note that on Flatpak, there are some more steps required when using a player "
 "external to the Flatpak. For more information, please consult the wiki."
 msgstr ""
-""Všimněte si, že v případě Flatpaku je při použití přehrávače externího "
+"Všimněte si, že v případě Flatpaku je při použití přehrávače externího "
 "k Flatpaku nutné provést několik dalších kroků. Další informace naleznete na wiki.""
 
 #: src/gui/preferences_window.rs:74
