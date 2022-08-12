@@ -2,20 +2,21 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # ALBANO BATTISTELLA <ALBANO_BATTISTELLA@HOTMAIL.COM>, 2022.
+# Michael Moroni <michaelmoroni@disroot.org>, 2022.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-08 12:47+0200\n"
-"PO-Revision-Date: 2022-08-08 21:10+0100\n"
-"Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
+"PO-Revision-Date: 2022-08-09 11:10+0100\n"
+"Last-Translator: Michael Moroni <michaelmoroni@disroot.org>\n"
 "Language-Team: ITALIAN <LL@li.org>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: data/resources/ui/feed_item.ui:148
 msgid "Download"
@@ -67,7 +68,7 @@ msgstr ""
 
 #: data/resources/ui/import_window.ui:44
 msgid "Cancel"
-msgstr "Cancella"
+msgstr "Annulla"
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
@@ -79,7 +80,7 @@ msgstr "Programmi"
 
 #: data/resources/ui/preferences_window.ui:16
 msgid "Player"
-msgstr "Player"
+msgstr "Lettore"
 
 #: data/resources/ui/preferences_window.ui:25
 msgid "Downloader"
@@ -95,16 +96,16 @@ msgid ""
 "Instances."
 msgstr ""
 "Per un elenco di API pubbliche, vedere https://github.com/TeamPiped/Piped/wiki/"
-"Istanze."
+"Instances."
 
 #: data/resources/ui/preferences_window.ui:40
 msgid "Piped API"
-msgstr "API convogliata"
+msgstr "API di Piped"
 
 #: data/resources/ui/subscription_page.ui:21
 #: data/resources/ui/subscription_page.ui:98 data/resources/ui/window.ui:47
 msgid "Subscriptions"
-msgstr "Abbonamenti"
+msgstr "Iscrizioni"
 
 #: data/resources/ui/subscription_page.ui:59
 msgid "Base URL"
@@ -116,7 +117,7 @@ msgstr "ID o nome del canale"
 
 #: data/resources/ui/watch_later.ui:16 data/resources/ui/window.ui:29
 msgid "Watch Later"
-msgstr "Guarda in seguito"
+msgstr "Guarda dopo"
 
 #: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
@@ -138,14 +139,14 @@ msgstr "%F %T"
 
 #: src/gui/import_window.rs:83 src/gui/import_window.rs:114
 msgid "Failure to import subscriptions"
-msgstr "Impossibile importare gli abbonamenti"
+msgstr "Impossibile importare le iscrizioni"
 
 #: src/gui/preferences_window.rs:49
 msgid ""
 "Note that on Flatpak, there are some more steps required when using a player "
 "external to the Flatpak. For more information, please consult the wiki."
 msgstr ""
-"Nota che su Flatpak, sono necessari alcuni passaggi in più quando si utilizza un lettore "
+"Nota che su Flatpak sono necessari alcuni passaggi in più quando si utilizza un lettore "
 "esterno al Flatpak. Per ulteriori informazioni, consultare il wiki."
 
 #: src/gui/preferences_window.rs:74
