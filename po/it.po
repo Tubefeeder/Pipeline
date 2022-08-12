@@ -1,6 +1,7 @@
 # ITALIAN TRANSLATION FOR TUBEFEEDER.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
+# ALBANO BATTISTELLA <ALBANO_BATTISTELLA@HOTMAIL.COM>, 2022.
 # Michael Moroni <michaelmoroni@disroot.org>, 2022.
 #
 msgid ""
@@ -83,7 +84,7 @@ msgstr "Lettore"
 
 #: data/resources/ui/preferences_window.ui:25
 msgid "Downloader"
-msgstr "Scaricatore"
+msgstr "Downloader"
 
 #: data/resources/ui/preferences_window.ui:36
 msgid "APIs"
@@ -95,7 +96,7 @@ msgid ""
 "Instances."
 msgstr ""
 "Per un elenco di API pubbliche, vedere https://github.com/TeamPiped/Piped/wiki/"
-"Istances."
+"Instances."
 
 #: data/resources/ui/preferences_window.ui:40
 msgid "Piped API"
