@@ -144,7 +144,7 @@ msgid ""
 "external to the Flatpak. For more information, please consult the wiki."
 msgstr ""
 "Všimněte si, že v případě Flatpaku je při použití přehrávače externího "
-"k Flatpaku nutné provést několik dalších kroků. Další informace naleznete na wiki.""
+"k Flatpaku nutné provést několik dalších kroků. Další informace naleznete na wiki."
 
 #: src/gui/preferences_window.rs:74
 msgid "Overwritten by environmental variable."
