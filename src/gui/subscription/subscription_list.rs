@@ -22,6 +22,7 @@ use gdk::{
     prelude::{Cast, ListModelExtManual},
     subclass::prelude::ObjectSubclassIsExt,
 };
+use gtk::{traits::SorterExt, SorterChange};
 use tf_join::AnySubscriptionList;
 
 use super::subscription_item_object::SubscriptionObject;
@@ -45,8 +46,14 @@ impl SubscriptionList {
     pub fn add(&self, new_item: SubscriptionObject) {
         let imp = self.imp();
         let model = &imp.model;
+        let sorter = &imp.sorter;
 
         model.borrow_mut().insert(0, &new_item);
+        sorter
+            .borrow()
+            .as_ref()
+            .expect("`Sorter` to be set up")
+            .changed(SorterChange::Different)
     }
 
     pub fn remove(&self, new_item: SubscriptionObject) {
@@ -86,7 +93,10 @@ pub mod imp {
     use gtk::glib;
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
+    use gtk::CustomSorter;
     use gtk::SignalListItemFactory;
+    use gtk::SortListModel;
+    use gtk::SorterChange;
     use gtk::Widget;
 
     use gtk::CompositeTemplate;
@@ -106,6 +116,7 @@ pub mod imp {
         pub(super) subscription_list: TemplateChild<gtk::ListView>,
 
         pub(super) model: RefCell<ListStore>,
+        pub(super) sorter: RefCell<Option<CustomSorter>>,
 
         pub(super) any_subscription_list: RefCell<Option<AnySubscriptionList>>,
         _subscription_observer:
@@ -157,12 +168,37 @@ pub mod imp {
 
         pub fn setup_list(&self) {
             let model = gtk::gio::ListStore::new(SubscriptionObject::static_type());
-            let selection_model = gtk::NoSelection::new(Some(&model));
+
+            let sorter = CustomSorter::new(move |obj1, obj2| {
+                let subscription_object_1 = obj1
+                    .downcast_ref::<SubscriptionObject>()
+                    .expect("The object needs to be of type `SubscriptionObject`.");
+                let subscription_object_2 = obj2
+                    .downcast_ref::<SubscriptionObject>()
+                    .expect("The object needs to be of type `SubscriptionObject`.");
+
+                let name_1 = subscription_object_1
+                    .property::<Option<String>>("name")
+                    .unwrap_or_else(|| "".to_string())
+                    .to_lowercase();
+                let name_2 = subscription_object_2
+                    .property::<Option<String>>("name")
+                    .unwrap_or_else(|| "".to_string())
+                    .to_lowercase();
+
+                log::trace!("Re-sorting");
+                name_1.cmp(&name_2).into()
+            });
+
+            let sort_model = SortListModel::new(Some(&model), Some(&sorter));
+
+            let selection_model = gtk::NoSelection::new(Some(&sort_model));
             self.subscription_list
                 .get()
                 .set_model(Some(&selection_model));
 
             self.model.replace(model);
+            self.sorter.replace(Some(sorter.clone()));
 
             let factory = SignalListItemFactory::new();
             let any_subscription_list = self
@@ -171,7 +207,7 @@ pub mod imp {
                 .clone()
                 .expect("AnySubscriptionList should be set up");
             let instance = self.instance();
-            factory.connect_setup(clone!(@strong instance => move |_, list_item| {
+            factory.connect_setup(clone!(@strong instance, @strong sorter => move |_, list_item| {
                 let subscription_item = SubscriptionItem::new(any_subscription_list.clone());
                 list_item.set_child(Some(&subscription_item));
 
@@ -181,6 +217,16 @@ pub mod imp {
                         .expect("The value needs to be of type `SubscriptionObject`.");
                     instance.emit_by_name::<()>("go-to-videos", &[&sub]);
                     None
+                }));
+
+                subscription_item.connect_notify_local(Some("subscription"), clone!(@strong sorter => move |s, _| {
+                    let item: Option<SubscriptionObject> = s.property("subscription");
+                    if let Some(item) = item {
+                        item.connect_notify_local(Some("name"), clone!(@strong sorter => move |_, _| {
+                            log::trace!("Got a name change");
+                            sorter.changed(SorterChange::Different);
+                        }));
+                    }
                 }));
 
                 list_item.property_expression("item").bind(
