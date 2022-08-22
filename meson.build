@@ -1,7 +1,7 @@
 project(
   'tubefeeder',
   'rust',
-  version: '1.9.0',
+  version: '1.9.1',
   meson_version: '>= 0.59',
   license: 'GPL-3.0-or-later',
 )
