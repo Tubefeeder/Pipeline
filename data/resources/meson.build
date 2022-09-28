@@ -1,3 +1,5 @@
+subdir('ui')
+
 # Resources
 resources = gnome.compile_resources(
   'resources',

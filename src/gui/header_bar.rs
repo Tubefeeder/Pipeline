@@ -46,11 +46,12 @@ pub mod imp {
     use gdk::glib::ParamSpecString;
     use gdk::glib::Value;
     use glib::subclass::InitializingObject;
-    use gtk::builders::AboutDialogBuilder;
     use gtk::glib;
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
     use gtk::Widget;
+    use gtk::Builder;
+    use libadwaita::AboutWindow;
 
     use gtk::CompositeTemplate;
     use once_cell::sync::Lazy;
@@ -90,28 +91,11 @@ pub mod imp {
 
             let action_about = SimpleAction::new("about", None);
             action_about.connect_activate(|_, _| {
-                let about_dialog = AboutDialogBuilder::new()
-                    .authors(
-                        env!("CARGO_PKG_AUTHORS")
-                            .split(";")
-                            .map(|s| s.to_string())
-                            .collect(),
-                    )
-                    .comments(env!("CARGO_PKG_DESCRIPTION"))
-                    .copyright(
-                        include_str!("../../NOTICE")
-                            .to_string()
-                            .lines()
-                            .next()
-                            .unwrap_or_default(),
-                    )
-                    .license_type(gtk::License::Gpl30)
-                    .logo_icon_name("icon")
-                    .program_name("Tubefeeder")
-                    .version(env!("CARGO_PKG_VERSION"))
-                    .website(env!("CARGO_PKG_HOMEPAGE"))
-                    .build();
-                about_dialog.show();
+                let builder = Builder::from_resource("/ui/about.ui");
+                let about: AboutWindow = builder
+                    .object("about")
+                    .expect("about.ui to have at least one object about");
+                about.show();
             });
 
             let actions = SimpleActionGroup::new();

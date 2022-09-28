@@ -25,17 +25,18 @@ pub mod imp {
     use libadwaita::subclass::prelude::PreferencesWindowImpl;
     use libadwaita::traits::ActionRowExt;
     use libadwaita::traits::PreferencesGroupExt;
+    use libadwaita::EntryRow;
 
     #[derive(CompositeTemplate)]
     #[template(resource = "/ui/preferences_window.ui")]
     pub struct PreferencesWindow {
         #[template_child]
-        entry_player: TemplateChild<gtk::Entry>,
+        entry_player: TemplateChild<EntryRow>,
         #[template_child]
-        entry_downloader: TemplateChild<gtk::Entry>,
+        entry_downloader: TemplateChild<EntryRow>,
 
         #[template_child]
-        entry_piped_api: TemplateChild<gtk::Entry>,
+        entry_piped_api: TemplateChild<EntryRow>,
 
         #[template_child]
         group_programs: TemplateChild<libadwaita::PreferencesGroup>,
@@ -53,7 +54,7 @@ pub mod imp {
             &self,
             env: &'static str,
             settings: &'static str,
-            entry: gtk::Entry,
+            entry: EntryRow,
         ) {
             let val_env = std::env::var_os(env);
             let val_settings = self.settings.string(settings);

@@ -12,24 +12,13 @@
           <object class="AdwPreferencesGroup" id="group_programs">
             <property name="title" translatable="yes">Programs</property>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwEntryRow" id="entry_player">
                 <property name="title" translatable="yes">Player</property>
-                <property name='valign'>center</property>
-                <child>
-                  <object class="GtkEntry" id="entry_player">
-                    <property name='valign'>center</property>
-                  </object>
-                </child>
               </object>
             </child>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwEntryRow" id="entry_downloader">
                 <property name="title" translatable="yes">Downloader</property>
-                <child>
-                  <object class="GtkEntry" id="entry_downloader">
-                    <property name='valign'>center</property>
-                  </object>
-                </child>
               </object>
             </child>
           </object>
@@ -39,13 +28,8 @@
             <property name="title" translatable="yes">APIs</property>
             <property name="description" translatable="yes">For a list of public APIs, see https://github.com/TeamPiped/Piped/wiki/Instances.</property>
             <child>
-              <object class="AdwActionRow">
+              <object class="AdwEntryRow" id="entry_piped_api">
                 <property name="title" translatable="yes">Piped API</property>
-                <child>
-                  <object class="GtkEntry" id="entry_piped_api">
-                    <property name='valign'>center</property>
-                  </object>
-                </child>
               </object>
             </child>
           </object>
