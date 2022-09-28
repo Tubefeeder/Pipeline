@@ -111,6 +111,7 @@ impl TryFrom<SubscriptionEvent> for CsvEvent<AnySubscription> {
         match e {
             SubscriptionEvent::Add(i) => Ok(CsvEvent::Add(i)),
             SubscriptionEvent::Remove(i) => Ok(CsvEvent::Remove(i)),
+            SubscriptionEvent::Update(i) => Ok(CsvEvent::Add(i)),
         }
     }
 }

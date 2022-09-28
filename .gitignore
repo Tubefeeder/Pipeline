@@ -1,3 +1,4 @@
 /target
 *~*
 src/config.rs
+data/resources/ui/about.ui

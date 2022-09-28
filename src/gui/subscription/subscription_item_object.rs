@@ -22,6 +22,8 @@ use std::cell::RefCell;
 
 use gdk::glib::Object;
 use gdk::subclass::prelude::ObjectSubclassIsExt;
+use gdk_pixbuf::prelude::ObjectExt;
+use tf_core::Subscription;
 use tf_join::AnySubscription;
 
 macro_rules! str_prop {
@@ -73,12 +75,15 @@ impl SubscriptionObject {
         ])
         .expect("Failed to create `SubscriptionObject`.");
         s.imp().subscription.swap(&RefCell::new(Some(subscription)));
-        s.imp().setup_name(&s);
         s
     }
 
     pub fn subscription(&self) -> Option<AnySubscription> {
         self.imp().subscription.borrow().clone()
+    }
+
+    pub fn update_name(&self, sub: &AnySubscription) {
+        self.set_property("name", sub.name());
     }
 }
 
@@ -88,10 +93,8 @@ mod imp {
     use tf_join::AnySubscription;
 
     use gdk::{
-        glib::{
-            clone, MainContext, ParamFlags, ParamSpec, ParamSpecString, Value, PRIORITY_DEFAULT,
-        },
-        prelude::{Continue, ObjectExt, ToValue},
+        glib::{ParamFlags, ParamSpec, ParamSpecString, Value},
+        prelude::ToValue,
         subclass::prelude::{ObjectImpl, ObjectSubclass},
     };
     use once_cell::sync::Lazy;
@@ -102,38 +105,6 @@ mod imp {
         platform: RefCell<Option<String>>,
 
         pub(super) subscription: RefCell<Option<AnySubscription>>,
-    }
-
-    impl SubscriptionObject {
-        pub(super) fn setup_name(&self, obj: &super::SubscriptionObject) {
-            let sub_clone = self
-                .subscription
-                .borrow()
-                .clone()
-                .expect("Subscription for the item should be set up");
-
-            let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
-
-            tokio::spawn(async move {
-                let client = reqwest::Client::new();
-                let name = match &sub_clone {
-                    AnySubscription::Youtube(sub) => sub.update_name(&client).await,
-                    AnySubscription::Peertube(sub) => sub.update_name(&client).await,
-                    AnySubscription::Lbry(sub) => sub.update_name(&client).await,
-                };
-                if name.is_some() {
-                    let _ = sender.send(name);
-                }
-            });
-
-            receiver.attach(
-                None,
-                clone!(@strong obj => move |name| {
-                    obj.set_property("name", name.to_value());
-                    Continue(true)
-                }),
-            );
-        }
     }
 
     #[glib::object_subclass]

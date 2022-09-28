@@ -23,7 +23,7 @@ use gdk::{
     subclass::prelude::ObjectSubclassIsExt,
 };
 use gtk::{traits::SorterExt, SorterChange};
-use tf_join::AnySubscriptionList;
+use tf_join::{AnySubscription, AnySubscriptionList};
 
 use super::subscription_item_object::SubscriptionObject;
 
@@ -68,6 +68,21 @@ impl SubscriptionList {
         }) {
             model.remove(idx as u32);
         }
+    }
+
+    pub fn update(&self, sub: AnySubscription) {
+        let imp = self.imp();
+        let model = imp.model.borrow();
+
+        model
+            .snapshot()
+            .into_iter()
+            .map(|i| {
+                i.downcast::<SubscriptionObject>()
+                    .expect("Items should be of type SubscriptionObject")
+            })
+            .filter(|i| i.subscription().as_ref() == Some(&sub))
+            .for_each(|i| i.update_name(&sub))
     }
 
     pub fn set_subscription_list(&self, subscription_list: AnySubscriptionList) {
@@ -160,6 +175,9 @@ pub mod imp {
                             let subscription = SubscriptionObject::new(s);
                             obj.remove(subscription);
                         }
+                        SubscriptionEvent::Update(s) => {
+                            obj.update(s);
+                        }
                     }
                     Continue(true)
                 }),
@@ -186,7 +204,6 @@ pub mod imp {
                     .unwrap_or_else(|| "".to_string())
                     .to_lowercase();
 
-                log::trace!("Re-sorting");
                 name_1.cmp(&name_2).into()
             });
 
@@ -223,7 +240,6 @@ pub mod imp {
                     let item: Option<SubscriptionObject> = s.property("subscription");
                     if let Some(item) = item {
                         item.connect_notify_local(Some("name"), clone!(@strong sorter => move |_, _| {
-                            log::trace!("Got a name change");
                             sorter.changed(SorterChange::Different);
                         }));
                     }
