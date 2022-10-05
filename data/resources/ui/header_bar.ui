@@ -33,6 +33,7 @@
         <child type="end">
           <object class="GtkMenuButton">
               <property name="menu-model">menubar</property>
+              <property name="icon-name">open-menu-symbolic</property>
           </object>
         </child>
       </object>
@@ -41,7 +42,7 @@
   <menu id="menubar">
     <section>
       <item>
-        <attribute name="label" translatable="yes">Settings</attribute>
+        <attribute name="label" translatable="yes">Preferences</attribute>
         <attribute name="action">win.settings</attribute>
       </item>
       <item>
