@@ -95,6 +95,7 @@ pub mod imp {
                 let about: AboutWindow = builder
                     .object("about")
                     .expect("about.ui to have at least one object about");
+                about.add_link(&gettextrs::gettext("Donate"), "https://www.tubefeeder.de/donate.html");
                 about.show();
             });
 
