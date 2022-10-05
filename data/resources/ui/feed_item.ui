@@ -133,12 +133,21 @@
     </child>
     <child>
       <object class="GtkMenuButton">
-          <property name="menu-model">menu</property>
+        <property name="menu-model">menu</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="hexpand">false</property>
+        <property name="vexpand">false</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="watch_later">
         <property name="icon-name">appointment-new-symbolic</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="vexpand">false</property>
+        <property name="hexpand">false</property>
+        <property name="margin-end">7</property>
       </object>
     </child>
   </template>
