@@ -1,0 +1,26 @@
+diff --git a/src/downloader.rs b/src/downloader.rs
+index 9014faf..a410828 100644
+--- a/src/downloader.rs
++++ b/src/downloader.rs
+@@ -34,7 +34,7 @@ pub fn download<
+         .unwrap_or("$HOME/Downloads/%(title)s-%(id)s.%(ext)s".to_string());
+     let downloader_str =
+         std::env::var("DOWNLOADER").unwrap_or(format!("youtube-dl --output {}", download_dir));
+-    open_with_output(url, downloader_str, move |output| {
++    open_with_output(url, format!("flatpak-spawn --host {}", downloader_str), move |output| {
+         callback(
+             output
+                 .lines()
+diff --git a/src/player.rs b/src/player.rs
+index 4768002..737648c 100644
+--- a/src/player.rs
++++ b/src/player.rs
+@@ -32,7 +32,7 @@ pub fn play<
+ ) {
+     log::debug!("Playing video with url: {}", url);
+     let player_str = std::env::var("PLAYER").unwrap_or("mpv --ytdl".to_string());
+-    open_with(url, player_str, callback);
++    open_with(url, format!("flatpak-spawn --host {}", player_str), callback);
+ }
+
+ pub fn open_with<
