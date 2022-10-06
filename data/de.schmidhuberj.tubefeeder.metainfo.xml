@@ -4,7 +4,7 @@
   <project_license>GPL-3.0+</project_license>
   <metadata_license>FSFAP</metadata_license>
   <name>Tubefeeder</name>
-  <summary>A Youtube, Lbry and Peertube client made for the Pinephone</summary>
+  <summary>A YouTube, LBRY and PeerTube client</summary>
   <launchable type="desktop-id">de.schmidhuberj.tubefeeder.desktop</launchable>
   <content_rating type="oars-1.1"/>
   <developer_name>Julian Schmidhuber</developer_name>
@@ -118,16 +118,19 @@
 
   <description>
     <p>
-    Tubefeeder allows to watch Youtube, Lbry and Peertube videos on your Pinephone,
-    including features like a subscription list, a filter list and
-    a watch-later list.
+      Tubefeeder lets you watch and download videos from YouTube,
+      LBRY and PeerTube, all without needing to navigate through
+      different websites.
     </p>
     <p>
-    Tubefeeder uses mpv to play the videos (Note that yt-dlp does to my knowledge not yet support Lbry, you need to use another video player).
-    This is already included in Flatpak, install it otherwise.
-
-    You can choose to use a different video player, for more information see [here](https://www.tubefeeder.de/wiki/different-player.html). Note that not all video players support every platform.
+      Tubefeeder comes with several features:
     </p>
+    <ul>
+      <li>Subscribe to channels</li>
+      <li>Play videos with MPV (or any other video player)</li>
+      <li>Filter out unwanted videos in the feed</li>
+      <li>Import data from NewPipe</li>
+    </ul>
   </description>
 
   <screenshots>

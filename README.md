@@ -2,13 +2,13 @@
 
 # Tubefeeder
 
-A Youtube, Lbry and PeerTube-Client that designed for phones and computers
+Tubefeeder is a YouTube, LBRY and PeerTube client for Linux.
 
 ###
 
-[![Matrix](https://img.shields.io/badge/Matrix-Join-brightgreen)](https://matrix.to/#/%23tubefeeder:matrix.org?via=matrix.org)
+[![Matrix](https://img.shields.io/badge/Matrix-Join-brightgreen)](https://matrix.to/#/#tubefeeder:matrix.org)
 
-# Screenshots
+## Screenshots
 <table>
   <tr>
     <td>
@@ -26,7 +26,7 @@ A Youtube, Lbry and PeerTube-Client that designed for phones and computers
     <tr>
 </table>
 
-# Installation
+## Installation
 
 <table>
   <tr>
@@ -43,31 +43,29 @@ A Youtube, Lbry and PeerTube-Client that designed for phones and computers
   </tr>
 </table>
 
-# What it can do
-- Show the feed of your subscribed channels
-- Play the video with mpv (or any other video player)
-- Subscribe to a channel in the application
-- Filtering out unwanted videos in the feed
-- A watch-later list
+## Features
+- Subscribe to channels
+- Play videos with MPV (or any other video player)
+- Filter out unwanted videos in the feed
+- Import data from [NewPipe](https://github.com/TeamNewPipe/NewPipe/)
 
-# What it cannot do (yet)
-Tell me what features you want to be included by opening an [issue](https://github.com/Schmiddiii/Tubefeeder/issues).
+## Contributing
 
-# What it (probably) will never be able to do
-- Play videos in the application: There are just so many good video players out there that forcing one inside the application would worsen the experience.
+See the [Contributing page](CONTRIBUTING.md).
 
-# Supported Platforms
+## Supported Platforms
 
-- Youtube (using Piped as the backend to prevent throttling)
+- YouTube (using Piped as the backend to prevent throttling)
 - PeerTube
-- Lbry
+- LBRY
 
 Suggest any other platform, if it has a good-enough API, I will consider adding it.
 
-# Wiki
+## Wiki
+
 Please also take a look at the [wiki](http://www.tubefeeder.de/wiki/) if you have any problems (e.g. mpv being slow on the PinePhone) or don't know how to do something (e.g. subscribing to a channel)
 
-# Donating
+## Donating
 
 If you like this project and have some spare Monero left, consider donating to my Monero address:
 
