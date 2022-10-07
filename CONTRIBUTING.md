@@ -10,3 +10,10 @@ If you experience a bug, or you want to suggest some changes or additions within
 
 You can submit code by [forking](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks) this project, editing the desired code and finally submitting a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
 
+## Translating
+
+The process of translating Tubefeeder is similar to submitting code. Start with [forking](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks) the project
+
+### Contributing to existing languages
+
+### Adding new language
