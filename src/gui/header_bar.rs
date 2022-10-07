@@ -65,7 +65,7 @@ pub mod imp {
     use gtk::CompositeTemplate;
     use once_cell::sync::Lazy;
 
-    use crate::gui::import_window::ImportWindow;
+    use crate::gui::import_window;
     use crate::gui::preferences_window::PreferencesWindow;
 
     #[derive(CompositeTemplate, Default)]
@@ -90,8 +90,8 @@ pub mod imp {
             }));
             let action_import = SimpleAction::new("import", None);
             action_import.connect_activate(clone!(@weak obj => move |_, _| {
-                let import = ImportWindow::new(&obj.window());
-                import.set_transient_for(Some(&obj.window()));
+                let window = obj.window();
+                let import = import_window::import_window(window.imp().joiner.borrow().clone().expect("Joiner to be set up"), &window);
                 import.show();
             }));
 
