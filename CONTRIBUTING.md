@@ -16,17 +16,23 @@ You can submit code by [forking](https://docs.github.com/en/pull-requests/collab
 
 The process of translating Tubefeeder is similar to submitting code. Start with [forking](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks) the project. Then, [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) the repository. And finally, install [Poedit](https://flathub.org/apps/details/net.poedit.Poedit).
 
-### A. Adding new language
+Proceed to [A. Adding a new language](#a-adding-new-language) to add a new language, or [B. Translating an existing language](#b-translating-an-existing-language) to translate an existing language.
+
+### A. Adding a new language
 
 Open Poedit, then press "Create new...". Navigate to the root of the repository. Navigate to `po` and click on `tubefeeder.pot`. Enter the locale you want to translate the program to save the file.
 
 Once translated, click the "Save" button and save the file where `tubefeeder.pot` is located.
 
-### B. Translating languages
+Proceed to [Submitting translations](#submitting-translations).
+
+### B. Translating an existing language
 
 Open Poedit, then press "Browse files". Open the `po` file with the appropriate locale.
 
 Once translated, click the "Save" button.
+
+Proceed to [Submitting translations](#submitting-translations).
 
 ### Submitting translations
 
