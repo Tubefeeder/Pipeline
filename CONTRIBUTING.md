@@ -1,6 +1,6 @@
 # Contributing
 
-There are a couple of ways you can contribute to Tubefeeder. You can report bugs, propose changes and additions, or directly contributing to the codebase.
+There are a couple of ways you can contribute to Tubefeeder. You can report bugs, propose changes and additions, directly contribute to the codebase, or translating.
 
 ## Reporting bugs / Proposing changes or additions
 
