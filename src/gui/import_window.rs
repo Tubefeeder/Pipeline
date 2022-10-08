@@ -1,133 +1,93 @@
-use gdk::{glib::Object, subclass::prelude::ObjectSubclassIsExt};
+use gdk_pixbuf::glib::clone;
+use gtk::builders::FileChooserNativeBuilder;
+use gtk::glib;
+use gtk::prelude::*;
+use gtk::Builder;
+use gtk::FileChooserAction;
+use gtk::FileFilter;
+use gtk::ResponseType;
+use libadwaita::traits::MessageDialogExt;
+use libadwaita::MessageDialog;
+use tf_join::Joiner;
 
-gtk::glib::wrapper! {
-    pub struct ImportWindow(ObjectSubclass<imp::ImportWindow>)
-        @extends gtk::Dialog, gtk::Window, gtk::Widget,
-        @implements gtk::gio::ActionGroup, gtk::gio::ActionMap, gtk::Accessible, gtk::Buildable,
-            gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager;
+pub fn import_window(joiner: Joiner, parent: &crate::gui::window::Window) -> MessageDialog {
+    let builder = Builder::from_resource("/ui/import_window.ui");
+    let dialog: MessageDialog = builder
+        .object("dialog")
+        .expect("import_window.ui to have at least one object dialog");
+    dialog.set_transient_for(Some(parent));
+    dialog.set_modal(true);
+    dialog.connect_response(
+        None,
+        clone!(@strong joiner, @weak parent => move |_dialog, response| {
+            handle_response(&joiner, response, &parent);
+        }),
+    );
+    dialog
 }
 
-impl ImportWindow {
-    pub fn new(parent: &crate::gui::window::Window) -> Self {
-        let s: Self =
-            Object::new(&[("transient-for", &parent)]).expect("Failed to create ImportWindow");
-        s.imp().joiner.replace(parent.imp().joiner.borrow().clone());
-        s
-    }
-}
-
-pub mod imp {
-    use std::cell::RefCell;
-
-    use gdk_pixbuf::glib::clone;
-    use glib::subclass::InitializingObject;
-    use gtk::builders::FileChooserNativeBuilder;
-    use gtk::glib;
-    use gtk::prelude::*;
-    use gtk::subclass::prelude::*;
-    use gtk::CompositeTemplate;
-    use gtk::FileChooserAction;
-    use gtk::FileFilter;
-    use gtk::ResponseType;
-    use tf_join::Joiner;
-
-    #[derive(CompositeTemplate, Default)]
-    #[template(resource = "/ui/import_window.ui")]
-    pub struct ImportWindow {
-        pub(super) joiner: RefCell<Option<Joiner>>,
-    }
-
-    #[glib::object_subclass]
-    impl ObjectSubclass for ImportWindow {
-        const NAME: &'static str = "TFImportWindow";
-        type Type = super::ImportWindow;
-        type ParentType = gtk::Dialog;
-
-        fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass);
-        }
-
-        fn instance_init(obj: &InitializingObject<Self>) {
-            obj.init_template();
-        }
-    }
-
-    impl ObjectImpl for ImportWindow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
-        }
-    }
-    impl WidgetImpl for ImportWindow {}
-    impl WindowImpl for ImportWindow {}
-    impl DialogImpl for ImportWindow {
-        fn response(&self, dialog: &Self::Type, response: gtk::ResponseType) {
-            match response {
-                ResponseType::Other(1) => {
-                    log::debug!("Import from NewPipe");
-                    let filter = FileFilter::new();
-                    filter.add_mime_type("application/json");
-                    let chooser = FileChooserNativeBuilder::new()
-                        .transient_for(dialog)
-                        .filter(&filter)
-                        .action(FileChooserAction::Open)
-                        .build();
-                    let obj = self.instance();
-                    chooser.connect_response(
-                        clone!(@strong chooser, @strong obj => move |_, action| {
-                            if action == ResponseType::Accept {
-                                log::trace!("User picked file to import from");
-                                let file = chooser.file();
-                                if let Some(file) = file {
-                                    if let Err(e) = crate::import::import_newpipe(&obj.imp().joiner.borrow().as_ref().expect("Joiner to be set up"), file) {
-                                        let dialog = gtk::MessageDialog::builder()
-                                            .text(&gettextrs::gettext("Failure to import subscriptions"))
-                                            .secondary_text(&format!("{}", e))
-                                            .message_type(gtk::MessageType::Error).build();
-                                        dialog.show();
-                                    }
-                                }
-                            } else {
-                                log::trace!("User did not choose anything to import from");
-                            }
-                        }),
-                    );
-                    chooser.show();
+fn handle_response(joiner: &Joiner, response: &str, parent: &crate::gui::window::Window) {
+    match response {
+        "newpipe" => {
+            log::debug!("Import from NewPipe");
+            let filter = FileFilter::new();
+            filter.add_mime_type("application/json");
+            let chooser = FileChooserNativeBuilder::new()
+                .title(&gettextrs::gettext("Select NewPipe subscriptions file"))
+                .transient_for(parent)
+                .modal(true)
+                .filter(&filter)
+                .action(FileChooserAction::Open)
+                .build();
+            chooser.connect_response(clone!(@strong chooser, @strong joiner => move |_, action| {
+                if action == ResponseType::Accept {
+                    log::trace!("User picked file to import from");
+                    let file = chooser.file();
+                    if let Some(file) = file {
+                        if let Err(e) = crate::import::import_newpipe(&joiner, file) {
+                            let dialog = MessageDialog::builder()
+                                .heading(&gettextrs::gettext("Failure to import subscriptions"))
+                                .body(&format!("{}", e))
+                                .build();
+                            dialog.show();
+                        }
+                    }
+                } else {
+                    log::trace!("User did not choose anything to import from");
                 }
-                ResponseType::Other(2) => {
-                    log::debug!("Import from YouTube");
-                    let filter = FileFilter::new();
-                    filter.add_mime_type("text/csv");
-                    let chooser = FileChooserNativeBuilder::new()
-                        .transient_for(dialog)
-                        .filter(&filter)
-                        .action(FileChooserAction::Open)
-                        .build();
-                    let obj = self.instance();
-                    chooser.connect_response(
-                        clone!(@strong chooser, @strong obj => move |_, action| {
-                            if action == ResponseType::Accept {
-                                log::trace!("User picked file to import from");
-                                let file = chooser.file();
-                                if let Some(file) = file {
-                                    if let Err(e) = crate::import::import_youtube(&obj.imp().joiner.borrow().as_ref().expect("Joiner to be set up"), file) {
-                                        let dialog = gtk::MessageDialog::builder()
-                                            .text(&gettextrs::gettext("Failure to import subscriptions"))
-                                            .secondary_text(&format!("{}", e))
-                                            .message_type(gtk::MessageType::Error).build();
-                                        dialog.show();
-                                    }
-                                }
-                            } else {
-                                log::trace!("User did not choose anything to import from");
-                            }
-                        }),
-                    );
-                    chooser.show();
-                }
-                _ => {}
-            }
-            dialog.close();
-            self.parent_response(dialog, response)
+            }));
+            chooser.show();
         }
+        "youtube" => {
+            log::debug!("Import from YouTube");
+            let filter = FileFilter::new();
+            filter.add_mime_type("text/csv");
+            let chooser = FileChooserNativeBuilder::new()
+                .title(&gettextrs::gettext("Select YouTube subscription file"))
+                .transient_for(parent)
+                .filter(&filter)
+                .modal(true)
+                .action(FileChooserAction::Open)
+                .build();
+            chooser.connect_response(clone!(@strong chooser, @strong joiner => move |_, action| {
+                if action == ResponseType::Accept {
+                    log::trace!("User picked file to import from");
+                    let file = chooser.file();
+                    if let Some(file) = file {
+                        if let Err(e) = crate::import::import_youtube(&joiner, file) {
+                            let dialog = MessageDialog::builder()
+                                .heading(&gettextrs::gettext("Failure to import subscriptions"))
+                                .body(&format!("{}", e))
+                                .build();
+                            dialog.show();
+                        }
+                    }
+                } else {
+                    log::trace!("User did not choose anything to import from");
+                }
+            }));
+            chooser.show();
+        }
+        _ => {}
     }
 }
