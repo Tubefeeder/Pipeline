@@ -19,6 +19,8 @@
  */
 
 use gdk::glib::Object;
+use gdk::prelude::Cast;
+use gtk::traits::WidgetExt;
 
 gtk::glib::wrapper! {
     pub struct HeaderBar(ObjectSubclass<imp::HeaderBar>)
@@ -30,6 +32,13 @@ gtk::glib::wrapper! {
 impl HeaderBar {
     pub fn new() -> Self {
         Object::new(&[]).expect("Failed to create HeaderBar")
+    }
+
+    fn window(&self) -> crate::gui::window::Window {
+        self.root()
+            .expect("HeaderBar to have root")
+            .downcast::<crate::gui::window::Window>()
+            .expect("Root to be window")
     }
 }
 
@@ -49,14 +58,14 @@ pub mod imp {
     use gtk::glib;
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
-    use gtk::Widget;
     use gtk::Builder;
+    use gtk::Widget;
     use libadwaita::AboutWindow;
 
     use gtk::CompositeTemplate;
     use once_cell::sync::Lazy;
 
-    use crate::gui::import_window::ImportWindow;
+    use crate::gui::import_window;
     use crate::gui::preferences_window::PreferencesWindow;
 
     #[derive(CompositeTemplate, Default)]
@@ -74,30 +83,31 @@ pub mod imp {
     impl HeaderBar {
         fn setup_actions(&self, obj: &super::HeaderBar) {
             let action_settings = SimpleAction::new("settings", None);
-            action_settings.connect_activate(|_, _| {
+            action_settings.connect_activate(clone!(@weak obj => move |_, _| {
                 let settings = PreferencesWindow::new();
+                settings.set_transient_for(Some(&obj.window()));
                 settings.show();
-            });
+            }));
             let action_import = SimpleAction::new("import", None);
             action_import.connect_activate(clone!(@weak obj => move |_, _| {
-                let root = obj
-                    .root()
-                    .expect("HeaderBar to have root")
-                    .downcast::<crate::gui::window::Window>()
-                    .expect("Root to be window");
-                let import = ImportWindow::new(&root);
+                let window = obj.window();
+                let import = import_window::import_window(window.imp().joiner.borrow().clone().expect("Joiner to be set up"), &window);
                 import.show();
             }));
 
             let action_about = SimpleAction::new("about", None);
-            action_about.connect_activate(|_, _| {
+            action_about.connect_activate(clone!(@weak obj => move |_, _| {
                 let builder = Builder::from_resource("/ui/about.ui");
                 let about: AboutWindow = builder
                     .object("about")
                     .expect("about.ui to have at least one object about");
-                about.add_link(&gettextrs::gettext("Donate"), "https://www.tubefeeder.de/donate.html");
+                about.add_link(
+                    &gettextrs::gettext("Donate"),
+                    "https://www.tubefeeder.de/donate.html",
+                );
+                about.set_transient_for(Some(&obj.window()));
                 about.show();
-            });
+            }));
 
             let actions = SimpleActionGroup::new();
             obj.insert_action_group("win", Some(&actions));

@@ -3,52 +3,16 @@
   <requires lib="gtk+" version="3.24"/>
   <requires lib="libadwaita" version="1.0"/>
 
-  <template class="TFImportWindow" parent="GtkDialog">
-    <property name="can-focus">True</property>
-    <property name="title" translatable="yes">Import</property>
-    <property name="default-height">100</property>
-    <property name="default-width">400</property>
-    <property name="destroy-with-parent">True</property>
+  <object class="AdwMessageDialog" id="dialog">
+    <property name="heading" translatable="yes">Import Subscriptions</property>
+    <property name="body" translatable="yes">This will import your subscriptions from exported data from NewPipe or YouTube.</property>
+    <property name="default-response">close</property>
+    <property name="close-response">cancel</property>
 
-    <child internal-child="content_area">
-      <object class="GtkBox">
-        <child>
-          <object class="GtkLabel">
-            <property name="label" translatable="yes">This will import your subscriptions from exported data from NewPipe or YouTube.</property>
-
-            <property name="wrap">True</property>
-            <property name="xalign">0</property>
-            <property name="wrap-mode">word</property>
-            <property name="justify">left</property>
-            <property name="vexpand">False</property>
-            <property name="valign">start</property>
-            <property name="hexpand">True</property>
-            <property name="halign">start</property>
-          </object>
-        </child>
-      </object>
-    </child>
-
-    <child type="action">
-      <object class="GtkButton" id="button_newpipe">
-        <property name="label">NewPipe</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="button_youtube">
-        <property name="label">YouTube</property>
-      </object>
-    </child>
-    <child type="action">
-      <object class="GtkButton" id="button_cancel">
-        <property name="label" translatable="yes">Cancel</property>
-      </object>
-    </child>
-
-    <action-widgets>
-      <action-widget response="1">button_newpipe</action-widget>
-      <action-widget response="2">button_youtube</action-widget>
-      <action-widget response="cancel">button_cancel</action-widget>
-    </action-widgets>
-  </template>
+    <responses>
+      <response id="newpipe" translatable="yes">NewPipe</response>
+      <response id="youtube" translatable="yes">YouTube</response>
+      <response id="cancel" translatable="yes">Cancel</response>
+    </responses>
+  </object>
 </interface>

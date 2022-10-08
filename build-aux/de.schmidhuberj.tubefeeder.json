@@ -1,0 +1,52 @@
+{
+    "app-id": "de.schmidhuberj.tubefeeder",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "43",
+    "sdk": "org.gnome.Sdk",
+    "sdk-extensions": [
+        "org.freedesktop.Sdk.Extension.rust-stable"
+    ],
+    "command": "tubefeeder",
+    "finish-args": [
+        "--socket=fallback-x11",
+        "--socket=wayland",
+        "--socket=pulseaudio",
+        "--device=dri",
+        "--share=network",
+        "--filesystem=xdg-data/tubefeeder:create",
+        "--filesystem=xdg-cache/tubefeeder:create",
+        "--filesystem=xdg-config/mpv:ro",
+        "--filesystem=xdg-download",
+        "--talk-name=org.freedesktop.portal.FileChooser",
+        "--talk-name=org.freedesktop.Flatpak"
+    ],
+    "build-options": {
+        "append-path": "/usr/lib/sdk/rust-stable/bin",
+        "build-args": [
+            "--share=network"
+        ],
+        "env": {
+            "CARGO_HOME": "/run/build/tubefeeder/cargo",
+            "RUST_BACKTRACE": "1"
+        }
+    },
+    "modules": [
+        {
+            "name": "tubefeeder",
+            "buildsystem": "meson",
+            "config-opts": [
+                "-Dflatpak=true"
+            ],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "../"
+                },
+                {
+                    "type": "patch",
+                    "path": "player_downloader.diff"
+                }
+            ]
+        }
+    ]
+}
