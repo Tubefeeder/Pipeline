@@ -6,6 +6,7 @@
   <object class="AdwMessageDialog" id="dialog">
     <property name="heading" translatable="yes">Import Subscriptions</property>
     <property name="body" translatable="yes">This will import your subscriptions from exported data from NewPipe or YouTube.</property>
+
     <property name="default-response">close</property>
     <property name="close-response">cancel</property>
 
