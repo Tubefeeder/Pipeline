@@ -26,7 +26,7 @@
         <child>
           <object class="AdwPreferencesGroup">
             <property name="title" translatable="yes">APIs</property>
-            <property name="description" translatable="yes">For a list of public APIs, see https://github.com/TeamPiped/Piped/wiki/Instances.</property>
+            <property name="description" translatable="yes">For a list of public APIs, see the &lt;a href="https://github.com/TeamPiped/Piped/wiki/Instances"&gt;Instances page&lt;/a&gt;.</property>
             <child>
               <object class="AdwEntryRow" id="entry_piped_api">
                 <property name="title" translatable="yes">Piped API</property>
