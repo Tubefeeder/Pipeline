@@ -83,6 +83,7 @@ pub mod imp {
     use crate::gui::subscription::platform::PlatformObject;
     use crate::gui::subscription::subscription_item_object::SubscriptionObject;
     use crate::gui::subscription::subscription_list::SubscriptionList;
+    use crate::gui::utility::Utility;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/ui/subscription_page.ui")]
@@ -257,6 +258,7 @@ pub mod imp {
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
             Self::bind_template_callbacks(klass);
+            Utility::bind_template_callbacks(klass);
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {

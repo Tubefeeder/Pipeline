@@ -57,6 +57,26 @@
         </child>
         <child>
           <object class="TFFilterList" id="filter_list">
+            <binding name="visible">
+              <closure function="not" type="gboolean">
+                <lookup name="is-empty">
+                  filter_list
+                </lookup>
+              </closure>
+            </binding>
+          </object>
+        </child>
+        <child>
+          <object class="AdwStatusPage">
+            <property name="title" translatable="yes">No Filters</property>
+            <property name="description" translatable="yes">How about adding some filters?</property>
+            <property name="icon-name">funnel-symbolic</property>
+            <property name="vexpand">True</property>
+            <binding name="visible">
+              <lookup name="is-empty">
+                filter_list
+              </lookup>
+            </binding>
           </object>
         </child>
       </object>

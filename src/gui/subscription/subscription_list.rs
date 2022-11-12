@@ -22,6 +22,7 @@ use gdk::{
     prelude::{Cast, ListModelExtManual},
     subclass::prelude::ObjectSubclassIsExt,
 };
+use gdk_pixbuf::prelude::ObjectExt;
 use gtk::{traits::SorterExt, SorterChange};
 use tf_join::{AnySubscription, AnySubscriptionList};
 
@@ -41,6 +42,7 @@ impl SubscriptionList {
 
         model.remove_all();
         model.splice(0, 0, &items);
+        self.notify("is-empty");
     }
 
     pub fn add(&self, new_item: SubscriptionObject) {
@@ -53,7 +55,8 @@ impl SubscriptionList {
             .borrow()
             .as_ref()
             .expect("`Sorter` to be set up")
-            .changed(SorterChange::Different)
+            .changed(SorterChange::Different);
+        self.notify("is-empty");
     }
 
     pub fn remove(&self, new_item: SubscriptionObject) {
@@ -68,6 +71,7 @@ impl SubscriptionList {
         }) {
             model.remove(idx as u32);
         }
+        self.notify("is-empty");
     }
 
     pub fn update(&self, sub: AnySubscription) {
@@ -104,6 +108,10 @@ pub mod imp {
     use gdk::glib::Sender;
     use gdk::glib::PRIORITY_DEFAULT;
     use gdk_pixbuf::glib::subclass::Signal;
+    use gdk_pixbuf::glib::ParamFlags;
+    use gdk_pixbuf::glib::ParamSpec;
+    use gdk_pixbuf::glib::ParamSpecBoolean;
+    use gdk_pixbuf::glib::Value;
     use glib::subclass::InitializingObject;
     use gtk::glib;
     use gtk::prelude::*;
@@ -273,6 +281,30 @@ pub mod imp {
     impl ObjectImpl for SubscriptionList {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+        }
+
+        fn properties() -> &'static [ParamSpec] {
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                vec![ParamSpecBoolean::new(
+                    "is-empty",
+                    "is-empty",
+                    "is-empty",
+                    false,
+                    ParamFlags::READABLE,
+                )]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn set_property(&self, _obj: &Self::Type, _id: usize, _value: &Value, _pspec: &ParamSpec) {
+            unimplemented!()
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+            match pspec.name() {
+                "is-empty" => (self.model.borrow().n_items() == 0).to_value(),
+                _ => unimplemented!(),
+            }
         }
 
         fn signals() -> &'static [Signal] {
