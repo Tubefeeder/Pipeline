@@ -77,6 +77,7 @@ impl FeedList {
         let _ = self.activate_action("feed.more", None);
 
         self.set_more_available();
+        self.notify("is-empty");
     }
 
     pub fn prepend(&self, new_item: VideoObject) {
@@ -90,6 +91,7 @@ impl FeedList {
         loaded_count.set(loaded_count.get() + 1);
 
         self.set_more_available();
+        self.notify("is-empty");
     }
 
     pub fn remove(&self, new_item: VideoObject) {
@@ -111,6 +113,7 @@ impl FeedList {
         }
 
         self.set_more_available();
+        self.notify("is-empty");
     }
 
     pub fn set_playlist_manager(&self, playlist_manager: PlaylistManager<String, AnyVideo>) {
@@ -228,13 +231,22 @@ pub mod imp {
 
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecBoolean::new(
-                    "more-available",
-                    "more-available",
-                    "more-available",
-                    false,
-                    ParamFlags::READWRITE,
-                )]
+                vec![
+                    ParamSpecBoolean::new(
+                        "more-available",
+                        "more-available",
+                        "more-available",
+                        false,
+                        ParamFlags::READWRITE,
+                    ),
+                    ParamSpecBoolean::new(
+                        "is-empty",
+                        "is-empty",
+                        "is-empty",
+                        false,
+                        ParamFlags::READABLE,
+                    ),
+                ]
             });
             PROPERTIES.as_ref()
         }
@@ -254,6 +266,7 @@ pub mod imp {
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
             match pspec.name() {
                 "more-available" => self.more_available.get().to_value(),
+                "is-empty" => (self.model.borrow().n_items() == 0).to_value(),
                 _ => unimplemented!(),
             }
         }

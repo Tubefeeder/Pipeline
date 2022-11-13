@@ -81,6 +81,26 @@
                 <child>
                   <object class="TFSubscriptionList" id="subscription_list">
                     <signal name="go-to-videos" handler="handle_go_to_videos_page" swapped="true"/>
+                    <binding name="visible">
+                      <closure function="not" type="gboolean">
+                        <lookup name="is-empty">
+                          subscription_list
+                        </lookup>
+                      </closure>
+                    </binding>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwStatusPage">
+                    <property name="title" translatable="yes">No Subscriptions</property>
+                    <property name="description" translatable="yes">How about subscribing to some channels?</property>
+                    <property name="icon-name">library-artists-symbolic</property>
+                    <property name="vexpand">True</property>
+                    <binding name="visible">
+                      <lookup name="is-empty">
+                        subscription_list
+                      </lookup>
+                    </binding>
                   </object>
                 </child>
               </object>

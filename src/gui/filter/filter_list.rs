@@ -24,6 +24,7 @@ use gdk::{
     prelude::{Cast, ListModelExtManual},
     subclass::prelude::ObjectSubclassIsExt,
 };
+use gdk_pixbuf::prelude::ObjectExt;
 use tf_filter::FilterGroup;
 use tf_join::AnyVideoFilter;
 
@@ -43,6 +44,7 @@ impl FilterList {
 
         model.remove_all();
         model.splice(0, 0, &items);
+        self.notify("is-empty");
     }
 
     pub fn add(&self, new_item: FilterObject) {
@@ -50,6 +52,7 @@ impl FilterList {
         let model = &imp.model;
 
         model.borrow_mut().insert(0, &new_item);
+        self.notify("is-empty");
     }
 
     pub fn remove(&self, new_item: FilterObject) {
@@ -64,6 +67,7 @@ impl FilterList {
         }) {
             model.remove(idx as u32);
         }
+        self.notify("is-empty");
     }
 
     pub fn set_filter_group(&self, filter_group: Arc<Mutex<FilterGroup<AnyVideoFilter>>>) {
@@ -82,6 +86,10 @@ pub mod imp {
     use gdk::glib::MainContext;
     use gdk::glib::Sender;
     use gdk::glib::PRIORITY_DEFAULT;
+    use gdk_pixbuf::glib::ParamFlags;
+    use gdk_pixbuf::glib::ParamSpec;
+    use gdk_pixbuf::glib::ParamSpecBoolean;
+    use gdk_pixbuf::glib::Value;
     use glib::subclass::InitializingObject;
     use gtk::glib;
     use gtk::prelude::*;
@@ -90,6 +98,7 @@ pub mod imp {
     use gtk::Widget;
 
     use gtk::CompositeTemplate;
+    use once_cell::sync::Lazy;
     use tf_filter::FilterEvent;
     use tf_filter::FilterGroup;
     use tf_join::AnyVideoFilter;
@@ -199,6 +208,30 @@ pub mod imp {
     impl ObjectImpl for FilterList {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+        }
+
+        fn properties() -> &'static [ParamSpec] {
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+                vec![ParamSpecBoolean::new(
+                    "is-empty",
+                    "is-empty",
+                    "is-empty",
+                    false,
+                    ParamFlags::READABLE,
+                )]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn set_property(&self, _obj: &Self::Type, _id: usize, _value: &Value, _pspec: &ParamSpec) {
+            unimplemented!()
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+            match pspec.name() {
+                "is-empty" => (self.model.borrow().n_items() == 0).to_value(),
+                _ => unimplemented!(),
+            }
         }
     }
 

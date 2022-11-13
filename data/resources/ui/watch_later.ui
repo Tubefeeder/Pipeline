@@ -18,6 +18,26 @@
         </child>
         <child>
           <object class="TFFeedList" id="feed_page">
+            <binding name="visible">
+              <closure function="not" type="gboolean">
+                <lookup name="is-empty">
+                  feed_page
+                </lookup>
+            </closure>
+            </binding>
+          </object>
+        </child>
+        <child>
+          <object class="AdwStatusPage">
+            <property name="title" translatable="yes">Everything Watched</property>
+            <property name="description" translatable="yes">How about going outside?</property>
+            <property name="icon-name">alarm-symbolic</property>
+            <property name="vexpand">True</property>
+            <binding name="visible">
+              <lookup name="is-empty">
+                feed_page
+              </lookup>
+            </binding>
           </object>
         </child>
       </object>

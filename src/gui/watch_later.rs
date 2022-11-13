@@ -58,6 +58,7 @@ pub mod imp {
 
     use crate::gui::feed::feed_item_object::VideoObject;
     use crate::gui::feed::feed_list::FeedList;
+    use crate::gui::utility::Utility;
 
     #[derive(CompositeTemplate, Default)]
     #[template(resource = "/ui/watch_later.ui")]
@@ -127,6 +128,7 @@ pub mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
+            Utility::bind_template_callbacks(klass);
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {

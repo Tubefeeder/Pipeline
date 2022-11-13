@@ -54,6 +54,26 @@
         </child>
         <child>
           <object class="TFFeedList" id="feed_list">
+            <binding name="visible">
+              <closure function="not" type="gboolean">
+                <lookup name="is-empty">
+                  feed_list
+                </lookup>
+              </closure>
+            </binding>
+          </object>
+        </child>
+        <child>
+          <object class="AdwStatusPage">
+            <property name="title" translatable="yes">No Videos Found</property>
+            <property name="description" translatable="yes">Are you subscribed to channels?</property>
+            <property name="icon-name">go-home-symbolic</property>
+            <property name="vexpand">True</property>
+            <binding name="visible">
+              <lookup name="is-empty">
+                feed_list
+              </lookup>
+            </binding>
           </object>
         </child>
       </object>
