@@ -23,7 +23,6 @@ pub mod imp {
     use gtk::CompositeTemplate;
     use libadwaita::subclass::prelude::AdwWindowImpl;
     use libadwaita::subclass::prelude::PreferencesWindowImpl;
-    use libadwaita::traits::ActionRowExt;
     use libadwaita::traits::PreferencesGroupExt;
     use libadwaita::EntryRow;
 
@@ -50,30 +49,12 @@ pub mod imp {
             self.group_programs.set_description(Some(&gettextrs::gettext("Note that on Flatpak, there are some more steps required when using a player external to the Flatpak. For more information, please consult the wiki.")));
         }
 
-        fn init_string_setting(
-            &self,
-            env: &'static str,
-            settings: &'static str,
-            entry: EntryRow,
-        ) {
+        fn init_string_setting(&self, env: &'static str, settings: &'static str, entry: EntryRow) {
             let val_env = std::env::var_os(env);
             let val_settings = self.settings.string(settings);
             entry.set_text(&val_settings);
             if val_env.is_some() && &val_env.unwrap() != val_settings.as_str() {
                 entry.set_editable(false);
-                // TODO: Not really nice to access the parents.
-                entry
-                    .parent()
-                    .expect("Settings entry to have parent")
-                    .parent()
-                    .expect("Settings entry to have parent")
-                    .parent()
-                    .expect("Settings entry to have parent")
-                    .dynamic_cast::<libadwaita::ActionRow>()
-                    .expect("Settings entry to have parent of thpe ActionRow")
-                    .set_subtitle(&gettextrs::gettext(
-                        "Overwritten by environmental variable.",
-                    ));
             }
             self.settings
                 .bind(settings, &entry, "text")
