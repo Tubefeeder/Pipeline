@@ -38,6 +38,6 @@ tf_join = "0.1.5"
 tf_filter = "0.1.2"
 tf_observer = "0.1.2"
 tf_playlist = "0.1.3"
-tf_yt = { package = "tf_platform_youtube", version = "0.1.5" }
-tf_pt = { package = "tf_platform_peertube", version = "0.1.2" }
-tf_lbry = { package = "tf_platform_lbry", version = "0.1.2" }
+tf_yt = { package = "tf_platform_youtube", version = "0.1.6" }
+tf_pt = { package = "tf_platform_peertube", version = "0.1.4" }
+tf_lbry = { package = "tf_platform_lbry", version = "0.1.3" }
