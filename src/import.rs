@@ -37,11 +37,10 @@ pub fn import_newpipe(joiner: &Joiner, file: gio::File) -> Result<(), Box<dyn st
     let uuids: HashSet<String> = deserialized
         .subscriptions
         .into_iter()
-        .map(|s| {
+        .filter_map(|s| {
             s.url
                 .strip_prefix("https://www.youtube.com/channel/")
-                .expect("NewPipe URL to start with the youtube URL")
-                .to_owned()
+                .map(ToOwned::to_owned)
         })
         .collect();
 
