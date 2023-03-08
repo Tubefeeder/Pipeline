@@ -21,6 +21,8 @@
 use std::sync::{Arc, Mutex};
 
 use gdk::subclass::prelude::ObjectSubclassIsExt;
+use gdk_pixbuf::prelude::Cast;
+use gtk::traits::WidgetExt;
 use tf_filter::FilterGroup;
 use tf_join::AnyVideoFilter;
 
@@ -35,20 +37,23 @@ impl FilterPage {
     pub fn set_filter_group(&self, filter_group: Arc<Mutex<FilterGroup<AnyVideoFilter>>>) {
         self.imp().filter_group.replace(Some(filter_group.clone()));
         self.imp().filter_list.get().set_filter_group(filter_group);
-        self.imp().setup_add_filter(&self);
+    }
+
+    fn window(&self) -> crate::gui::window::Window {
+        self.root()
+            .expect("FilterPage to have root")
+            .downcast::<crate::gui::window::Window>()
+            .expect("Root to be window")
     }
 }
 
 pub mod imp {
-    use std::cell::Cell;
     use std::cell::RefCell;
     use std::sync::Arc;
     use std::sync::Mutex;
 
     use gdk::glib::clone;
-    use gdk::glib::ParamFlags;
     use gdk::glib::ParamSpec;
-    use gdk::glib::ParamSpecBoolean;
     use glib::subclass::InitializingObject;
     use gtk::glib;
     use gtk::prelude::*;
@@ -76,60 +81,77 @@ pub mod imp {
         #[template_child]
         pub(super) entry_channel: TemplateChild<gtk::Entry>,
         #[template_child]
-        pub(super) btn_add_filter: TemplateChild<gtk::Button>,
+        pub(super) dialog_add: TemplateChild<libadwaita::MessageDialog>,
 
         pub(super) filter_group: RefCell<Option<Arc<Mutex<FilterGroup<AnyVideoFilter>>>>>,
-        add_visible: Cell<bool>,
     }
 
+    #[gtk::template_callbacks]
     impl FilterPage {
         fn setup_toggle_add_filter(&self, obj: &super::FilterPage) {
-            self.btn_toggle_add_filter
-                .connect_clicked(clone!(@strong obj as s => move |_| {
-                    s.set_property("add-visible", !s.property::<bool>("add-visible"));
-                }));
+            self.btn_toggle_add_filter.connect_clicked(
+                clone!(@strong obj as s, @strong self.dialog_add as dialog, @strong self.entry_title as in_title, @strong self.entry_channel as in_channel => move |_| {
+                    in_title.set_text("");
+                    in_channel.set_text("");
+
+                    // Theoretically only needs to be done once, but when setting up the page does
+                    // not yet have a root.
+                    let window = s.window();
+                    dialog.set_transient_for(Some(&window));
+                    dialog.present();
+                }),
+            );
         }
 
-        pub(super) fn setup_add_filter(&self, obj: &super::FilterPage) {
-            self.btn_add_filter.connect_clicked(clone!(@strong obj as s,
-                                                       @strong self.filter_group as filters
-                                                       @strong self.entry_title as in_title,
-                                                       @strong self.entry_channel as in_channel => move |_| {
-                s.set_property("add-visible", !s.property::<bool>("add-visible"));
-                let title = in_title.text();
-                let channel = in_channel.text();
+        #[template_callback]
+        fn handle_add_filter(&self, response: Option<&str>) {
+            if response != Some("add") {
+                return;
+            }
 
-                in_title.set_text("");
-                in_channel.set_text("");
+            let in_title = &self.entry_title;
+            let in_channel = &self.entry_channel;
+            let filters = &self.filter_group;
 
-                let title_opt = if title.is_empty() {None} else {Some(title)};
-                let channel_opt = if channel.is_empty() {None} else {Some(channel)};
+            let title = in_title.text();
+            let channel = in_channel.text();
 
-                let title_regex = title_opt.map(|s| Regex::new(&s));
-                let channel_regex = channel_opt.map(|s| Regex::new(&s));
+            in_title.set_text("");
+            in_channel.set_text("");
 
-                if let Some(Err(_)) = title_regex {
-                    // TODO: Error Handling
-                    return;
-                }
-                if let Some(Err(_)) = channel_regex {
-                    // TODO: Error Handling
-                    return;
-                }
+            let title_opt = if title.is_empty() { None } else { Some(title) };
+            let channel_opt = if channel.is_empty() {
+                None
+            } else {
+                Some(channel)
+            };
 
-                filters
-                    .borrow()
-                    .as_ref()
-                    .expect("Filter List should be set up")
-                    .lock()
-                    .expect("Filter List should be lockable")
-                    .add(AnyVideoFilter::new(None,
-                                            title_regex.map(|r| r.unwrap()),
-                                            channel_regex.map(|r| r.unwrap())
-                                            ).into()
-                         );
+            let title_regex = title_opt.map(|s| Regex::new(&s));
+            let channel_regex = channel_opt.map(|s| Regex::new(&s));
 
-            }));
+            if let Some(Err(_)) = title_regex {
+                // TODO: Error Handling
+                return;
+            }
+            if let Some(Err(_)) = channel_regex {
+                // TODO: Error Handling
+                return;
+            }
+
+            filters
+                .borrow()
+                .as_ref()
+                .expect("Filter List should be set up")
+                .lock()
+                .expect("Filter List should be lockable")
+                .add(
+                    AnyVideoFilter::new(
+                        None,
+                        title_regex.map(|r| r.unwrap()),
+                        channel_regex.map(|r| r.unwrap()),
+                    )
+                    .into(),
+                );
         }
     }
 
@@ -141,6 +163,7 @@ pub mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
+            Self::bind_template_callbacks(klass);
             Utility::bind_template_callbacks(klass);
         }
 
@@ -156,15 +179,7 @@ pub mod imp {
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
-            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecBoolean::new(
-                    "add-visible",
-                    "add-visible",
-                    "add-visible",
-                    false,
-                    ParamFlags::READWRITE,
-                )]
-            });
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(Vec::new);
             PROPERTIES.as_ref()
         }
 
@@ -172,25 +187,14 @@ pub mod imp {
             &self,
             _obj: &Self::Type,
             _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
+            _value: &glib::Value,
+            _pspec: &glib::ParamSpec,
         ) {
-            match pspec.name() {
-                "add-visible" => {
-                    let _ =
-                        self.add_visible.replace(value.get().expect(
-                            "The property 'add-visible' of TFFilterPage has to be boolean",
-                        ));
-                }
-                _ => unimplemented!(),
-            }
+            unimplemented!()
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
-            match pspec.name() {
-                "add-visible" => self.add_visible.get().to_value(),
-                _ => unimplemented!(),
-            }
+        fn property(&self, _obj: &Self::Type, _id: usize, _pspec: &glib::ParamSpec) -> glib::Value {
+            unimplemented!()
         }
     }
 
