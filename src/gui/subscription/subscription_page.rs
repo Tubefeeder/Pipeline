@@ -19,6 +19,8 @@
  */
 
 use gdk::subclass::prelude::ObjectSubclassIsExt;
+use gdk_pixbuf::prelude::Cast;
+use gtk::traits::WidgetExt;
 use tf_join::{AnySubscriptionList, AnyVideo};
 use tf_playlist::PlaylistManager;
 
@@ -46,21 +48,24 @@ impl SubscriptionPage {
             .subscription_video_list
             .get()
             .set_playlist_manager(playlist_manager);
-        self.imp().setup_add_subscription(&self);
+    }
+
+    fn window(&self) -> crate::gui::window::Window {
+        self.root()
+            .expect("SubscriptionPage to have root")
+            .downcast::<crate::gui::window::Window>()
+            .expect("Root to be window")
     }
 }
 
 pub mod imp {
-    use std::cell::Cell;
     use std::cell::RefCell;
 
     use gdk::gio::ListStore;
     use gdk::glib::clone;
     use gdk::glib::MainContext;
     use gdk::glib::Object;
-    use gdk::glib::ParamFlags;
     use gdk::glib::ParamSpec;
-    use gdk::glib::ParamSpecBoolean;
     use gdk::glib::PRIORITY_DEFAULT;
     use glib::subclass::InitializingObject;
     use gtk::glib;
@@ -100,7 +105,7 @@ pub mod imp {
         #[template_child]
         pub(super) entry_name_id: TemplateChild<gtk::Entry>,
         #[template_child]
-        pub(super) btn_add_subscription: TemplateChild<gtk::Button>,
+        pub(super) dialog_add: TemplateChild<libadwaita::MessageDialog>,
 
         #[template_child]
         pub(super) subscription_stack: TemplateChild<gtk::Stack>,
@@ -108,57 +113,95 @@ pub mod imp {
         pub(super) subscription_video_list: TemplateChild<FeedList>,
 
         pub(super) any_subscription_list: RefCell<Option<AnySubscriptionList>>,
-        add_visible: Cell<bool>,
     }
 
     impl SubscriptionPage {
         fn setup_toggle_add_subscription(&self, obj: &super::SubscriptionPage) {
             self.btn_toggle_add_subscription.connect_clicked(clone!(@strong obj as s,
-                                                                    @strong self.any_subscription_list as any_subscription_list => move |_| {
-                s.set_property("add-visible", !s.property::<bool>("add-visible"));
-            }));
-        }
-
-        pub(super) fn setup_add_subscription(&self, obj: &super::SubscriptionPage) {
-            let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
-
-            self.btn_add_subscription.connect_clicked(clone!(@strong obj as s,
-                                                             @strong self.dropdown_platform as in_platform,
-                                                             @strong self.entry_url as in_url,
-                                                             @strong self.entry_name_id as in_name_id => move |_| {
-                s.set_property("add-visible", !s.property::<bool>("add-visible"));
-                let platform = in_platform.selected_item()
-                    .expect("Something has to be selected.")
-                    .downcast::<PlatformObject>()
-                    .expect("Dropdown items should be of type PlatformObject.")
-                    .platform()
-                    .expect("The platform has to be set up.");
-                let url = in_url.text();
-                let name_id = in_name_id.text();
-
+                                                                    @strong self.dialog_add as dialog,
+                                                                    @strong self.entry_url as in_url,
+                                                                    @strong self.entry_name_id as in_name_id,
+                                                                    @strong self.dropdown_platform as dropdown_platform,
+                                                                    => move |_| {
+                dropdown_platform.set_selected(0);
                 in_url.set_text("");
                 in_name_id.set_text("");
 
-                let sender = sender.clone();
-                tokio::spawn(async move {
-                    let subscription = match platform {
-                        Platform::Youtube => YTSubscription::try_from_search(&name_id)
-                            .await
-                            .map(|s| s.into()),
-                        Platform::Peertube => {
-                            Some(PTSubscription::new(&url, &name_id).into())
-                        }
-                        Platform::Lbry => Some(LbrySubscription::new(&name_id).into()),
-                        // -- Add case here
-                    };
-                    if let Some(subscription) = subscription {
-                        sender.send(subscription).expect("Failed to send message about subscription");
-                    } else {
-                        // TODO: Better Error Handling
-                        log::error!("Failed to get subscription with supplied data");
-                    }
-                });
+                // Theoretically only needs to be done once, but when setting up the page does
+                // not yet have a root.
+                let window = s.window();
+                dialog.set_transient_for(Some(&window));
+                dialog.present();
             }));
+        }
+
+        fn setup_platform_dropdown(&self) {
+            self.dropdown_platform
+                .set_expression(Some(&PropertyExpression::new(
+                    PlatformObject::static_type(),
+                    None::<ConstantExpression>,
+                    "name",
+                )));
+
+            let model = ListStore::new(PlatformObject::static_type());
+            model.splice(
+                0,
+                0,
+                &[
+                    PlatformObject::new(Platform::Youtube),
+                    PlatformObject::new(Platform::Lbry),
+                    PlatformObject::new(Platform::Peertube),
+                ],
+            );
+            self.dropdown_platform.set_model(Some(&model));
+        }
+    }
+
+    #[gtk::template_callbacks]
+    impl SubscriptionPage {
+        #[template_callback]
+        fn handle_add_subscription(&self, response: Option<&str>) {
+            if response != Some("add") {
+                return;
+            }
+
+            let in_platform = &self.dropdown_platform;
+            let in_url = &self.entry_url;
+            let in_name_id = &self.entry_name_id;
+
+            let platform = in_platform
+                .selected_item()
+                .expect("Something has to be selected.")
+                .downcast::<PlatformObject>()
+                .expect("Dropdown items should be of type PlatformObject.")
+                .platform()
+                .expect("The platform has to be set up.");
+            let url = in_url.text();
+            let name_id = in_name_id.text();
+
+            in_url.set_text("");
+            in_name_id.set_text("");
+
+            let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
+            let sender = sender.clone();
+            tokio::spawn(async move {
+                let subscription = match platform {
+                    Platform::Youtube => YTSubscription::try_from_search(&name_id)
+                        .await
+                        .map(|s| s.into()),
+                    Platform::Peertube => Some(PTSubscription::new(&url, &name_id).into()),
+                    Platform::Lbry => Some(LbrySubscription::new(&name_id).into()),
+                    // -- Add case here
+                };
+                if let Some(subscription) = subscription {
+                    sender
+                        .send(subscription)
+                        .expect("Failed to send message about subscription");
+                } else {
+                    // TODO: Better Error Handling
+                    log::error!("Failed to get subscription with supplied data");
+                }
+            });
 
             receiver.attach(
                 None,
@@ -171,29 +214,6 @@ pub mod imp {
             );
         }
 
-        fn setup_platform_dropdown(&self) {
-            let model = ListStore::new(PlatformObject::static_type());
-            model.splice(
-                0,
-                0,
-                &[
-                    PlatformObject::new(Platform::Youtube),
-                    PlatformObject::new(Platform::Lbry),
-                    PlatformObject::new(Platform::Peertube),
-                ],
-            );
-            self.dropdown_platform.set_model(Some(&model));
-            self.dropdown_platform
-                .set_expression(Some(&PropertyExpression::new(
-                    PlatformObject::static_type(),
-                    None::<ConstantExpression>,
-                    "name",
-                )));
-        }
-    }
-
-    #[gtk::template_callbacks]
-    impl SubscriptionPage {
         #[template_callback]
         fn handle_go_to_videos_page(&self, subscription: SubscriptionObject) {
             log::debug!(
@@ -274,15 +294,7 @@ pub mod imp {
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
-            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecBoolean::new(
-                    "add-visible",
-                    "add-visible",
-                    "add-visible",
-                    false,
-                    ParamFlags::READWRITE,
-                )]
-            });
+            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(Vec::new);
             PROPERTIES.as_ref()
         }
 
@@ -290,24 +302,14 @@ pub mod imp {
             &self,
             _obj: &Self::Type,
             _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
+            _value: &glib::Value,
+            _pspec: &glib::ParamSpec,
         ) {
-            match pspec.name() {
-                "add-visible" => {
-                    let _ = self.add_visible.replace(value.get().expect(
-                        "The property 'add-visible' of TFSubscriptionPage has to be boolean",
-                    ));
-                }
-                _ => unimplemented!(),
-            }
+            unimplemented!()
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
-            match pspec.name() {
-                "add-visible" => self.add_visible.get().to_value(),
-                _ => unimplemented!(),
-            }
+        fn property(&self, _obj: &Self::Type, _id: usize, _pspec: &glib::ParamSpec) -> glib::Value {
+            unimplemented!()
         }
     }
 

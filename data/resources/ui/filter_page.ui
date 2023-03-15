@@ -31,31 +31,6 @@
           </object>
         </child>
         <child>
-          <object class="GtkBox">
-            <property name="spacing">8</property>
-            <binding name="visible">
-              <lookup name="add-visible" type="TFFilterPage">
-              </lookup>
-            </binding>
-
-            <child>
-              <object class="GtkEntry" id="entry_title">
-                <property name="placeholder-text" translatable="yes">Title</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkEntry" id="entry_channel">
-                <property name="placeholder-text" translatable="yes">Channel Name</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="btn_add_filter">
-                <property name="icon-name">go-next-symbolic</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
           <object class="TFFilterList" id="filter_list">
             <binding name="visible">
               <closure function="not" type="gboolean">
@@ -82,4 +57,31 @@
       </object>
     </child>
   </template>
+
+  <object class="AdwMessageDialog" id="dialog_add">
+    <property name="heading" translatable="yes">Add Filter</property>
+    <property name="default-response">add</property>
+    <property name="hide-on-close">True</property>
+    <property name="extra-child">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkEntry" id="entry_title">
+            <property name="placeholder-text" translatable="yes">Title</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="entry_channel">
+            <property name="placeholder-text" translatable="yes">Channel Name</property>
+          </object>
+        </child>
+      </object>
+    </property>
+    <signal name="response" handler="handle_add_filter" swapped="true"/>
+    <responses>
+      <response id="cancel" translatable="yes">Cancel</response>
+      <response id="add" translatable="yes" appearance="suggested">Add</response>
+    </responses>
+  </object>
 </interface>

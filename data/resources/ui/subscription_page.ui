@@ -36,49 +36,6 @@
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox">
-                    <property name="spacing">8</property>
-                    <binding name="visible">
-                      <lookup name="add-visible" type="TFSubscriptionPage">
-                      </lookup>
-                    </binding>
-
-                    <child>
-                      <object class="GtkDropDown" id="dropdown_platform">
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="entry_url">
-                        <binding name="visible">
-                          <closure function="url_visible" type="gboolean">
-                            <lookup name="selected-item">
-                              dropdown_platform
-                            </lookup>
-                          </closure>
-                        </binding>
-                        <property name="placeholder-text" translatable="yes">Base URL</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkEntry" id="entry_name_id">
-                        <binding name="visible">
-                          <closure function="name_visible" type="gboolean">
-                            <lookup name="selected-item">
-                              dropdown_platform
-                            </lookup>
-                          </closure>
-                        </binding>
-                        <property name="placeholder-text" translatable="yes">Channel ID or Name</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="btn_add_subscription">
-                        <property name="icon-name">go-next-symbolic</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
                   <object class="TFSubscriptionList" id="subscription_list">
                     <signal name="go-to-videos" handler="handle_go_to_videos_page" swapped="true"/>
                     <binding name="visible">
@@ -141,4 +98,51 @@
       </object>
     </child>
   </template>
+
+  <object class="AdwMessageDialog" id="dialog_add">
+    <property name="heading" translatable="yes">Add Subscription</property>
+    <property name="default-response">add</property>
+    <property name="hide-on-close">True</property>
+    <property name="extra-child">
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">5</property>
+
+        <child>
+          <object class="GtkDropDown" id="dropdown_platform">
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="entry_url">
+            <binding name="visible">
+              <closure function="url_visible" type="gboolean">
+                <lookup name="selected-item">
+                  dropdown_platform
+                </lookup>
+              </closure>
+            </binding>
+            <property name="placeholder-text" translatable="yes">Base URL</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="entry_name_id">
+            <binding name="visible">
+              <closure function="name_visible" type="gboolean">
+                <lookup name="selected-item">
+                  dropdown_platform
+                </lookup>
+              </closure>
+            </binding>
+            <property name="placeholder-text" translatable="yes">Channel ID or Name</property>
+          </object>
+        </child>
+
+      </object>
+    </property>
+    <signal name="response" handler="handle_add_subscription" swapped="true"/>
+    <responses>
+      <response id="cancel" translatable="yes">Cancel</response>
+      <response id="add" translatable="yes" appearance="suggested">Add</response>
+    </responses>
+  </object>
 </interface>
