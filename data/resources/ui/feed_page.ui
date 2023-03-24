@@ -76,12 +76,9 @@
                   <class name="pill"/>
                   <class name="suggested-action"/>
                 </style>
+
                 <property name="halign">center</property>
-                <child>
-                  <object class="AdwButtonContent">
-                    <property name="label" translatable="yes">Subscribe to a Channel</property>
-                  </object>
-                </child>
+                <property name="label" translatable="yes">Subscribe to a Channel</property>
               </object>
             </property>
 
