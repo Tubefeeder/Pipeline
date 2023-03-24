@@ -74,12 +74,12 @@
               <object class="GtkButton" id="btn_add_subscription">
                 <style>
                   <class name="pill"/>
+                  <class name="suggested-action"/>
                 </style>
                 <property name="halign">center</property>
                 <child>
                   <object class="AdwButtonContent">
-                    <property name="icon-name">list-add-symbolic</property>
-                    <property name="label" translatable="yes">Subscribe to a chanel</property>
+                    <property name="label" translatable="yes">Subscribe to a Channel</property>
                   </object>
                 </child>
               </object>
