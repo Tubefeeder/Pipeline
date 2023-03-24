@@ -69,6 +69,22 @@
             <property name="description" translatable="yes">Are you subscribed to channels?</property>
             <property name="icon-name">go-home-symbolic</property>
             <property name="vexpand">True</property>
+
+            <property name="child">
+              <object class="GtkButton" id="btn_add_subscription">
+                <style>
+                  <class name="pill"/>
+                </style>
+                <property name="halign">center</property>
+                <child>
+                  <object class="AdwButtonContent">
+                    <property name="icon-name">list-add-symbolic</property>
+                    <property name="label" translatable="yes">Subscribe to a chanel</property>
+                  </object>
+                </child>
+              </object>
+            </property>
+
             <binding name="visible">
               <lookup name="is-empty">
                 feed_list

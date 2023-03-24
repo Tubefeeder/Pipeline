@@ -82,6 +82,7 @@ pub mod imp {
     use std::sync::Arc;
     use std::sync::Mutex;
 
+    use gdk_pixbuf::glib::clone;
     use glib::subclass::InitializingObject;
     use gtk::glib;
     use gtk::prelude::*;
@@ -163,6 +164,16 @@ pub mod imp {
     }
 
     impl Window {
+        fn setup_feed(&self) {
+            self.feed_page.connect_local(
+                "add-subscription",
+                true,
+                clone!(@strong self.subscription_page as s => move |_| {
+                    s.present_subscribe();
+                    None
+                }),
+            );
+        }
         fn setup_watch_later(&self) {
             let joiner = setup_joiner();
             self.joiner.replace(Some(joiner.clone()));
@@ -238,6 +249,15 @@ pub mod imp {
                     .expect("PlaylistManager should be set up"),
                 joiner,
             );
+
+            self.subscription_page.connect_local(
+                "subscription-added",
+                true,
+                clone!(@strong self.feed_page as f => move |_| {
+                    f.reload();
+                    None
+                }),
+            );
         }
 
         fn setup_filter(&self) {
@@ -296,6 +316,7 @@ pub mod imp {
     impl ObjectImpl for Window {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+            self.setup_feed();
             self.setup_watch_later();
             self.setup_subscriptions();
             self.setup_filter();

@@ -35,6 +35,10 @@ impl FeedPage {
         self.imp().joiner.replace(Some(joiner));
         self.imp().setup(&self);
     }
+
+    pub fn reload(&self) {
+        self.imp().reload();
+    }
 }
 
 pub mod imp {
@@ -47,6 +51,7 @@ pub mod imp {
     use gdk::glib::ParamSpec;
     use gdk::glib::ParamSpecBoolean;
     use gdk::glib::PRIORITY_DEFAULT;
+    use gdk_pixbuf::glib::subclass::Signal;
     use glib::subclass::InitializingObject;
     use gtk::glib;
     use gtk::prelude::*;
@@ -73,6 +78,8 @@ pub mod imp {
 
         #[template_child]
         pub(super) btn_reload: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub(super) btn_add_subscription: TemplateChild<gtk::Button>,
 
         #[template_child]
         pub(super) error_label: TemplateChild<ErrorLabel>,
@@ -85,6 +92,10 @@ pub mod imp {
     }
 
     impl FeedPage {
+        pub(super) fn reload(&self) {
+            self.btn_reload.emit_clicked();
+        }
+
         fn setup_reload(&self, obj: &super::FeedPage) {
             let joiner = self
                 .joiner
@@ -132,6 +143,13 @@ pub mod imp {
             self.joiner.replace(Some(joiner));
         }
 
+        fn setup_add_subscription(&self, obj: &super::FeedPage) {
+            self.btn_add_subscription
+                .connect_clicked(clone!(@weak obj => move |_| {
+                    obj.emit_by_name::<()>("add-subscription", &[]);
+                }));
+        }
+
         pub(super) fn setup(&self, obj: &super::FeedPage) {
             self.feed_list.set_playlist_manager(
                 self.playlist_manager
@@ -140,6 +158,7 @@ pub mod imp {
                     .expect("PlaylistManager has to be set up"),
             );
             self.setup_reload(obj);
+            self.setup_add_subscription(obj);
         }
     }
 
@@ -201,6 +220,20 @@ pub mod imp {
                 "reloading" => self.reloading.get().to_value(),
                 _ => unimplemented!(),
             }
+        }
+
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
+                vec![Signal::builder(
+                    "add-subscription",
+                    // Types of the values which will be sent to the signal handler
+                    &[],
+                    // Type of the value the signal handler sends back
+                    <()>::static_type().into(),
+                )
+                .build()]
+            });
+            SIGNALS.as_ref()
         }
     }
 
