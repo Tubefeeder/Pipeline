@@ -69,4 +69,7 @@ Please also take a look at the [wiki](http://www.tubefeeder.de/wiki/) if you hav
 
 If you like this project and have some spare Monero left, consider donating to my Monero address:
 
-Monero: 82pRFY4iUjVUWm48ykaTKbjYeDksdMunWPHbrDbTmyKF7PWAxNX8FXM7G6B1n4NFvHfr3ztEg411A2gCjJjNJ8PtEnmcehf
+Monero: 
+~~~
+82pRFY4iUjVUWm48ykaTKbjYeDksdMunWPHbrDbTmyKF7PWAxNX8FXM7G6B1n4NFvHfr3ztEg411A2gCjJjNJ8PtEnmcehf
+~~~
