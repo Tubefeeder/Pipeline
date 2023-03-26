@@ -105,6 +105,8 @@ pub mod imp {
         #[template_child]
         pub(super) btn_toggle_add_subscription: TemplateChild<gtk::Button>,
         #[template_child]
+        pub(super) btn_add_subscription: TemplateChild<gtk::Button>,
+        #[template_child]
         pub(super) dropdown_platform: TemplateChild<gtk::DropDown>,
         #[template_child]
         pub(super) entry_url: TemplateChild<gtk::Entry>,
@@ -136,6 +138,11 @@ pub mod imp {
 
         fn setup_toggle_add_subscription(&self, obj: &super::SubscriptionPage) {
             self.btn_toggle_add_subscription
+                .connect_clicked(clone!(@strong obj as s,
+                                        => move |_| {
+                    s.present_subscribe();
+                }));
+            self.btn_add_subscription
                 .connect_clicked(clone!(@strong obj as s,
                                         => move |_| {
                     s.present_subscribe();
