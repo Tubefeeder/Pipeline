@@ -60,7 +60,7 @@
                 </style>
 
                 <property name="halign">center</property>
-                <property name="label" translatable="yes">Add Filter</property>
+                <property name="label" translatable="yes">Add Filter…</property>
               </object>
             </property>
           </object>

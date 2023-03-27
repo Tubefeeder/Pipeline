@@ -77,7 +77,7 @@
                 </style>
 
                 <property name="halign">center</property>
-                <property name="label" translatable="yes">Subscribe to a Channel</property>
+                <property name="label" translatable="yes">Subscribe to a Channel…</property>
               </object>
             </property>
 
