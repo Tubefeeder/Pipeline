@@ -44,7 +44,6 @@
         <child>
           <object class="AdwStatusPage">
             <property name="title" translatable="yes">No Filters</property>
-            <property name="description" translatable="yes">How about adding some filters?</property>
             <property name="icon-name">funnel-symbolic</property>
             <property name="vexpand">True</property>
             <binding name="visible">
@@ -52,6 +51,18 @@
                 filter_list
               </lookup>
             </binding>
+
+            <property name="child">
+              <object class="GtkButton" id="btn_add_filter">
+                <style>
+                  <class name="pill"/>
+                  <class name="suggested-action"/>
+                </style>
+
+                <property name="halign">center</property>
+                <property name="label" translatable="yes">Add Filter…</property>
+              </object>
+            </property>
           </object>
         </child>
       </object>

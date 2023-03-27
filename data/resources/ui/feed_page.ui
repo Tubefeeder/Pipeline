@@ -66,9 +66,21 @@
         <child>
           <object class="AdwStatusPage">
             <property name="title" translatable="yes">No Videos Found</property>
-            <property name="description" translatable="yes">Are you subscribed to channels?</property>
             <property name="icon-name">go-home-symbolic</property>
             <property name="vexpand">True</property>
+
+            <property name="child">
+              <object class="GtkButton" id="btn_add_subscription">
+                <style>
+                  <class name="pill"/>
+                  <class name="suggested-action"/>
+                </style>
+
+                <property name="halign">center</property>
+                <property name="label" translatable="yes">Subscribe to a Channel…</property>
+              </object>
+            </property>
+
             <binding name="visible">
               <lookup name="is-empty">
                 feed_list

@@ -32,6 +32,11 @@ gtk::glib::wrapper! {
 }
 
 impl SubscriptionPage {
+    pub fn present_subscribe(&self) {
+        log::trace!("Subscription page got request to present the subscription window");
+        self.imp().present_subscribe();
+    }
+
     pub fn set_subscription_list(
         &self,
         subscription_list: AnySubscriptionList,
@@ -67,6 +72,7 @@ pub mod imp {
     use gdk::glib::Object;
     use gdk::glib::ParamSpec;
     use gdk::glib::PRIORITY_DEFAULT;
+    use gdk_pixbuf::glib::subclass::Signal;
     use glib::subclass::InitializingObject;
     use gtk::glib;
     use gtk::prelude::*;
@@ -99,6 +105,8 @@ pub mod imp {
         #[template_child]
         pub(super) btn_toggle_add_subscription: TemplateChild<gtk::Button>,
         #[template_child]
+        pub(super) btn_add_subscription: TemplateChild<gtk::Button>,
+        #[template_child]
         pub(super) dropdown_platform: TemplateChild<gtk::DropDown>,
         #[template_child]
         pub(super) entry_url: TemplateChild<gtk::Entry>,
@@ -116,23 +124,29 @@ pub mod imp {
     }
 
     impl SubscriptionPage {
-        fn setup_toggle_add_subscription(&self, obj: &super::SubscriptionPage) {
-            self.btn_toggle_add_subscription.connect_clicked(clone!(@strong obj as s,
-                                                                    @strong self.dialog_add as dialog,
-                                                                    @strong self.entry_url as in_url,
-                                                                    @strong self.entry_name_id as in_name_id,
-                                                                    @strong self.dropdown_platform as dropdown_platform,
-                                                                    => move |_| {
-                dropdown_platform.set_selected(0);
-                in_url.set_text("");
-                in_name_id.set_text("");
+        pub(super) fn present_subscribe(&self) {
+            self.dropdown_platform.set_selected(0);
+            self.entry_url.set_text("");
+            self.entry_name_id.set_text("");
 
-                // Theoretically only needs to be done once, but when setting up the page does
-                // not yet have a root.
-                let window = s.window();
-                dialog.set_transient_for(Some(&window));
-                dialog.present();
-            }));
+            // Theoretically only needs to be done once, but when setting up the page does
+            // not yet have a root.
+            let window = self.instance().window();
+            self.dialog_add.set_transient_for(Some(&window));
+            self.dialog_add.present();
+        }
+
+        fn setup_toggle_add_subscription(&self, obj: &super::SubscriptionPage) {
+            self.btn_toggle_add_subscription
+                .connect_clicked(clone!(@strong obj as s,
+                                        => move |_| {
+                    s.present_subscribe();
+                }));
+            self.btn_add_subscription
+                .connect_clicked(clone!(@strong obj as s,
+                                        => move |_| {
+                    s.present_subscribe();
+                }));
         }
 
         fn setup_platform_dropdown(&self) {
@@ -203,11 +217,13 @@ pub mod imp {
                 }
             });
 
+            let obj = self.instance();
             receiver.attach(
                 None,
-                clone!(@strong self.any_subscription_list as list =>
+                clone!(@strong self.any_subscription_list as list, @strong obj =>
                        move |sub| {
                            list.borrow().as_ref().expect("SubscriptionList should be set up").add(sub);
+                           obj.emit_by_name::<()>("subscription-added", &[]);
                            Continue(true)
                        }
                 )
@@ -310,6 +326,20 @@ pub mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, _pspec: &glib::ParamSpec) -> glib::Value {
             unimplemented!()
+        }
+
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
+                vec![Signal::builder(
+                    "subscription-added",
+                    // Types of the values which will be sent to the signal handler
+                    &[],
+                    // Type of the value the signal handler sends back
+                    <()>::static_type().into(),
+                )
+                .build()]
+            });
+            SIGNALS.as_ref()
         }
     }
 

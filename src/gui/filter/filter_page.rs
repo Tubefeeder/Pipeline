@@ -77,6 +77,8 @@ pub mod imp {
         #[template_child]
         pub(super) btn_toggle_add_filter: TemplateChild<gtk::Button>,
         #[template_child]
+        pub(super) btn_add_filter: TemplateChild<gtk::Button>,
+        #[template_child]
         pub(super) entry_title: TemplateChild<gtk::Entry>,
         #[template_child]
         pub(super) entry_channel: TemplateChild<gtk::Entry>,
@@ -88,19 +90,26 @@ pub mod imp {
 
     #[gtk::template_callbacks]
     impl FilterPage {
-        fn setup_toggle_add_filter(&self, obj: &super::FilterPage) {
-            self.btn_toggle_add_filter.connect_clicked(
-                clone!(@strong obj as s, @strong self.dialog_add as dialog, @strong self.entry_title as in_title, @strong self.entry_channel as in_channel => move |_| {
-                    in_title.set_text("");
-                    in_channel.set_text("");
+        fn present_filter(&self) {
+            self.entry_channel.set_text("");
+            self.entry_title.set_text("");
 
-                    // Theoretically only needs to be done once, but when setting up the page does
-                    // not yet have a root.
-                    let window = s.window();
-                    dialog.set_transient_for(Some(&window));
-                    dialog.present();
-                }),
-            );
+            // Theoretically only needs to be done once, but when setting up the page does
+            // not yet have a root.
+            let window = self.instance().window();
+            self.dialog_add.set_transient_for(Some(&window));
+            self.dialog_add.present();
+        }
+
+        fn setup_toggle_add_filter(&self, obj: &super::FilterPage) {
+            self.btn_toggle_add_filter
+                .connect_clicked(clone!(@strong obj as s => move |_| {
+                    s.imp().present_filter();
+                }));
+            self.btn_add_filter
+                .connect_clicked(clone!(@strong obj as s => move |_| {
+                    s.imp().present_filter();
+                }));
         }
 
         #[template_callback]
