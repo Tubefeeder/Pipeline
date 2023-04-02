@@ -20,6 +20,15 @@
             <property name="halign">GTK_ALIGN_FILL</property>
             <child>
               <object class="GtkListView" id="feed_list">
+                <style>
+                  <class name="card"/>
+                  <class name="separators"/>
+                </style>
+                <property name="margin-start">5</property>
+                <property name="margin-end">5</property>
+                <property name="margin-top">5</property>
+                <property name="margin-bottom">5</property>
+
                 <property name="vexpand">True</property>
                 <property name="valign">GTK_ALIGN_FILL</property>
                 <property name="hexpand">True</property>

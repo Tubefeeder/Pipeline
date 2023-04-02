@@ -4,13 +4,18 @@
   <requires lib="libadwaita" version="1.0"/>
   <template class="TFThumbnail" parent="GtkBox">
     <property name="halign">GTK_ALIGN_START</property>
-    <property name="valign">GTK_ALIGN_FILL</property>
+    <property name="valign">GTK_ALIGN_START</property>
     <property name="hexpand">False</property>
     <property name="vexpand">True</property>
-    <property name="height-request">60</property>
-    <property name="width-request">80</property>
+    <property name="height-request">72</property>
+    <property name="width-request">128</property>
+    <property name="orientation">vertical</property>
+
     <child>
       <object class="GtkPicture" id="thumbnail">
+        <style>
+          <class name="card"/>
+        </style>
       </object>
     </child>
   </template>
