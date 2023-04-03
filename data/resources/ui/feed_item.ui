@@ -7,34 +7,11 @@
     <property name="spacing">8</property>
     <property name="hexpand">True</property>
     <property name="halign">GTK_ALIGN_FILL</property>
-
     <property name="margin-start">5</property>
     <property name="margin-end">5</property>
     <property name="margin-top">5</property>
     <property name="margin-bottom">5</property>
 
-    <child>
-      <object class="GtkImage" id="playing">
-        <property name="icon-name">media-playback-start-symbolic</property>
-        <binding name="visible">
-          <lookup name="playing">
-            <lookup name="video" type="TFFeedItem">
-            </lookup>
-          </lookup>
-        </binding>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage" id="downloading">
-        <property name="icon-name">folder-download-symbolic</property>
-        <binding name="visible">
-          <lookup name="downloading">
-            <lookup name="video" type="TFFeedItem">
-            </lookup>
-          </lookup>
-        </binding>
-      </object>
-    </child>
     <child>
       <object class="TFThumbnail" id="thumbnail">
         <binding name="video">
@@ -43,12 +20,13 @@
         </binding>
       </object>
     </child>
+
     <child>
       <object class="GtkBox" id="box_info">
         <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
         <property name="vexpand">True</property>
         <property name="hexpand">True</property>
-        <property name="spacing">0</property>
+        <property name="spacing">5</property>
 
         <child>
           <object class="GtkLabel" id="label_title">
@@ -70,53 +48,52 @@
         <child>
           <object class="GtkBox">
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-
             <child>
               <object class="GtkBox">
                 <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="spacing">10</property>
+                    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
                     <child>
-                      <object class="GtkBox">
-                        <property name="spacing">10</property>
-                        <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-                        <child>
-                          <object class="GtkLabel" id="label_author">
-                            <style>
-                              <class name="caption"/>
-                            </style>
-                            <binding name="label">
-                              <lookup name="author">
-                                <lookup name="video" type="TFFeedItem">
+                      <object class="GtkLabel" id="label_author">
+                        <style>
+                          <class name="caption"/>
+                        </style>
+                        <binding name="label">
+                          <lookup name="author">
+                            <lookup name="video" type="TFFeedItem">
                                 </lookup>
-                              </lookup>
-                            </binding>
-                            <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
-                            <property name="wrap">true</property>
-                            <property name="wrap-mode">PANGO_WRAP_WORD</property>
-                            <property name="lines">2</property>
-                            <property name="justify">GTK_JUSTIFY_LEFT</property>
-                            <property name="halign">GTK_ALIGN_START</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="label_platform">
-                            <style>
-                              <class name="caption"/>
-                            </style>
-                            <binding name="label">
-                              <lookup name="platform">
-                                <lookup name="video" type="TFFeedItem">
+                          </lookup>
+                        </binding>
+                        <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
+                        <property name="wrap">true</property>
+                        <property name="wrap-mode">PANGO_WRAP_WORD</property>
+                        <property name="lines">2</property>
+                        <property name="justify">GTK_JUSTIFY_LEFT</property>
+                        <property name="halign">GTK_ALIGN_START</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_platform">
+                        <style>
+                          <class name="caption"/>
+                        </style>
+                        <binding name="label">
+                          <lookup name="platform">
+                            <lookup name="video" type="TFFeedItem">
                                 </lookup>
-                              </lookup>
-                            </binding>
-                            <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
-                            <property name="wrap">true</property>
-                            <property name="wrap-mode">PANGO_WRAP_WORD</property>
-                            <property name="lines">2</property>
-                            <property name="justify">GTK_JUSTIFY_LEFT</property>
-                            <property name="halign">GTK_ALIGN_START</property>
-                          </object>
-                        </child>
-
+                          </lookup>
+                        </binding>
+                        <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
+                        <property name="wrap">true</property>
+                        <property name="wrap-mode">PANGO_WRAP_WORD</property>
+                        <property name="lines">2</property>
+                        <property name="justify">GTK_JUSTIFY_LEFT</property>
+                        <property name="halign">GTK_ALIGN_START</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -125,10 +102,10 @@
                       <class name="caption"/>
                     </style>
                     <binding name="label">
-                        <lookup name="date">
-                          <lookup name="video" type="TFFeedItem">
+                      <lookup name="date">
+                        <lookup name="video" type="TFFeedItem">
                           </lookup>
-                        </lookup>
+                      </lookup>
                     </binding>
                     <property name="ellipsize">PANGO_ELLIPSIZE_END</property>
                     <property name="wrap">true</property>
@@ -152,41 +129,42 @@
                 </child>
               </object>
             </child>
-        <child>
-        <object class="GtkBox">
-          <style>
-            <class name="linked"/>
-          </style>
-          <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
-          <property name="hexpand">true</property>
-          <property name="halign">end</property>
-        <child>
-          <object class="GtkMenuButton">
-            <property name="menu-model">menu</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="hexpand">false</property>
-            <property name="vexpand">false</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="watch_later">
-            <property name="icon-name">appointment-new-symbolic</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="vexpand">false</property>
-            <property name="hexpand">false</property>
-            <property name="margin-end">7</property>
-          </object>
-        </child>
-        </object>
-        </child>
-          </object>
-        </child>
 
+            <child>
+              <object class="GtkBox">
+                <style>
+                  <class name="linked"/>
+                </style>
+                <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+                <property name="hexpand">true</property>
+                <property name="halign">end</property>
+                <child>
+                  <object class="GtkMenuButton">
+                    <property name="menu-model">menu</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="hexpand">false</property>
+                    <property name="vexpand">false</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="watch_later">
+                    <property name="icon-name">appointment-new-symbolic</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <property name="vexpand">false</property>
+                    <property name="hexpand">false</property>
+                    <property name="margin-end">7</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </template>
+
   <menu id="menu">
     <section>
       <item>

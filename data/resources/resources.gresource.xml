@@ -24,4 +24,7 @@
     <file preprocess="xml-stripblanks" alias="scalable/actions/funnel-symbolic.svg">../icons/funnel-symbolic.svg</file>
     <file preprocess="xml-stripblanks" alias="scalable/actions/library-artists-symbolic.svg">../icons/library-artists-symbolic.svg</file>
   </gresource>
+  <gresource prefix="/de/schmidhuberj/tubefeeder/">
+    <file compressed="true">style.css</file>
+  </gresource>
 </gresources>

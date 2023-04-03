@@ -1,0 +1,4 @@
+.osd {
+  /* The osd above the thumbnails are not rounded by default */
+  border-radius: 6pt;
+}

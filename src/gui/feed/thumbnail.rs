@@ -97,6 +97,8 @@ impl Thumbnail {
 }
 
 pub mod imp {
+    use crate::gui::utility::Utility;
+
     use std::cell::RefCell;
 
     use gdk::glib::clone;
@@ -129,6 +131,7 @@ pub mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
+            Utility::bind_template_callbacks(klass);
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {
