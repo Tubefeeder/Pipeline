@@ -36,6 +36,8 @@
                     <property name="valign">GTK_ALIGN_START</property>
                     <property name="hexpand">True</property>
                     <property name="halign">GTK_ALIGN_FILL</property>
+                    <!-- Fix issue where highlighting the first/last item in the list would cut off the highlighting -->
+                    <property name="overflow">visible</property>
                   </object>
                 </child>
                 <child>
