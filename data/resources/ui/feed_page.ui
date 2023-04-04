@@ -53,18 +53,14 @@
           </object>
         </child>
         <child>
-          <object class="AdwClamp">
-            <child>
-              <object class="TFFeedList" id="feed_list">
-                <binding name="visible">
-                  <closure function="not" type="gboolean">
-                    <lookup name="is-empty">
-                      feed_list
-                    </lookup>
-                  </closure>
-                </binding>
-              </object>
-            </child>
+          <object class="TFFeedList" id="feed_list">
+            <binding name="visible">
+              <closure function="not" type="gboolean">
+                <lookup name="is-empty">
+                  feed_list
+                </lookup>
+              </closure>
+            </binding>
           </object>
         </child>
         <child>

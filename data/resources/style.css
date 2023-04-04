@@ -2,3 +2,9 @@
   /* The osd above the thumbnails are not rounded by default */
   border-radius: 6pt;
 }
+
+/* For the feed list, the default view class overwrites the card-color. Undo that */
+.feed-list {
+	background-color: @card_bg_color;
+	color: @card_fg_color;
+}
