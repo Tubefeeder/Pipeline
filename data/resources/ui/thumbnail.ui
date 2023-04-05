@@ -69,6 +69,8 @@
             <style>
               <class name="card"/>
             </style>
+
+            <property name="can-shrink">false</property>
           </object>
         </child>
       </object>
