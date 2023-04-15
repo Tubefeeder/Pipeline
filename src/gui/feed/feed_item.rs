@@ -75,8 +75,6 @@ pub mod imp {
         label_date: TemplateChild<gtk::Label>,
 
         #[template_child]
-        playing: TemplateChild<gtk::Image>,
-        #[template_child]
         thumbnail: TemplateChild<Thumbnail>,
 
         #[template_child]

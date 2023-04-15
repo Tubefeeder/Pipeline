@@ -18,9 +18,12 @@
  *
  */
 
-use gdk::prelude::{ApplicationExt, ApplicationExtManual};
+use gdk::{
+    prelude::{ApplicationExt, ApplicationExtManual},
+    Display,
+};
 use gdk_pixbuf::{gio::Settings, prelude::SettingsExt};
-use gtk::traits::GtkWindowExt;
+use gtk::{traits::GtkWindowExt, CssProvider, StyleContext};
 
 mod config;
 use self::config::{APP_ID, GETTEXT_PACKAGE, LOCALEDIR, RESOURCES_BYTES};
@@ -74,6 +77,18 @@ fn init_internationalization() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+fn init_css() {
+    let provider = CssProvider::new();
+    provider.load_from_resource("/de/schmidhuberj/tubefeeder/style.css");
+
+    // Add the provider to the default screen
+    StyleContext::add_provider_for_display(
+        &Display::default().expect("Could not connect to a display."),
+        &provider,
+        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
+}
+
 #[tokio::main]
 async fn main() {
     env_logger::init();
@@ -91,6 +106,7 @@ fn build_ui(app: &gtk::Application) {
     init_resources();
     init_folders();
     init_settings();
+    init_css();
     // Create new window and present it
     let window = crate::gui::window::Window::new(app);
     window.present();

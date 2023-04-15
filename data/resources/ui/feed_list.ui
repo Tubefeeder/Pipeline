@@ -12,32 +12,48 @@
       <object class="GtkScrolledWindow">
         <property name="hscrollbar-policy">GTK_POLICY_NEVER</property>
         <child>
-          <object class="GtkBox">
-            <property name="orientation">vertical</property>
-            <property name="vexpand">True</property>
-            <property name="valign">GTK_ALIGN_FILL</property>
-            <property name="hexpand">True</property>
-            <property name="halign">GTK_ALIGN_FILL</property>
+          <object class="AdwClamp">
             <child>
-              <object class="GtkListView" id="feed_list">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
                 <property name="vexpand">True</property>
                 <property name="valign">GTK_ALIGN_FILL</property>
                 <property name="hexpand">True</property>
                 <property name="halign">GTK_ALIGN_FILL</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="load_more">
-                <binding name="visible">
-                  <lookup name="more-available" type="TFFeedList">
-                  </lookup>
-                </binding>
-                <property name="label" translatable="yes">Load more</property>
-                <property name="vexpand">False</property>
-                <property name="valign">GTK_ALIGN_FILL</property>
-                <property name="hexpand">True</property>
-                <property name="halign">GTK_ALIGN_FILL</property>
-                <property name="action-name">feed.more</property>
+                <child>
+                  <object class="GtkListView" id="feed_list">
+                    <style>
+                      <class name="card"/>
+                      <class name="separators"/>
+                      <class name="feed-list"/>
+                    </style>
+                    <property name="margin-start">5</property>
+                    <property name="margin-end">5</property>
+                    <property name="margin-top">5</property>
+                    <property name="margin-bottom">5</property>
+
+                    <property name="vexpand">True</property>
+                    <property name="valign">GTK_ALIGN_START</property>
+                    <property name="hexpand">True</property>
+                    <property name="halign">GTK_ALIGN_FILL</property>
+                    <!-- Fix issue where highlighting the first/last item in the list would cut off the highlighting -->
+                    <property name="overflow">visible</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="load_more">
+                    <binding name="visible">
+                      <lookup name="more-available" type="TFFeedList">
+                      </lookup>
+                    </binding>
+                    <property name="label" translatable="yes">Load more</property>
+                    <property name="vexpand">False</property>
+                    <property name="valign">GTK_ALIGN_FILL</property>
+                    <property name="hexpand">True</property>
+                    <property name="halign">GTK_ALIGN_FILL</property>
+                    <property name="action-name">feed.more</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

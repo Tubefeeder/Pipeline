@@ -4,13 +4,75 @@
   <requires lib="libadwaita" version="1.0"/>
   <template class="TFThumbnail" parent="GtkBox">
     <property name="halign">GTK_ALIGN_START</property>
-    <property name="valign">GTK_ALIGN_FILL</property>
+    <property name="valign">GTK_ALIGN_START</property>
     <property name="hexpand">False</property>
     <property name="vexpand">True</property>
-    <property name="height-request">60</property>
-    <property name="width-request">80</property>
+    <property name="height-request">72</property>
+    <property name="width-request">128</property>
+    <property name="orientation">vertical</property>
+
     <child>
-      <object class="GtkPicture" id="thumbnail">
+      <object class="GtkOverlay">
+        <child type="overlay">
+          <object class="GtkBox">
+            <style>
+              <class name="osd"/>
+            </style>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+
+            <binding name="visible">
+              <closure function="or" type="gboolean">
+                <lookup name="playing">
+                  <lookup name="video" type="TFThumbnail">
+                  </lookup>
+                </lookup>
+                <lookup name="downloading">
+                  <lookup name="video" type="TFThumbnail">
+                  </lookup>
+                </lookup>
+              </closure>
+            </binding>
+
+            <child>
+              <object class="GtkImage" id="playing">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+
+                <property name="icon-name">media-playback-start-symbolic</property>
+                <binding name="visible">
+                  <lookup name="playing">
+                    <lookup name="video" type="TFThumbnail">
+                    </lookup>
+                  </lookup>
+                </binding>
+              </object>
+            </child>
+            <child>
+              <object class="GtkImage" id="downloading">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+
+                <property name="icon-name">folder-download-symbolic</property>
+                <binding name="visible">
+                  <lookup name="downloading">
+                    <lookup name="video" type="TFThumbnail">
+                    </lookup>
+                  </lookup>
+                </binding>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkPicture" id="thumbnail">
+            <style>
+              <class name="card"/>
+            </style>
+
+            <property name="can-shrink">false</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>
