@@ -10,6 +10,9 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
+	  <release version="v1.9.5" date="2023-04-15">
+            <description><p>Major UI updates to the feed list.</p></description>
+	  </release>
 	  <release version="v1.9.4" date="2023-03-17">
             <description><p>Minor UI improvements and bug fix.</p></description>
 	  </release>
