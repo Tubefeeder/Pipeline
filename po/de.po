@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-17 14:38+0200\n"
-"PO-Revision-Date: 2022-03-05 15:52+0100\n"
+"PO-Revision-Date: 2022-04-17 14:46+0100\n"
 "Last-Translator: Julian Schmidhuber <internationalization@schmiddi.anonaddy."
 "com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -36,30 +36,27 @@ msgstr "Feed"
 
 #: data/resources/ui/feed_page.ui:68
 msgid "No Videos Found"
-msgstr ""
+msgstr "Keine Videos Gefunden"
 
 #: data/resources/ui/feed_page.ui:80 data/resources/ui/subscription_page.ui:69
 msgid "Subscribe to a Channel…"
-msgstr ""
+msgstr "Einen Kanal Abbonieren…"
 
 #: data/resources/ui/filter_page.ui:16 data/resources/ui/window.ui:38
 msgid "Filters"
 msgstr "Filter"
 
 #: data/resources/ui/filter_page.ui:46
-#, fuzzy
 msgid "No Filters"
-msgstr "Filter"
+msgstr "Keine Filter"
 
 #: data/resources/ui/filter_page.ui:63
-#, fuzzy
 msgid "Add Filter…"
-msgstr "Filter"
+msgstr "Filter Hinzufügen…"
 
 #: data/resources/ui/filter_page.ui:73
-#, fuzzy
 msgid "Add Filter"
-msgstr "Filter"
+msgstr "Filter Hinzufügen"
 
 #: data/resources/ui/filter_page.ui:82
 msgid "Title"
@@ -77,28 +74,25 @@ msgstr "Abbrechen"
 #: data/resources/ui/filter_page.ui:95
 #: data/resources/ui/subscription_page.ui:156
 msgid "Add"
-msgstr ""
+msgstr "Hinzufügen"
 
 #: data/resources/ui/header_bar.ui:45
 msgid "Preferences"
-msgstr ""
+msgstr "Einstellungen"
 
 #: data/resources/ui/header_bar.ui:49
-#, fuzzy
 msgid "Import…"
-msgstr "Importieren"
+msgstr "Importieren…"
 
 #: data/resources/ui/header_bar.ui:53
 msgid "About Tubefeeder"
-msgstr ""
+msgstr "Über Tubefeeder"
 
 #: data/resources/ui/import_window.ui:7
-#, fuzzy
 msgid "Import Subscriptions"
-msgstr "Abonnenten"
+msgstr "Abonnenten Importieren"
 
 #: data/resources/ui/import_window.ui:8
-#, fuzzy
 msgid ""
 "This will import your subscriptions from exported data from NewPipe or "
 "YouTube."
@@ -106,11 +100,11 @@ msgstr "Dies wird Abonnentens von NewPipe oder Youtube importieren."
 
 #: data/resources/ui/import_window.ui:14
 msgid "NewPipe"
-msgstr ""
+msgstr "NewPipe"
 
 #: data/resources/ui/import_window.ui:15
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
@@ -133,13 +127,12 @@ msgid "APIs"
 msgstr "APIs"
 
 #: data/resources/ui/preferences_window.ui:29
-#, fuzzy
 msgid ""
 "For a list of public APIs, see the <a href=\"https://github.com/TeamPiped/"
 "Piped/wiki/Instances\">Instances page</a>."
 msgstr ""
-"Für eine Liste an öffentlichen APIs, siehe https://github.com/TeamPiped/"
-"Piped/wiki/Instances."
+"Für eine Liste an öffentlichen APIs, siehe <a href=\"https://github.com/TeamPiped/"
+"Piped/wiki/Instances\">Instances Page</a>."
 
 #: data/resources/ui/preferences_window.ui:32
 msgid "Piped API"
@@ -151,18 +144,16 @@ msgid "Subscriptions"
 msgstr "Abonnenten"
 
 #: data/resources/ui/subscription_page.ui:52
-#, fuzzy
 msgid "No Subscriptions"
-msgstr "Abonnenten"
+msgstr "Keine Abonnenten"
 
 #: data/resources/ui/subscription_page.ui:114
-#, fuzzy
 msgid "Add Subscription"
-msgstr "Abonnenten"
+msgstr "Abonnement Hinzufügen"
 
 #: data/resources/ui/subscription_page.ui:135
 msgid "Base URL"
-msgstr "URL"
+msgstr "Basis URL"
 
 #: data/resources/ui/subscription_page.ui:147
 msgid "Channel ID or Name"
@@ -174,11 +165,11 @@ msgstr "Später Ansehen"
 
 #: data/resources/ui/watch_later.ui:32
 msgid "Everything Watched"
-msgstr ""
+msgstr "Alles Angesehen"
 
 #: data/resources/ui/watch_later.ui:33
 msgid "How about going outside?"
-msgstr ""
+msgstr "Wie wäre es einmal rauszugehen?"
 
 #: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
@@ -200,12 +191,11 @@ msgstr "%x %T"
 
 #: src/gui/header_bar.rs:105
 msgid "Donate"
-msgstr ""
+msgstr "Spenden"
 
 #: src/gui/import_window.rs:36
-#, fuzzy
 msgid "Select NewPipe subscriptions file"
-msgstr "Konnte Abbonements nicht importieren"
+msgstr "Wähle Datei mit NewPipe Abonnenten"
 
 #: src/gui/import_window.rs:49 src/gui/import_window.rs:79
 msgid "Failure to import subscriptions"
@@ -213,7 +203,7 @@ msgstr "Konnte Abbonements nicht importieren"
 
 #: src/gui/import_window.rs:66
 msgid "Select YouTube subscription file"
-msgstr ""
+msgstr "Wähle Datei mit YouTube Abonnenten"
 
 #: src/gui/preferences_window.rs:49
 msgid ""
