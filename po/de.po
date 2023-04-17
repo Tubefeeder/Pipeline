@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-08 12:47+0200\n"
+"POT-Creation-Date: 2023-04-17 14:38+0200\n"
 "PO-Revision-Date: 2022-03-05 15:52+0100\n"
 "Last-Translator: Julian Schmidhuber <internationalization@schmiddi.anonaddy."
 "com>\n"
@@ -18,15 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: data/resources/ui/feed_item.ui:148
+#: data/resources/ui/feed_item.ui:171
 msgid "Download"
 msgstr "Herunterladen"
 
-#: data/resources/ui/feed_item.ui:152
+#: data/resources/ui/feed_item.ui:175
 msgid "Copy to Clipboard"
 msgstr "Kopieren zum Clipboard"
 
-#: data/resources/ui/feed_list.ui:35
+#: data/resources/ui/feed_list.ui:49
 msgid "Load more"
 msgstr "Lade mehr"
 
@@ -34,39 +34,83 @@ msgstr "Lade mehr"
 msgid "Feed"
 msgstr "Feed"
 
+#: data/resources/ui/feed_page.ui:68
+msgid "No Videos Found"
+msgstr ""
+
+#: data/resources/ui/feed_page.ui:80 data/resources/ui/subscription_page.ui:69
+msgid "Subscribe to a Channel…"
+msgstr ""
+
 #: data/resources/ui/filter_page.ui:16 data/resources/ui/window.ui:38
 msgid "Filters"
 msgstr "Filter"
 
-#: data/resources/ui/filter_page.ui:43
+#: data/resources/ui/filter_page.ui:46
+#, fuzzy
+msgid "No Filters"
+msgstr "Filter"
+
+#: data/resources/ui/filter_page.ui:63
+#, fuzzy
+msgid "Add Filter…"
+msgstr "Filter"
+
+#: data/resources/ui/filter_page.ui:73
+#, fuzzy
+msgid "Add Filter"
+msgstr "Filter"
+
+#: data/resources/ui/filter_page.ui:82
 msgid "Title"
 msgstr "Titel"
 
-#: data/resources/ui/filter_page.ui:48
+#: data/resources/ui/filter_page.ui:87
 msgid "Channel Name"
 msgstr "Kanal-Name"
 
-#: data/resources/ui/header_bar.ui:44
-msgid "Settings"
-msgstr "Einstellungen"
-
-#: data/resources/ui/header_bar.ui:48 data/resources/ui/import_window.ui:8
-msgid "Import"
-msgstr "Importieren"
-
-#: data/resources/ui/header_bar.ui:52
-msgid "About"
-msgstr "Über"
-
-#: data/resources/ui/import_window.ui:17
-msgid ""
-"This will import your subscriptions from exported data from NewPipe or "
-"Youtube."
-msgstr "Dies wird Abonnentens von NewPipe oder Youtube importieren."
-
-#: data/resources/ui/import_window.ui:44
+#: data/resources/ui/filter_page.ui:94 data/resources/ui/import_window.ui:16
+#: data/resources/ui/subscription_page.ui:155
 msgid "Cancel"
 msgstr "Abbrechen"
+
+#: data/resources/ui/filter_page.ui:95
+#: data/resources/ui/subscription_page.ui:156
+msgid "Add"
+msgstr ""
+
+#: data/resources/ui/header_bar.ui:45
+msgid "Preferences"
+msgstr ""
+
+#: data/resources/ui/header_bar.ui:49
+#, fuzzy
+msgid "Import…"
+msgstr "Importieren"
+
+#: data/resources/ui/header_bar.ui:53
+msgid "About Tubefeeder"
+msgstr ""
+
+#: data/resources/ui/import_window.ui:7
+#, fuzzy
+msgid "Import Subscriptions"
+msgstr "Abonnenten"
+
+#: data/resources/ui/import_window.ui:8
+#, fuzzy
+msgid ""
+"This will import your subscriptions from exported data from NewPipe or "
+"YouTube."
+msgstr "Dies wird Abonnentens von NewPipe oder Youtube importieren."
+
+#: data/resources/ui/import_window.ui:14
+msgid "NewPipe"
+msgstr ""
+
+#: data/resources/ui/import_window.ui:15
+msgid "YouTube"
+msgstr ""
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
@@ -80,40 +124,61 @@ msgstr "Programme"
 msgid "Player"
 msgstr "Spieler"
 
-#: data/resources/ui/preferences_window.ui:25
+#: data/resources/ui/preferences_window.ui:21
 msgid "Downloader"
 msgstr "Herunterladen"
 
-#: data/resources/ui/preferences_window.ui:36
+#: data/resources/ui/preferences_window.ui:28
 msgid "APIs"
 msgstr "APIs"
 
-#: data/resources/ui/preferences_window.ui:37
+#: data/resources/ui/preferences_window.ui:29
+#, fuzzy
 msgid ""
-"For a list of public APIs, see https://github.com/TeamPiped/Piped/wiki/"
-"Instances."
-msgstr "Für eine Liste an öffentlichen APIs, siehe https://github.com/TeamPiped/Piped/wiki/Instances."
+"For a list of public APIs, see the <a href=\"https://github.com/TeamPiped/"
+"Piped/wiki/Instances\">Instances page</a>."
+msgstr ""
+"Für eine Liste an öffentlichen APIs, siehe https://github.com/TeamPiped/"
+"Piped/wiki/Instances."
 
-#: data/resources/ui/preferences_window.ui:40
+#: data/resources/ui/preferences_window.ui:32
 msgid "Piped API"
 msgstr "Piped API"
 
 #: data/resources/ui/subscription_page.ui:21
-#: data/resources/ui/subscription_page.ui:98 data/resources/ui/window.ui:47
+#: data/resources/ui/subscription_page.ui:86 data/resources/ui/window.ui:47
 msgid "Subscriptions"
 msgstr "Abonnenten"
 
-#: data/resources/ui/subscription_page.ui:59
+#: data/resources/ui/subscription_page.ui:52
+#, fuzzy
+msgid "No Subscriptions"
+msgstr "Abonnenten"
+
+#: data/resources/ui/subscription_page.ui:114
+#, fuzzy
+msgid "Add Subscription"
+msgstr "Abonnenten"
+
+#: data/resources/ui/subscription_page.ui:135
 msgid "Base URL"
 msgstr "URL"
 
-#: data/resources/ui/subscription_page.ui:71
+#: data/resources/ui/subscription_page.ui:147
 msgid "Channel ID or Name"
 msgstr "Kanal Name oder ID"
 
 #: data/resources/ui/watch_later.ui:16 data/resources/ui/window.ui:29
 msgid "Watch Later"
 msgstr "Später Ansehen"
+
+#: data/resources/ui/watch_later.ui:32
+msgid "Everything Watched"
+msgstr ""
+
+#: data/resources/ui/watch_later.ui:33
+msgid "How about going outside?"
+msgstr ""
 
 #: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
@@ -133,16 +198,37 @@ msgstr "Ein Fehler ist aufgetreten"
 msgid "%F %T"
 msgstr "%x %T"
 
-#: src/gui/import_window.rs:83 src/gui/import_window.rs:114
+#: src/gui/header_bar.rs:105
+msgid "Donate"
+msgstr ""
+
+#: src/gui/import_window.rs:36
+#, fuzzy
+msgid "Select NewPipe subscriptions file"
+msgstr "Konnte Abbonements nicht importieren"
+
+#: src/gui/import_window.rs:49 src/gui/import_window.rs:79
 msgid "Failure to import subscriptions"
 msgstr "Konnte Abbonements nicht importieren"
+
+#: src/gui/import_window.rs:66
+msgid "Select YouTube subscription file"
+msgstr ""
 
 #: src/gui/preferences_window.rs:49
 msgid ""
 "Note that on Flatpak, there are some more steps required when using a player "
 "external to the Flatpak. For more information, please consult the wiki."
-msgstr "Bei Installation mit Flatpak sind außerdem weitere Schritte zur Änderung des Spielers auf ein Programm außerhalb des Flatpaks nötig. Beachten Sie bitte das Wiki."
+msgstr ""
+"Bei Installation mit Flatpak sind außerdem weitere Schritte zur Änderung des "
+"Spielers auf ein Programm außerhalb des Flatpaks nötig. Beachten Sie bitte "
+"das Wiki."
 
-#: src/gui/preferences_window.rs:74
-msgid "Overwritten by environmental variable."
-msgstr "Überschrieben von Umgebungsvariable."
+#~ msgid "Settings"
+#~ msgstr "Einstellungen"
+
+#~ msgid "About"
+#~ msgstr "Über"
+
+#~ msgid "Overwritten by environmental variable."
+#~ msgstr "Überschrieben von Umgebungsvariable."
