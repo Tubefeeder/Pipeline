@@ -23,7 +23,7 @@ msgstr "Stáhnout"
 
 #: data/resources/ui/feed_item.ui:175
 msgid "Copy to Clipboard"
-msgstr "Kopírovat do schránky"
+msgstr "Zkopírovat do schránky"
 
 #: data/resources/ui/feed_list.ui:49
 msgid "Load more"
@@ -35,11 +35,11 @@ msgstr "Feed"
 
 #: data/resources/ui/feed_page.ui:68
 msgid "No Videos Found"
-msgstr ""
+msgstr "Žádná videa k nalezení"
 
 #: data/resources/ui/feed_page.ui:80 data/resources/ui/subscription_page.ui:69
 msgid "Subscribe to a Channel…"
-msgstr ""
+msgstr "Přihlásit se k odběru kanálu…"
 
 #: data/resources/ui/filter_page.ui:16 data/resources/ui/window.ui:38
 msgid "Filters"
@@ -48,17 +48,17 @@ msgstr "Filtry"
 #: data/resources/ui/filter_page.ui:46
 #, fuzzy
 msgid "No Filters"
-msgstr "Filtry"
+msgstr "Žádné filtry"
 
 #: data/resources/ui/filter_page.ui:63
 #, fuzzy
 msgid "Add Filter…"
-msgstr "Filtry"
+msgstr "Přidat filtr…"
 
 #: data/resources/ui/filter_page.ui:73
 #, fuzzy
 msgid "Add Filter"
-msgstr "Filtry"
+msgstr "Přidat filtr"
 
 #: data/resources/ui/filter_page.ui:82
 msgid "Title"
@@ -76,25 +76,25 @@ msgstr "Zrušit"
 #: data/resources/ui/filter_page.ui:95
 #: data/resources/ui/subscription_page.ui:156
 msgid "Add"
-msgstr ""
+msgstr "Přidat"
 
 #: data/resources/ui/header_bar.ui:45
 msgid "Preferences"
-msgstr ""
+msgstr "Předvolby"
 
 #: data/resources/ui/header_bar.ui:49
 #, fuzzy
 msgid "Import…"
-msgstr "Importovat"
+msgstr "Importovat…"
 
 #: data/resources/ui/header_bar.ui:53
 msgid "About Tubefeeder"
-msgstr ""
+msgstr "O aplikaci Tubefeeder"
 
 #: data/resources/ui/import_window.ui:7
 #, fuzzy
 msgid "Import Subscriptions"
-msgstr "Odběry"
+msgstr "Importovat odběry"
 
 #: data/resources/ui/import_window.ui:8
 #, fuzzy
@@ -102,16 +102,16 @@ msgid ""
 "This will import your subscriptions from exported data from NewPipe or "
 "YouTube."
 msgstr ""
-"Tímto způsobem naimportujete odběry z exportovaných dat ze služby NewPipe "
+"Tímto způsobem importujete odběry z exportovaných dat ze služby NewPipe "
 "nebo Youtube."
 
 #: data/resources/ui/import_window.ui:14
 msgid "NewPipe"
-msgstr ""
+msgstr "NewPipe"
 
 #: data/resources/ui/import_window.ui:15
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
@@ -144,7 +144,7 @@ msgstr ""
 
 #: data/resources/ui/preferences_window.ui:32
 msgid "Piped API"
-msgstr "Potrubní rozhraní API"
+msgstr "Rizhraní Pipe-API"
 
 #: data/resources/ui/subscription_page.ui:21
 #: data/resources/ui/subscription_page.ui:86 data/resources/ui/window.ui:47
@@ -154,12 +154,12 @@ msgstr "Odběry"
 #: data/resources/ui/subscription_page.ui:52
 #, fuzzy
 msgid "No Subscriptions"
-msgstr "Odběry"
+msgstr "Žádné odběry"
 
 #: data/resources/ui/subscription_page.ui:114
 #, fuzzy
 msgid "Add Subscription"
-msgstr "Odběry"
+msgstr "Přidat odběr"
 
 #: data/resources/ui/subscription_page.ui:135
 msgid "Base URL"
@@ -175,11 +175,11 @@ msgstr "Podívat se později"
 
 #: data/resources/ui/watch_later.ui:32
 msgid "Everything Watched"
-msgstr ""
+msgstr "Vše sledované"
 
 #: data/resources/ui/watch_later.ui:33
 msgid "How about going outside?"
-msgstr ""
+msgstr "Co takhle jít ven?"
 
 #: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
@@ -201,12 +201,12 @@ msgstr "%F %T"
 
 #: src/gui/header_bar.rs:105
 msgid "Donate"
-msgstr ""
+msgstr "Podpořit"
 
 #: src/gui/import_window.rs:36
 #, fuzzy
 msgid "Select NewPipe subscriptions file"
-msgstr "Neúspěšný import odběrů"
+msgstr "Vybrat soubor odběrů NewPipe"
 
 #: src/gui/import_window.rs:49 src/gui/import_window.rs:79
 msgid "Failure to import subscriptions"
@@ -214,7 +214,7 @@ msgstr "Neúspěšný import odběrů"
 
 #: src/gui/import_window.rs:66
 msgid "Select YouTube subscription file"
-msgstr ""
+msgstr "Vybrat soubor odběrů YouTube"
 
 #: src/gui/preferences_window.rs:49
 msgid ""
