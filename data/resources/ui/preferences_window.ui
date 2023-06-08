@@ -34,6 +34,22 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="AdwPreferencesGroup">
+            <property name="title" translatable="yes">Other</property>
+            <child>
+              <object class="AdwActionRow">
+                <property name="title" translatable="yes">Show only Videos from Yesterday</property>
+                <child>
+                  <object class="GtkSwitch" id="switch_only_videos_yesterday">
+                    <property name="valign">center</property>
+                    <property name="halign">center</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </template>

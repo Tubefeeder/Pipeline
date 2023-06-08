@@ -51,6 +51,7 @@ pub mod imp {
     use gdk::glib::ParamSpec;
     use gdk::glib::ParamSpecBoolean;
     use gdk::glib::PRIORITY_DEFAULT;
+    use gdk_pixbuf::gio::Settings;
     use gdk_pixbuf::glib::subclass::Signal;
     use glib::subclass::InitializingObject;
     use gtk::glib;
@@ -65,12 +66,13 @@ pub mod imp {
     use tf_join::Joiner;
     use tf_playlist::PlaylistManager;
 
+    use crate::config::APP_ID;
     use crate::gui::feed::error_label::ErrorLabel;
     use crate::gui::feed::feed_item_object::VideoObject;
     use crate::gui::feed::feed_list::FeedList;
     use crate::gui::utility::Utility;
 
-    #[derive(CompositeTemplate, Default)]
+    #[derive(CompositeTemplate)]
     #[template(resource = "/ui/feed_page.ui")]
     pub struct FeedPage {
         #[template_child]
@@ -89,6 +91,24 @@ pub mod imp {
         pub(super) playlist_manager: RefCell<Option<PlaylistManager<String, AnyVideo>>>,
         pub(super) joiner: RefCell<Option<Joiner>>,
         error_store: RefCell<ErrorStore>,
+
+        pub settings: gtk::gio::Settings,
+    }
+
+    impl Default for FeedPage {
+        fn default() -> Self {
+            Self {
+                feed_list: Default::default(),
+                btn_reload: Default::default(),
+                btn_add_subscription: Default::default(),
+                error_label: Default::default(),
+                reloading: Default::default(),
+                playlist_manager: Default::default(),
+                joiner: Default::default(),
+                error_store: Default::default(),
+                settings: Settings::new(APP_ID),
+            }
+        }
     }
 
     impl FeedPage {
@@ -107,6 +127,7 @@ pub mod imp {
             let sender = sender.clone();
             let joiner = joiner.clone();
             let error_store = self.error_store.borrow().clone();
+            let settings = self.settings.clone();
 
             self.btn_reload.connect_clicked(
                 clone!(@strong obj as s, @strong joiner, @strong error_store => move |_| {
@@ -125,8 +146,15 @@ pub mod imp {
             );
             receiver.attach(
                 None,
-                clone!(@strong obj as s => @default-return Continue(false), move |videos| {
-                    let video_objects = videos.into_iter().map(VideoObject::new).collect::<Vec<_>>();
+                clone!(@strong obj as s, @strong settings => @default-return Continue(false), move |videos| {
+                    let yesterday = chrono::Local::today().naive_local() - chrono::Duration::days(1);
+                    let video_objects_iter = videos.into_iter().map(VideoObject::new);
+
+                    let video_objects = if settings.boolean("only-videos-yesterday") {
+                        video_objects_iter.filter(|v| v.uploaded().map(|d| d.date()) == Some(yesterday)).collect::<Vec<_>>()
+                    } else {
+                        video_objects_iter.collect::<Vec<_>>()
+                    };
                     s.imp().feed_list.get().set_items(video_objects);
                     s.set_property("reloading", &false);
                     Continue(true)

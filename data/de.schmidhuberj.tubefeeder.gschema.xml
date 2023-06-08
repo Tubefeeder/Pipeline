@@ -26,5 +26,10 @@
       <default>"https://pipedapi.kavin.rocks"</default>
       <summary>The piped api url</summary>
     </key>
+
+    <key name="only-videos-yesterday" type="b">
+      <default>false</default>
+      <summary>Only show videos of yesterday.</summary>
+    </key>
   </schema>
 </schemalist>

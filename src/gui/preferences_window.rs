@@ -21,6 +21,7 @@ pub mod imp {
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
     use gtk::CompositeTemplate;
+    use gtk::Switch;
     use libadwaita::subclass::prelude::AdwWindowImpl;
     use libadwaita::subclass::prelude::PreferencesWindowImpl;
     use libadwaita::traits::PreferencesGroupExt;
@@ -39,6 +40,9 @@ pub mod imp {
 
         #[template_child]
         group_programs: TemplateChild<libadwaita::PreferencesGroup>,
+
+        #[template_child]
+        switch_only_videos_yesterday: TemplateChild<Switch>,
 
         settings: Settings,
     }
@@ -67,6 +71,15 @@ pub mod imp {
             self.init_string_setting("PLAYER", "player", self.entry_player.get());
             self.init_string_setting("DOWNLOADER", "downloader", self.entry_downloader.get());
             self.init_string_setting("PIPED_API_URL", "piped-url", self.entry_piped_api.get());
+
+            self.settings
+                .bind(
+                    "only-videos-yesterday",
+                    &self.switch_only_videos_yesterday.get(),
+                    "active",
+                )
+                .flags(SettingsBindFlags::DEFAULT)
+                .build();
         }
     }
 
@@ -83,6 +96,7 @@ pub mod imp {
                 entry_player: TemplateChild::default(),
                 entry_downloader: TemplateChild::default(),
                 entry_piped_api: TemplateChild::default(),
+                switch_only_videos_yesterday: Default::default(),
             }
         }
 

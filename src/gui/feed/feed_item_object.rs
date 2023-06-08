@@ -99,6 +99,10 @@ impl VideoObject {
         self.imp().video.borrow().clone()
     }
 
+    pub fn uploaded(&self) -> Option<chrono::NaiveDateTime> {
+        self.video().map(|v| v.uploaded())
+    }
+
     pub fn play(&self) {
         self.set_property("playing", true);
         let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
