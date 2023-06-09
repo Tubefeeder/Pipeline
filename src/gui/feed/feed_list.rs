@@ -22,11 +22,15 @@ use std::cmp::min;
 
 use gdk::{
     gio::{SimpleAction, SimpleActionGroup},
+    glib,
     glib::clone,
     prelude::{ActionMapExt, ListModelExt, ObjectExt, ToValue},
     subclass::prelude::ObjectSubclassIsExt,
 };
-use gtk::traits::WidgetExt;
+use gtk::{
+    traits::{AdjustmentExt, WidgetExt},
+    Adjustment,
+};
 use tf_join::AnyVideo;
 use tf_playlist::PlaylistManager;
 
@@ -62,6 +66,20 @@ impl FeedList {
         let actions = SimpleActionGroup::new();
         self.insert_action_group("feed", Some(&actions));
         actions.add_action(&action_more);
+    }
+
+    fn setup_autoload(&self) {
+        let adj = self.imp().scrolled_window.vadjustment();
+        adj.connect_changed(clone!(@weak self as s => move |adj| {
+            s.load_if_screen_not_filled(adj);
+        }));
+    }
+
+    fn load_if_screen_not_filled(&self, adj: &Adjustment) {
+        if self.property("more-available") && adj.upper() <= adj.page_size() {
+            // The screen is not yet filled.
+            let _ = self.activate_action("feed.more", None);
+        }
     }
 
     pub fn set_items(&self, new_items: Vec<VideoObject>) {
@@ -142,6 +160,7 @@ pub mod imp {
     use gtk::glib;
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
+    use gtk::PositionType;
     use gtk::SignalListItemFactory;
     use gtk::Widget;
 
@@ -159,7 +178,7 @@ pub mod imp {
         #[template_child]
         pub(super) feed_list: TemplateChild<gtk::ListView>,
         #[template_child]
-        load_more: TemplateChild<gtk::Button>,
+        pub(super) scrolled_window: TemplateChild<gtk::ScrolledWindow>,
 
         pub(super) items: RefCell<Vec<VideoObject>>,
         pub(super) model: RefCell<ListStore>,
@@ -205,6 +224,18 @@ pub mod imp {
 
                 video_object.play();
             });
+
+            self.instance().setup_autoload();
+        }
+    }
+
+    #[gtk::template_callbacks]
+    impl FeedList {
+        #[template_callback]
+        fn edge_reached(&self, pos: PositionType) {
+            if pos == PositionType::Bottom {
+                let _ = WidgetExt::activate_action(&self.instance(), "feed.more", None);
+            }
         }
     }
 
@@ -216,6 +247,7 @@ pub mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
+            Self::bind_template_callbacks(klass);
         }
 
         fn instance_init(obj: &InitializingObject<Self>) {
