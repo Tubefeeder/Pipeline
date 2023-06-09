@@ -1,34 +1,34 @@
-# ITALIAN TRANSLATION FOR TUBEFEEDER.
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# ALBANO BATTISTELLA <ALBANO_BATTISTELLA@HOTMAIL.COM>, 2022.
+# This file is distributed under the same license as the tubefeeder package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 1.5.0\n"
+"Project-Id-Version: tubefeeder\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-17 14:38+0200\n"
-"PO-Revision-Date: 2023-04-17 14:51+0200\n"
-"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
-"Language-Team: Dutch <vistausss@fastmail.com>\n"
-"Language: it\n"
+"PO-Revision-Date: 2023-06-05 16:54-0400\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.3.1\n"
 
 #: data/resources/ui/feed_item.ui:171
 msgid "Download"
-msgstr "Downloaden"
+msgstr "Descargar"
 
 #: data/resources/ui/feed_item.ui:175
 msgid "Copy to Clipboard"
-msgstr "Kopiëren naar klembord"
+msgstr "Copiar al portapapeles"
 
 #: data/resources/ui/feed_list.ui:49
 msgid "Load more"
-msgstr "Meer laden"
+msgstr "Carga más"
 
 #: data/resources/ui/feed_page.ui:16 data/resources/ui/window.ui:19
 msgid "Feed"
@@ -36,69 +36,69 @@ msgstr "Feed"
 
 #: data/resources/ui/feed_page.ui:68
 msgid "No Videos Found"
-msgstr "Er zijn geen video's gevonden"
+msgstr "No se han encontrado vídeos"
 
 #: data/resources/ui/feed_page.ui:80 data/resources/ui/subscription_page.ui:69
 msgid "Subscribe to a Channel…"
-msgstr "Abonneren op kanaal…"
+msgstr "Suscríbase a un canal…"
 
 #: data/resources/ui/filter_page.ui:16 data/resources/ui/window.ui:38
 msgid "Filters"
-msgstr "Filters"
+msgstr "Filtros"
 
 #: data/resources/ui/filter_page.ui:46
 msgid "No Filters"
-msgstr "Geen filters"
+msgstr "Sin filtros"
 
 #: data/resources/ui/filter_page.ui:63
 msgid "Add Filter…"
-msgstr "Filter toevoegen…"
+msgstr "Añadir filtro…"
 
 #: data/resources/ui/filter_page.ui:73
 msgid "Add Filter"
-msgstr "Filter toevoegen"
+msgstr "Agregar filtro"
 
 #: data/resources/ui/filter_page.ui:82
 msgid "Title"
-msgstr "Titel"
+msgstr "Título"
 
 #: data/resources/ui/filter_page.ui:87
 msgid "Channel Name"
-msgstr "Kanaalnaam"
+msgstr "Nombre del canal"
 
 #: data/resources/ui/filter_page.ui:94 data/resources/ui/import_window.ui:16
 #: data/resources/ui/subscription_page.ui:155
 msgid "Cancel"
-msgstr "Annuleren"
+msgstr "Cancelar"
 
 #: data/resources/ui/filter_page.ui:95
 #: data/resources/ui/subscription_page.ui:156
 msgid "Add"
-msgstr "Toevoegen"
+msgstr "Agregar"
 
 #: data/resources/ui/header_bar.ui:45
 msgid "Preferences"
-msgstr "Voorkeuren"
+msgstr "Preferencias"
 
 #: data/resources/ui/header_bar.ui:49
 msgid "Import…"
-msgstr "Importeren…"
+msgstr "Importar…"
 
 #: data/resources/ui/header_bar.ui:53
 msgid "About Tubefeeder"
-msgstr "Over Tubefeeder"
+msgstr "Acerca de Tubefeeder"
 
 #: data/resources/ui/import_window.ui:7
 msgid "Import Subscriptions"
-msgstr "Abonnementen importeren"
+msgstr "Importar suscripciones"
 
 #: data/resources/ui/import_window.ui:8
 msgid ""
 "This will import your subscriptions from exported data from NewPipe or "
 "YouTube."
 msgstr ""
-"Hiermee worden al uw abonnementen geïmporteerd uit de geëxporteerde gegevens "
-"van NewPipe of YouTube."
+"Esto importará sus suscripciones desde los datos exportados desde NewPipe o "
+"YouTube."
 
 #: data/resources/ui/import_window.ui:14
 msgid "NewPipe"
@@ -110,82 +110,82 @@ msgstr "YouTube"
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
-msgstr "Algemeen"
+msgstr "General"
 
 #: data/resources/ui/preferences_window.ui:13
 msgid "Programs"
-msgstr "Apps"
+msgstr "Programas"
 
 #: data/resources/ui/preferences_window.ui:16
 msgid "Player"
-msgstr "Speler"
+msgstr "Reproductor"
 
 #: data/resources/ui/preferences_window.ui:21
 msgid "Downloader"
-msgstr "Downloader"
+msgstr "Descargador"
 
 #: data/resources/ui/preferences_window.ui:28
 msgid "APIs"
-msgstr "Api's"
+msgstr "APIs"
 
 #: data/resources/ui/preferences_window.ui:29
 msgid ""
 "For a list of public APIs, see the <a href=\"https://github.com/TeamPiped/"
 "Piped/wiki/Instances\">Instances page</a>."
 msgstr ""
-"De lijst met openbare api's is te vinden op de <a href=\"https://github.com/"
-"TeamPiped/Piped/wiki/Instances\">Instantiespagina</a> (Engels)."
+"Para obtener una lista de API públicas, consulte la página <a href=\"https://"
+"github.com/TeamPiped/Piped/wiki/Instances\">Instancias</a>."
 
 #: data/resources/ui/preferences_window.ui:32
 msgid "Piped API"
-msgstr "Piped-api"
+msgstr "API canalizada"
 
 #: data/resources/ui/subscription_page.ui:21
 #: data/resources/ui/subscription_page.ui:86 data/resources/ui/window.ui:47
 msgid "Subscriptions"
-msgstr "Abonnementen"
+msgstr "Suscripciones"
 
 #: data/resources/ui/subscription_page.ui:52
 msgid "No Subscriptions"
-msgstr "U heeft geen abonnementen"
+msgstr "Sin suscripciones"
 
 #: data/resources/ui/subscription_page.ui:114
 msgid "Add Subscription"
-msgstr "Abonnement toevoegen"
+msgstr "Agregar suscripción"
 
 #: data/resources/ui/subscription_page.ui:135
 msgid "Base URL"
-msgstr "Hoofdurl"
+msgstr "URL base"
 
 #: data/resources/ui/subscription_page.ui:147
 msgid "Channel ID or Name"
-msgstr "Kanaalid of -naam"
+msgstr "ID o nombre del canal"
 
 #: data/resources/ui/watch_later.ui:16 data/resources/ui/window.ui:29
 msgid "Watch Later"
-msgstr "Later bekijken"
+msgstr "Ver más tarde"
 
 #: data/resources/ui/watch_later.ui:32
 msgid "Everything Watched"
-msgstr "Kijkgeschiedenis"
+msgstr "Todo lo visto"
 
 #: data/resources/ui/watch_later.ui:33
 msgid "How about going outside?"
-msgstr "Waarom gaat u niet even lekker naar buiten?"
+msgstr "¿Qué tal si salimos fuera?"
 
 #: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
-msgstr "Er kan geen verbinding worden gemaakt met het internet"
+msgstr "Error de conexión a la red"
 
 #: src/gui/feed/error_label.rs:103
 msgid "Error parsing one subscription"
 msgid_plural "Error parsing {} subscriptions"
-msgstr[0] "Eén abonnement kan niet worden verwerkt"
-msgstr[1] "{} abonnementen kunnen niet worden verwerkt"
+msgstr[0] "Error al procesar una suscripción"
+msgstr[1] "Error al procesar {} suscripciones"
 
 #: src/gui/feed/error_label.rs:106
 msgid "Some error occured"
-msgstr "Er is een fout opgetreden"
+msgstr "Se ha producido un error"
 
 #: src/gui/feed/feed_item_object.rs:88
 msgid "%F %T"
@@ -193,33 +193,25 @@ msgstr "%F %T"
 
 #: src/gui/header_bar.rs:105
 msgid "Donate"
-msgstr "Doneren"
+msgstr "Donar"
 
 #: src/gui/import_window.rs:36
 msgid "Select NewPipe subscriptions file"
-msgstr "Kies het NewPipe-abonnementsbestand"
+msgstr "Seleccione el archivo de suscripciones NewPipe"
 
 #: src/gui/import_window.rs:49 src/gui/import_window.rs:79
 msgid "Failure to import subscriptions"
-msgstr "De abonnementen kunnen niet worden geïmporteerd"
+msgstr "Fallo al importar suscripciones"
 
 #: src/gui/import_window.rs:66
 msgid "Select YouTube subscription file"
-msgstr "Kies het YouTube-abonnementsbestand"
+msgstr "Seleccione el archivo de suscripción de YouTube"
 
 #: src/gui/preferences_window.rs:49
 msgid ""
 "Note that on Flatpak, there are some more steps required when using a player "
 "external to the Flatpak. For more information, please consult the wiki."
 msgstr ""
-"Let op: de flatpakversie vereist meer stappen bij gebruik van een externe "
-"speler. Bekijk voor meer informatie de wiki."
-
-#~ msgid "Settings"
-#~ msgstr "Instellingen"
-
-#~ msgid "About"
-#~ msgstr "Over"
-
-#~ msgid "Overwritten by environmental variable."
-#~ msgstr "Overschreven door een omgevingsvariabele."
+"Tenga en cuenta que en Flatpak, hay algunos pasos más necesarios cuando se "
+"utiliza un reproductor externo a Flatpak. Para más información, consulte la "
+"wiki."
