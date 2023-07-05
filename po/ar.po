@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: tubefeeder\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-17 14:38+0200\n"
-"PO-Revision-Date: 2023-07-05 18:58+0100\n"
+"PO-Revision-Date: 2023-07-05 22:21+0100\n"
 "Last-Translator: Rayan Nakib <rayan.nakib@tutamail.com>\n"
 "Language-Team: ARABIC\n"
 "Language: ar\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: data/resources/ui/feed_item.ui:171
 msgid "Download"
-msgstr "نزّل الفيديو"
+msgstr "نزّل المقطع المرئي"
 
 #: data/resources/ui/feed_item.ui:175
 msgid "Copy to Clipboard"
@@ -37,7 +37,7 @@ msgstr "الموجز"
 
 #: data/resources/ui/feed_page.ui:68
 msgid "No Videos Found"
-msgstr "لم يتم العثور على مقاطع فيديو"
+msgstr "لا توجد مرئيات"
 
 #: data/resources/ui/feed_page.ui:80 data/resources/ui/subscription_page.ui:69
 msgid "Subscribe to a Channel…"
@@ -87,7 +87,7 @@ msgstr "استورد..."
 
 #: data/resources/ui/header_bar.ui:53
 msgid "About Tubefeeder"
-msgstr "حول تيوب فيدر"
+msgstr "حول Tubefeeder"
 
 #: data/resources/ui/import_window.ui:7
 msgid "Import Subscriptions"
@@ -118,11 +118,11 @@ msgstr "برامج"
 
 #: data/resources/ui/preferences_window.ui:16
 msgid "Player"
-msgstr "برنامج تشغيل الفيديو"
+msgstr "برنامج تشغيل المرئيات"
 
 #: data/resources/ui/preferences_window.ui:21
 msgid "Downloader"
-msgstr "برنامج تنزيل الفيديو"
+msgstr "برنامج تنزيل المرئيات"
 
 #: data/resources/ui/preferences_window.ui:28
 msgid "APIs"

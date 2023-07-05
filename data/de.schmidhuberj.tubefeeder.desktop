@@ -1,10 +1,9 @@
 [Desktop Entry]
 Type=Application
 Icon=de.schmidhuberj.tubefeeder
-Name[ar]=تيوبفيدر
 Name=Tubefeeder
-Comment[ar]=عميل ل موقع YouTube و LBRY و PeerTube
 Comment=A YouTube, LBRY and PeerTube client
+Comment[ar]=عميل YouTube و LBRY و PeerTube
 Comment[it]=Un client per YouTube, LBRY e PeerTube
 StartupWMClass=Tubefeeder
 Exec=/app/bin/tubefeeder
