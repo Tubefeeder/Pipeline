@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: tubefeeder\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-17 14:38+0200\n"
-"PO-Revision-Date: 2023-06-30 18:36+0100\n"
+"PO-Revision-Date: 2023-07-05 18:58+0100\n"
 "Last-Translator: Rayan Nakib <rayan.nakib@tutamail.com>\n"
 "Language-Team: ARABIC\n"
 "Language: ar\n"
@@ -21,15 +21,15 @@ msgstr ""
 
 #: data/resources/ui/feed_item.ui:171
 msgid "Download"
-msgstr "تحميل"
+msgstr "نزّل الفيديو"
 
 #: data/resources/ui/feed_item.ui:175
 msgid "Copy to Clipboard"
-msgstr "نسخ إلى الحافظة"
+msgstr "انسخ إلى الحافظة"
 
 #: data/resources/ui/feed_list.ui:49
 msgid "Load more"
-msgstr "تحميل المزيد"
+msgstr "حِمْل المزيد"
 
 #: data/resources/ui/feed_page.ui:16 data/resources/ui/window.ui:19
 msgid "Feed"
@@ -37,31 +37,31 @@ msgstr "الموجز"
 
 #: data/resources/ui/feed_page.ui:68
 msgid "No Videos Found"
-msgstr "لم يتم العثور على فيديوهات"
+msgstr "لم يتم العثور على مقاطع فيديو"
 
 #: data/resources/ui/feed_page.ui:80 data/resources/ui/subscription_page.ui:69
 msgid "Subscribe to a Channel…"
-msgstr "الاشتراك في قناة…"
+msgstr "اشترك في قناة..."
 
 #: data/resources/ui/filter_page.ui:16 data/resources/ui/window.ui:38
 msgid "Filters"
-msgstr "الفلاتر"
+msgstr "مُرشِّحات"
 
 #: data/resources/ui/filter_page.ui:46
 msgid "No Filters"
-msgstr "لا يوجد فلاتر"
+msgstr "لا توجد مُرشِّحات"
 
 #: data/resources/ui/filter_page.ui:63
 msgid "Add Filter…"
-msgstr "إضافة فلتر..."
+msgstr "أضف مرشِّح..."
 
 #: data/resources/ui/filter_page.ui:73
 msgid "Add Filter"
-msgstr "إضافة فلتر"
+msgstr "أضِف مُرشِّح"
 
 #: data/resources/ui/filter_page.ui:82
 msgid "Title"
-msgstr "العنوان"
+msgstr "عنوان"
 
 #: data/resources/ui/filter_page.ui:87
 msgid "Channel Name"
@@ -70,20 +70,20 @@ msgstr "اسم القناة"
 #: data/resources/ui/filter_page.ui:94 data/resources/ui/import_window.ui:16
 #: data/resources/ui/subscription_page.ui:155
 msgid "Cancel"
-msgstr "إلغاء"
+msgstr "ألغِ"
 
 #: data/resources/ui/filter_page.ui:95
 #: data/resources/ui/subscription_page.ui:156
 msgid "Add"
-msgstr "إضافة"
+msgstr "اضِف"
 
 #: data/resources/ui/header_bar.ui:45
 msgid "Preferences"
-msgstr "التفضيلات"
+msgstr "تفضيلات"
 
 #: data/resources/ui/header_bar.ui:49
 msgid "Import…"
-msgstr "استيراد..."
+msgstr "استورد..."
 
 #: data/resources/ui/header_bar.ui:53
 msgid "About Tubefeeder"
@@ -91,23 +91,22 @@ msgstr "حول تيوب فيدر"
 
 #: data/resources/ui/import_window.ui:7
 msgid "Import Subscriptions"
-msgstr "استيراد الإشتراكات"
+msgstr "استيرادات الاشتراكات"
 
 #: data/resources/ui/import_window.ui:8
 msgid ""
 "This will import your subscriptions from exported data from NewPipe or "
 "YouTube."
 msgstr ""
-"ستؤدي هذه العملية إلى استيراد الاشتراكات من البيانات المصدرة من تطبيق "
-"NewPipe أو موقع YouTube."
+"سيؤدي هذا إلى استيراد اشتراكاتك من البيانات المصدرة من NewPipe أو YouTube."
 
 #: data/resources/ui/import_window.ui:14
 msgid "NewPipe"
-msgstr "تطبيق NewPipe"
+msgstr "NewPipe"
 
 #: data/resources/ui/import_window.ui:15
 msgid "YouTube"
-msgstr "موقع YouTube"
+msgstr "YouTube"
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
@@ -115,31 +114,31 @@ msgstr "عام"
 
 #: data/resources/ui/preferences_window.ui:13
 msgid "Programs"
-msgstr "البرمجيات"
+msgstr "برامج"
 
 #: data/resources/ui/preferences_window.ui:16
 msgid "Player"
-msgstr "برنامج تشغيل الفيديوهات"
+msgstr "برنامج تشغيل الفيديو"
 
 #: data/resources/ui/preferences_window.ui:21
 msgid "Downloader"
-msgstr "برنامج تحميل الفيديوهات"
+msgstr "برنامج تنزيل الفيديو"
 
 #: data/resources/ui/preferences_window.ui:28
 msgid "APIs"
-msgstr "API"
+msgstr "واجهات برمجة التطبيقات"
 
 #: data/resources/ui/preferences_window.ui:29
 msgid ""
 "For a list of public APIs, see the <a href=\"https://github.com/TeamPiped/"
 "Piped/wiki/Instances\">Instances page</a>."
 msgstr ""
-"لقائمة ب ال API المتاحة للعامة ، يرجى زيارة <a href=\"https://github.com/"
-"TeamPiped/Piped/wiki/Instances\">صفحة المثيلات (Instances)</a>."
+"للحصول على قائمة بواجهات برمجة التطبيقات العامة راجع <a href=\"https://"
+"github.com/TeamPiped/Piped/wiki/Instances\">صفحة المثيلات</a>."
 
 #: data/resources/ui/preferences_window.ui:32
 msgid "Piped API"
-msgstr "ال API الخاص ب Piped"
+msgstr "واجهة برمجة التطبيقات المنقولة"
 
 #: data/resources/ui/subscription_page.ui:21
 #: data/resources/ui/subscription_page.ui:86 data/resources/ui/window.ui:47
@@ -148,19 +147,19 @@ msgstr "الاشتراكات"
 
 #: data/resources/ui/subscription_page.ui:52
 msgid "No Subscriptions"
-msgstr "لا يوجد اشتراكات"
+msgstr "لم يتم العثور على اشتراكات"
 
 #: data/resources/ui/subscription_page.ui:114
 msgid "Add Subscription"
-msgstr "اضفة اشتراك"
+msgstr "أضِف اشتراك"
 
 #: data/resources/ui/subscription_page.ui:135
 msgid "Base URL"
-msgstr "الرابط الأساسي"
+msgstr "الرابط الرئيسي"
 
 #: data/resources/ui/subscription_page.ui:147
 msgid "Channel ID or Name"
-msgstr "معرف القناة (ID) أو الاسم"
+msgstr "معرًف القناة أو الاسم"
 
 #: data/resources/ui/watch_later.ui:16 data/resources/ui/window.ui:29
 msgid "Watch Later"
@@ -168,29 +167,29 @@ msgstr "المشاهدة لاحقا"
 
 #: data/resources/ui/watch_later.ui:32
 msgid "Everything Watched"
-msgstr "لقد تم مشاهدة كل شيئ"
+msgstr "شاهدت كل شيئ"
 
 #: data/resources/ui/watch_later.ui:33
 msgid "How about going outside?"
-msgstr "ماذا عن الذهاب خارجا ؟"
+msgstr "ماذا عن الخروج؟"
 
 #: src/gui/feed/error_label.rs:101
 msgid "Error connecting to the network"
-msgstr "خطأ عند محاولة الاتصال بالشبكة"
+msgstr "خطأ في الاتصال بالشبكة"
 
 #: src/gui/feed/error_label.rs:103
 msgid "Error parsing one subscription"
 msgid_plural "Error parsing {} subscriptions"
-msgstr[0] "خطأ في معالجة 0 اشتراكات"
-msgstr[1] "خطأ في معالة اشتراك واحد"
-msgstr[2] "خطأ في معالة اشتراكين"
-msgstr[3] "خطأ في معالجة {} أشتراكات"
-msgstr[4] "خطأ في معالجة {} اشتراك"
-msgstr[5] "خطأ في معالجة {} اشتراك"
+msgstr[0] "خطأ في تحليل اشتراكات {}"
+msgstr[1] "خطأ في تحليل اشتراك واحد"
+msgstr[2] "خطأ في تحليل اشتراكات {}"
+msgstr[3] "خطأ في تحليل اشتراكات {}"
+msgstr[4] "خطأ في تحليل اشتراكات {}"
+msgstr[5] "خطأ في تحليل اشتراكات {}"
 
 #: src/gui/feed/error_label.rs:106
 msgid "Some error occured"
-msgstr "حدت خطأ ما"
+msgstr "حدث خطأ ما"
 
 #: src/gui/feed/feed_item_object.rs:88
 msgid "%F %T"
@@ -198,25 +197,24 @@ msgstr "%F %T"
 
 #: src/gui/header_bar.rs:105
 msgid "Donate"
-msgstr "التبرع"
+msgstr "تبرّع"
 
 #: src/gui/import_window.rs:36
 msgid "Select NewPipe subscriptions file"
-msgstr "اختيار ملف الاشتراكات الخاص بتطبيق NewPipe"
+msgstr "حدد ملف اشتراكات NewPipe"
 
 #: src/gui/import_window.rs:49 src/gui/import_window.rs:79
 msgid "Failure to import subscriptions"
-msgstr "خطأ عند محاولة استيراد الاشتراكات"
+msgstr "خطأ في استيراد الاشتراكات"
 
 #: src/gui/import_window.rs:66
 msgid "Select YouTube subscription file"
-msgstr "اختيار ملف الاشتراكات الخاص بموقع YouTube"
+msgstr "حدد ملف اشتراك"
 
 #: src/gui/preferences_window.rs:49
 msgid ""
 "Note that on Flatpak, there are some more steps required when using a player "
 "external to the Flatpak. For more information, please consult the wiki."
 msgstr ""
-"يرجى الملاحظة أنه عند استخدام فلات باك (Flatpak) ، هناك بعض الخطوات الإضافية "
-"المطلوبة عند استخدام مشغل فيديو خارجي لـال Flatpak. للمزيد من المعلومات يرجى "
-"الرجوع إلى الويكي (wiki)."
+"لاحظ أنه في فلاتباك هناك بعض الخطوات الإضافية المطلوبة عند استخدام مشغل "
+"فيديو خارجي للفلاتباك ، لمزيد من المعلومات يرجى الرجوع إلى الويكي."
