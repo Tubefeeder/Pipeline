@@ -1,4 +1,4 @@
-# Arabic Translation
+# Arabic translation for Tubefeeder
 # Copyright (C) 2023
 # This file is distributed under the same license as the tubefeeder package.
 # Rayan Nakib <rayan.nakib@tutamail.com>, 2023.
@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: tubefeeder\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-17 14:38+0200\n"
-"PO-Revision-Date: 2023-07-05 22:21+0100\n"
+"PO-Revision-Date: 2023-07-07 17:16+0100\n"
 "Last-Translator: Rayan Nakib <rayan.nakib@tutamail.com>\n"
 "Language-Team: ARABIC\n"
 "Language: ar\n"
@@ -114,7 +114,7 @@ msgstr "عام"
 
 #: data/resources/ui/preferences_window.ui:13
 msgid "Programs"
-msgstr "برامج"
+msgstr "البرمجيات"
 
 #: data/resources/ui/preferences_window.ui:16
 msgid "Player"
@@ -140,6 +140,14 @@ msgstr ""
 msgid "Piped API"
 msgstr "واجهة برمجة التطبيقات المنقولة"
 
+#: data/resources/ui/preferences_window.ui:39
+msgid "Other"
+msgstr "أخرى"
+
+#: data/resources/ui/preferences_window.ui:42
+msgid "Show only Videos from Yesterday"
+msgstr "أظهر مقاطع الفيديو من الأمس فقط"
+
 #: data/resources/ui/subscription_page.ui:21
 #: data/resources/ui/subscription_page.ui:86 data/resources/ui/window.ui:47
 msgid "Subscriptions"
@@ -147,7 +155,7 @@ msgstr "الاشتراكات"
 
 #: data/resources/ui/subscription_page.ui:52
 msgid "No Subscriptions"
-msgstr "لم يتم العثور على اشتراكات"
+msgstr "لا توجد اشتراكات"
 
 #: data/resources/ui/subscription_page.ui:114
 msgid "Add Subscription"
