@@ -136,6 +136,15 @@ msgstr ""
 msgid "Piped API"
 msgstr ""
 
+#: data/resources/ui/preferences_window.ui:39
+msgid "Other"
+msgstr ""
+
+#: data/resources/ui/preferences_window.ui:42
+msgid ""
+"Show only Videos from Yesterday"
+msgstr ""
+
 #: data/resources/ui/subscription_page.ui:21
 #: data/resources/ui/subscription_page.ui:86 data/resources/ui/window.ui:47
 msgid "Subscriptions"
