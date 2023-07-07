@@ -141,8 +141,7 @@ msgid "Other"
 msgstr ""
 
 #: data/resources/ui/preferences_window.ui:42
-msgid ""
-"Show only Videos from Yesterday"
+msgid "Show only Videos from Yesterday"
 msgstr ""
 
 #: data/resources/ui/subscription_page.ui:21
