@@ -2,3 +2,4 @@
 *~*
 src/config.rs
 data/resources/ui/about.ui
+.flatpak-builder

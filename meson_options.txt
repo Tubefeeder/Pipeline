@@ -6,7 +6,7 @@ option(
     'development',
   ],
   value: 'default',
-  description: 'The build profile for Tubefeeder. One of "default" or "development".'
+  description: 'The build profile for Pipeline. One of "default" or "development".'
 )
 
 option(

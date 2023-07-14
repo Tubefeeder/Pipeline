@@ -1,8 +1,8 @@
 <img align="left" style="vertical-align: middle" width="120" height="120" src="/data/icons/de.schmidhuberj.tubefeeder.svg">
 
-# Tubefeeder
+# Pipeline
 
-Tubefeeder is a YouTube, LBRY and PeerTube client for Linux.
+Pipeline is a YouTube, LBRY and PeerTube client for Linux.
 
 ###
 

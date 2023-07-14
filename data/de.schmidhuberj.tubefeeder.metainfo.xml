@@ -3,7 +3,7 @@
   <id>de.schmidhuberj.tubefeeder</id>
   <project_license>GPL-3.0+</project_license>
   <metadata_license>FSFAP</metadata_license>
-  <name>Tubefeeder</name>
+  <name>Pipeline</name>
   <summary>A YouTube, LBRY and PeerTube client</summary>
   <launchable type="desktop-id">de.schmidhuberj.tubefeeder.desktop</launchable>
   <content_rating type="oars-1.1"/>
@@ -133,12 +133,12 @@
 
   <description>
     <p>
-      Tubefeeder lets you watch and download videos from YouTube,
+      Pipeline lets you watch and download videos from YouTube,
       LBRY and PeerTube, all without needing to navigate through
       different websites.
     </p>
     <p>
-      Tubefeeder comes with several features:
+      Pipeline comes with several features:
     </p>
     <ul>
       <li>Subscribe to channels</li>
@@ -151,24 +151,24 @@
   <screenshots>
     <screenshot type="default">
       <caption>The feed</caption>
-      <image>https://github.com/Schmiddiii/Tubefeeder/blob/master/data/screenshots/tubefeeder_screenshot_feed.png?raw=true</image>
+      <image>https://github.com/Schmiddiii/Pipeline/blob/master/data/screenshots/tubefeeder_screenshot_feed.png?raw=true</image>
     </screenshot>
     <screenshot type="default">
       <caption>The watch later list</caption>
-      <image>https://github.com/Schmiddiii/Tubefeeder/blob/master/data/screenshots/tubefeeder_screenshot_watch_later.png?raw=true</image>
+      <image>https://github.com/Schmiddiii/Pipeline/blob/master/data/screenshots/tubefeeder_screenshot_watch_later.png?raw=true</image>
     </screenshot>
     <screenshot type="default">
       <caption>The filter</caption>
-      <image>https://github.com/Schmiddiii/Tubefeeder/blob/master/data/screenshots/tubefeeder_screenshot_filters.png?raw=true</image>
+      <image>https://github.com/Schmiddiii/Pipeline/blob/master/data/screenshots/tubefeeder_screenshot_filters.png?raw=true</image>
     </screenshot>
     <screenshot>
       <caption>The subscriptions</caption>
-      <image>https://github.com/Schmiddiii/Tubefeeder/blob/master/data/screenshots/tubefeeder_screenshot_subscriptions.png?raw=true</image>
+      <image>https://github.com/Schmiddiii/Pipeline/blob/master/data/screenshots/tubefeeder_screenshot_subscriptions.png?raw=true</image>
     </screenshot>
   </screenshots>
 
   <url type="homepage">https://www.tubefeeder.de/</url>
-  <url type="bugtracker">https://github.com/Schmiddiii/Tubefeeder/issues</url>
+  <url type="bugtracker">https://github.com/Schmiddiii/Pipeline/issues</url>
   <url type="help">http://www.tubefeeder.de/wiki/</url>
   <url type="donation">https://www.tubefeeder.de/donate</url>
 

@@ -50,7 +50,7 @@
         <attribute name="action">win.import</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">About Tubefeeder</attribute>
+        <attribute name="label" translatable="yes">About Pipeline</attribute>
         <attribute name="action">win.about</attribute>
       </item>
     </section>

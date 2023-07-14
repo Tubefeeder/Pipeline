@@ -85,8 +85,8 @@ msgid "Import…"
 msgstr "Importar…"
 
 #: data/resources/ui/header_bar.ui:53
-msgid "About Tubefeeder"
-msgstr "Acerca de Tubefeeder"
+msgid "About Pipeline"
+msgstr "Acerca de Pipeline"
 
 #: data/resources/ui/import_window.ui:7
 msgid "Import Subscriptions"

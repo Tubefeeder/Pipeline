@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
 Icon=de.schmidhuberj.tubefeeder
-Name=Tubefeeder
+Name=Pipeline
 Comment=A YouTube, LBRY and PeerTube client
 Comment[ar]=عميل YouTube و LBRY و PeerTube
 Comment[it]=Un client per YouTube, LBRY e PeerTube
-StartupWMClass=Tubefeeder
+StartupWMClass=Pipeline
 Exec=/app/bin/tubefeeder
 Categories=Video;AudioVideo
 X-Purism-FormFactor=Workstation;Mobile;
