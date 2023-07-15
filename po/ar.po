@@ -1,4 +1,4 @@
-# Arabic translation for Tubefeeder
+# Arabic translation for Pipeline
 # Copyright (C) 2023
 # This file is distributed under the same license as the tubefeeder package.
 # Rayan Nakib <rayan.nakib@tutamail.com>, 2023.
@@ -86,8 +86,8 @@ msgid "Import…"
 msgstr "استورد..."
 
 #: data/resources/ui/header_bar.ui:53
-msgid "About Tubefeeder"
-msgstr "حول Tubefeeder"
+msgid "About Pipeline"
+msgstr "حول Pipeline"
 
 #: data/resources/ui/import_window.ui:7
 msgid "Import Subscriptions"

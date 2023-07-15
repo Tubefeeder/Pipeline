@@ -22,7 +22,7 @@ if ! [ -f "$BINFILE_COMPILED" ]; then
 fi
 
 if ! [ -f "$BINFILE" ]; then
-    echo "The Tubefeeder binary does not seem to exist"
+    echo "The Pipeline binary does not seem to exist"
     echo "Make sure you alread have the compiled binary in $BINFILE_COMPILED or the downloaded binary as $BINFILE_ALT"
     exit
 fi
@@ -123,5 +123,5 @@ echo "MBTN_LEFT_DBL script-binding touchscreen-seek" > ~/.config/mpv/input.conf
 
 EOF
 
-echo "Successfully installed Tubefeeder"
+echo "Successfully installed Pipeline"
 echo "Dont forget installing mpv and youtube-dl"

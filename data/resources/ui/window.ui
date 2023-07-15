@@ -5,7 +5,7 @@
 
   <template class="TFWindow" parent="AdwApplicationWindow">
     <property name="can-focus">True</property>
-    <property name="title">Tubefeeder</property>
+    <property name="title">Pipeline</property>
     <property name="default-height">800</property>
     <property name="default-width">500</property>
 

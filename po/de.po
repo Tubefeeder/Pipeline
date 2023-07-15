@@ -1,6 +1,6 @@
-# German translations for Tubefeeder package.
-# Copyright (C) 2022 THE Tubefeeder'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Tubefeeder package.
+# German translations for Pipeline package.
+# Copyright (C) 2022 THE Pipeline'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Pipeline package.
 # Julian Schmidhuber <internationalization@schmiddi.anonaddy.com>, 2022.
 #
 msgid ""
@@ -85,8 +85,8 @@ msgid "Import…"
 msgstr "Importieren…"
 
 #: data/resources/ui/header_bar.ui:53
-msgid "About Tubefeeder"
-msgstr "Über Tubefeeder"
+msgid "About Pipeline"
+msgstr "Über Pipeline"
 
 #: data/resources/ui/import_window.ui:7
 msgid "Import Subscriptions"

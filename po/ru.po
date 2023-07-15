@@ -90,7 +90,7 @@ msgid "Import…"
 msgstr "Импорт"
 
 #: data/resources/ui/header_bar.ui:53
-msgid "About Tubefeeder"
+msgid "About Pipeline"
 msgstr ""
 
 #: data/resources/ui/import_window.ui:7

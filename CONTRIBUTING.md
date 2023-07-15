@@ -1,6 +1,6 @@
 # Contributing
 
-There are a couple of ways you can contribute to Tubefeeder. You can report bugs, propose changes and additions, directly contribute to the codebase, or translating.
+There are a couple of ways you can contribute to Pipeline. You can report bugs, propose changes and additions, directly contribute to the codebase, or translating.
 
 ## Reporting bugs / Proposing changes or additions
 
@@ -14,7 +14,7 @@ You can submit code by [forking](https://docs.github.com/en/pull-requests/collab
 
 ### Prerequisites
 
-The process of translating Tubefeeder is similar to submitting code. Start with [forking](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks) the project. Then, [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) the repository. And finally, install [Poedit](https://flathub.org/apps/details/net.poedit.Poedit).
+The process of translating Pipeline is similar to submitting code. Start with [forking](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks) the project. Then, [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) the repository. And finally, install [Poedit](https://flathub.org/apps/details/net.poedit.Poedit).
 
 Proceed to [A. Adding a new language](#a-adding-new-language) to add a new language, or [B. Translating an existing language](#b-translating-an-existing-language) to translate an existing language.
 

@@ -2,7 +2,7 @@
 <interface>
   <object class="AdwAboutWindow" id="about">
     <property name="application-icon">icon</property>
-    <property name="application-name">Tubefeeder</property>
+    <property name="application-name">Pipeline</property>
     <property name="copyright">Copyright © 2022 Julian Schmidhuber</property>
     <property name="developer-name">Julian Schmidhuber</property>
     <property name="developers">Julian Schmidhuber  &lt;schmidhuberj2@protonmail.com&gt;</property>

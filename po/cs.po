@@ -88,8 +88,8 @@ msgid "Import…"
 msgstr "Importovat…"
 
 #: data/resources/ui/header_bar.ui:53
-msgid "About Tubefeeder"
-msgstr "O aplikaci Tubefeeder"
+msgid "About Pipeline"
+msgstr "O aplikaci Pipeline"
 
 #: data/resources/ui/import_window.ui:7
 #, fuzzy
