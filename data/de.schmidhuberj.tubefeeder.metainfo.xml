@@ -151,24 +151,24 @@
   <screenshots>
     <screenshot type="default">
       <caption>The feed</caption>
-      <image>https://github.com/Tubefeeder/Tubefeeder/blob/master/data/screenshots/tubefeeder_screenshot_feed.png?raw=true</image>
+      <image>https://github.com/Tubefeeder/Pipeline/blob/master/data/screenshots/tubefeeder_screenshot_feed.png?raw=true</image>
     </screenshot>
     <screenshot type="default">
       <caption>The watch later list</caption>
-      <image>https://github.com/Tubefeeder/Tubefeeder/blob/master/data/screenshots/tubefeeder_screenshot_watch_later.png?raw=true</image>
+      <image>https://github.com/Tubefeeder/Pipeline/blob/master/data/screenshots/tubefeeder_screenshot_watch_later.png?raw=true</image>
     </screenshot>
     <screenshot type="default">
       <caption>The filter</caption>
-      <image>https://github.com/Tubefeeder/Tubefeeder/blob/master/data/screenshots/tubefeeder_screenshot_filters.png?raw=true</image>
+      <image>https://github.com/Tubefeeder/Pipeline/blob/master/data/screenshots/tubefeeder_screenshot_filters.png?raw=true</image>
     </screenshot>
     <screenshot>
       <caption>The subscriptions</caption>
-      <image>https://github.com/Tubefeeder/Tubefeeder/blob/master/data/screenshots/tubefeeder_screenshot_subscriptions.png?raw=true</image>
+      <image>https://github.com/Tubefeeder/Pipeline/blob/master/data/screenshots/tubefeeder_screenshot_subscriptions.png?raw=true</image>
     </screenshot>
   </screenshots>
 
   <url type="homepage">https://www.tubefeeder.de/</url>
-  <url type="bugtracker">https://github.com/Tubefeeder/Tubefeeder/issues</url>
+  <url type="bugtracker">https://github.com/Tubefeeder/Pipeline/issues</url>
   <url type="help">http://www.tubefeeder.de/wiki/</url>
   <url type="donation">https://www.tubefeeder.de/donate</url>
 

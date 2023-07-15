@@ -4,7 +4,7 @@ There are a couple of ways you can contribute to Pipeline. You can report bugs, 
 
 ## Reporting bugs / Proposing changes or additions
 
-If you experience a bug, or you want to suggest some changes or additions within an app, you can open an issue in the [issue tracker](https://github.com/Tubefeeder/Tubefeeder/issues). However, we heavily encourage to check if there is an existing issue first. If there is an existing issue, please leave a thumbs up (👍).
+If you experience a bug, or you want to suggest some changes or additions within an app, you can open an issue in the [issue tracker](https://github.com/Tubefeeder/Pipeline/issues). However, we heavily encourage to check if there is an existing issue first. If there is an existing issue, please leave a thumbs up (👍).
 
 ## Submitting code
 
