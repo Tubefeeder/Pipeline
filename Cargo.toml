@@ -2,7 +2,7 @@
 name = "tubefeeder"
 description = "A YouTube, LBRY and PeerTube client"
 homepage = "https://tubefeeder.de"
-version = "1.10.0"
+version = "1.11.0"
 authors = ["Julian Schmidhuber <schmidhuberj2@protonmail.com>"]
 edition = "2021"
 
