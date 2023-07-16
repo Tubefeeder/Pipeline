@@ -52,7 +52,7 @@ msgstr "Nessun filtro"
 
 #: data/resources/ui/filter_page.ui:63
 msgid "Add Filter…"
-msgstr "Aggiunfi filtro…"
+msgstr "Aggiungi filtro…"
 
 #: data/resources/ui/filter_page.ui:73
 msgid "Add Filter"
@@ -106,7 +106,7 @@ msgstr ""
 
 #: data/resources/ui/import_window.ui:15
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: data/resources/ui/preferences_window.ui:9
 msgid "General"
