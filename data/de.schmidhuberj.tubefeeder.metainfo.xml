@@ -10,6 +10,9 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
+	  <release version="v1.11.0" date="2023-07-16">
+            <description><p>Rebranding to Pipeline.</p></description>
+	  </release>
 	  <release version="v1.10.0" date="2023-06-09">
             <description><p>Load videos in feed automatically and introduce an option to only show videos from yesterday.</p></description>
 	  </release>
