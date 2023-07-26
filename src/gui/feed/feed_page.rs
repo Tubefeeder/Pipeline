@@ -147,7 +147,7 @@ pub mod imp {
             receiver.attach(
                 None,
                 clone!(@strong obj as s, @strong settings => @default-return Continue(false), move |videos| {
-                    let yesterday = chrono::Local::today().naive_local() - chrono::Duration::days(1);
+                    let yesterday = chrono::Local::now().date_naive() - chrono::Duration::days(1);
                     let video_objects_iter = videos.into_iter().map(VideoObject::new);
 
                     let video_objects = if settings.boolean("only-videos-yesterday") {
