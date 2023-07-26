@@ -32,7 +32,7 @@ gtk::glib::wrapper! {
 
 impl FeedItem {
     pub fn new(playlist_manager: PlaylistManager<String, AnyVideo>) -> Self {
-        let s: Self = Object::new(&[]).expect("Failed to create FeedItem");
+        let s: Self = Object::builder::<Self>().build();
         s.imp().playlist_manager.replace(Some(playlist_manager));
         s
     }
@@ -47,7 +47,6 @@ pub mod imp {
     use gdk::glib::ParamSpecObject;
     use gdk::glib::Value;
     use glib::subclass::InitializingObject;
-    use glib::ParamFlags;
     use glib::ParamSpec;
     use gtk::glib;
     use gtk::prelude::*;
@@ -134,37 +133,30 @@ pub mod imp {
     }
 
     impl ObjectImpl for FeedItem {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
         fn properties() -> &'static [ParamSpec] {
-            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecObject::new(
-                    "video",
-                    "video",
-                    "video",
-                    VideoObject::static_type(),
-                    ParamFlags::READWRITE,
-                )]
-            });
+            static PROPERTIES: Lazy<Vec<ParamSpec>> =
+                Lazy::new(|| vec![ParamSpecObject::builder::<VideoObject>("video").build()]);
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, value: &Value, pspec: &ParamSpec) {
             match pspec.name() {
                 "video" => {
                     let value: Option<VideoObject> =
                         value.get().expect("Property video of incorrect type");
                     self.video.replace(value);
                     self.bind_watch_later();
-                    self.setup_actions(obj);
+                    self.setup_actions(&self.obj());
                 }
                 _ => unimplemented!(),
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             match pspec.name() {
                 "video" => self.video.borrow().to_value(),
                 _ => unimplemented!(),

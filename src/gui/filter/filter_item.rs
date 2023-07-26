@@ -34,7 +34,7 @@ gtk::glib::wrapper! {
 
 impl FilterItem {
     pub fn new(filter_group: Arc<Mutex<FilterGroup<AnyVideoFilter>>>) -> Self {
-        let s: Self = Object::new(&[]).expect("Failed to create FilterItem");
+        let s: Self = Object::builder::<Self>().build();
         s.imp().filter_group.replace(Some(filter_group));
         s
     }
@@ -49,7 +49,6 @@ pub mod imp {
     use gdk::glib::ParamSpecObject;
     use gdk::glib::Value;
     use glib::subclass::InitializingObject;
-    use glib::ParamFlags;
     use glib::ParamSpec;
     use gtk::glib;
     use gtk::prelude::*;
@@ -108,24 +107,17 @@ pub mod imp {
     }
 
     impl ObjectImpl for FilterItem {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
         fn properties() -> &'static [ParamSpec] {
-            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecObject::new(
-                    "filter",
-                    "filter",
-                    "filter",
-                    FilterObject::static_type(),
-                    ParamFlags::READWRITE,
-                )]
-            });
+            static PROPERTIES: Lazy<Vec<ParamSpec>> =
+                Lazy::new(|| vec![ParamSpecObject::builder::<FilterObject>("filter").build()]);
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, value: &Value, pspec: &ParamSpec) {
             match pspec.name() {
                 "filter" => {
                     let value: Option<FilterObject> =
@@ -137,7 +129,7 @@ pub mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             match pspec.name() {
                 "filter" => self.filter.borrow().to_value(),
                 _ => unimplemented!(),

@@ -31,7 +31,7 @@ gtk::glib::wrapper! {
 
 impl SubscriptionItem {
     pub fn new(subscription_list: AnySubscriptionList) -> Self {
-        let s: Self = Object::new(&[]).expect("Failed to create SubscriptionItem");
+        let s: Self = Object::builder().build();
         s.imp().subscription_list.replace(Some(subscription_list));
         s
     }
@@ -45,7 +45,6 @@ pub mod imp {
     use gdk::glib::Value;
     use gdk_pixbuf::glib::subclass::Signal;
     use glib::subclass::InitializingObject;
-    use glib::ParamFlags;
     use glib::ParamSpec;
     use gtk::glib;
     use gtk::prelude::*;
@@ -90,7 +89,7 @@ pub mod imp {
         #[template_callback]
         fn handle_go_to_videos(&self) {
             if let Some(sub) = self.subscription.borrow().as_ref() {
-                self.instance().emit_by_name::<()>("go-to-videos", &[&sub]);
+                self.obj().emit_by_name::<()>("go-to-videos", &[&sub]);
             }
         }
     }
@@ -115,24 +114,18 @@ pub mod imp {
     impl SubscriptionItem {}
 
     impl ObjectImpl for SubscriptionItem {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecObject::new(
-                    "subscription",
-                    "subscription",
-                    "subscription",
-                    SubscriptionObject::static_type(),
-                    ParamFlags::READWRITE,
-                )]
+                vec![ParamSpecObject::builder::<SubscriptionObject>("subscription").build()]
             });
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, value: &Value, pspec: &ParamSpec) {
             match pspec.name() {
                 "subscription" => {
                     let value: Option<SubscriptionObject> = value
@@ -145,7 +138,7 @@ pub mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             match pspec.name() {
                 "subscription" => self.subscription.borrow().to_value(),
                 _ => unimplemented!(),
@@ -154,14 +147,9 @@ pub mod imp {
 
         fn signals() -> &'static [Signal] {
             static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
-                vec![Signal::builder(
-                    "go-to-videos",
-                    // Types of the values which will be sent to the signal handler
-                    &[SubscriptionObject::static_type().into()],
-                    // Type of the value the signal handler sends back
-                    <()>::static_type().into(),
-                )
-                .build()]
+                vec![Signal::builder("go-to-videos")
+                    .param_types([SubscriptionObject::static_type()])
+                    .build()]
             });
             SIGNALS.as_ref()
         }

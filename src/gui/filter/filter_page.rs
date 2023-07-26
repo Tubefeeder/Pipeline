@@ -96,7 +96,7 @@ pub mod imp {
 
             // Theoretically only needs to be done once, but when setting up the page does
             // not yet have a root.
-            let window = self.instance().window();
+            let window = self.obj().window();
             self.dialog_add.set_transient_for(Some(&window));
             self.dialog_add.present();
         }
@@ -182,9 +182,9 @@ pub mod imp {
     }
 
     impl ObjectImpl for FilterPage {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
-            self.setup_toggle_add_filter(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.setup_toggle_add_filter(&self.obj());
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
@@ -192,17 +192,11 @@ pub mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            _value: &glib::Value,
-            _pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, _value: &glib::Value, _pspec: &glib::ParamSpec) {
             unimplemented!()
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, _pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, _pspec: &glib::ParamSpec) -> glib::Value {
             unimplemented!()
         }
     }

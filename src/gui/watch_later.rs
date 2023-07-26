@@ -137,8 +137,8 @@ pub mod imp {
     }
 
     impl ObjectImpl for WatchLaterPage {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
     }
 

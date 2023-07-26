@@ -131,7 +131,7 @@ pub mod imp {
 
             // Theoretically only needs to be done once, but when setting up the page does
             // not yet have a root.
-            let window = self.instance().window();
+            let window = self.obj().window();
             self.dialog_add.set_transient_for(Some(&window));
             self.dialog_add.present();
         }
@@ -217,7 +217,7 @@ pub mod imp {
                 }
             });
 
-            let obj = self.instance();
+            let obj = self.obj();
             receiver.attach(
                 None,
                 clone!(@strong self.any_subscription_list as list, @strong obj =>
@@ -253,7 +253,7 @@ pub mod imp {
                 let videos = joiner.generate(&error_store).await;
                 let _ = sender.send(videos);
             });
-            let obj = self.instance();
+            let obj = self.obj();
             receiver.attach(
                 None,
                 clone!(@strong obj as s => @default-return Continue(false), move |videos| {
@@ -303,9 +303,9 @@ pub mod imp {
     }
 
     impl ObjectImpl for SubscriptionPage {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
-            self.setup_toggle_add_subscription(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.setup_toggle_add_subscription(&self.obj());
             self.setup_platform_dropdown();
         }
 
@@ -314,31 +314,17 @@ pub mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            _value: &glib::Value,
-            _pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, _value: &glib::Value, _pspec: &glib::ParamSpec) {
             unimplemented!()
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, _pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, _pspec: &glib::ParamSpec) -> glib::Value {
             unimplemented!()
         }
 
         fn signals() -> &'static [Signal] {
-            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
-                vec![Signal::builder(
-                    "subscription-added",
-                    // Types of the values which will be sent to the signal handler
-                    &[],
-                    // Type of the value the signal handler sends back
-                    <()>::static_type().into(),
-                )
-                .build()]
-            });
+            static SIGNALS: Lazy<Vec<Signal>> =
+                Lazy::new(|| vec![Signal::builder("subscription-added").build()]);
             SIGNALS.as_ref()
         }
     }

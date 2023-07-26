@@ -152,7 +152,6 @@ pub mod imp {
     use std::cell::{Cell, RefCell};
 
     use gdk::gio::ListStore;
-    use gdk::glib::ParamFlags;
     use gdk::glib::ParamSpec;
     use gdk::glib::ParamSpecBoolean;
     use gdk::glib::Value;
@@ -192,7 +191,7 @@ pub mod imp {
     impl FeedList {
         pub(super) fn setup(&self) {
             let model = gtk::gio::ListStore::new(VideoObject::static_type());
-            let selection_model = gtk::NoSelection::new(Some(&model));
+            let selection_model = gtk::NoSelection::new(Some(model.clone()));
             self.feed_list.get().set_model(Some(&selection_model));
 
             self.model.replace(model);
@@ -225,7 +224,7 @@ pub mod imp {
                 video_object.play();
             });
 
-            self.instance().setup_autoload();
+            self.obj().setup_autoload();
         }
     }
 
@@ -234,7 +233,11 @@ pub mod imp {
         #[template_callback]
         fn edge_reached(&self, pos: PositionType) {
             if pos == PositionType::Bottom {
-                let _ = WidgetExt::activate_action(&self.instance(), "feed.more", None);
+                let _ = gtk::prelude::WidgetExt::activate_action(
+                    self.obj().as_ref(),
+                    "feed.more",
+                    None,
+                );
             }
         }
     }
@@ -256,34 +259,22 @@ pub mod imp {
     }
 
     impl ObjectImpl for FeedList {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
-            obj.add_actions();
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.obj().add_actions();
         }
 
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
-                    ParamSpecBoolean::new(
-                        "more-available",
-                        "more-available",
-                        "more-available",
-                        false,
-                        ParamFlags::READWRITE,
-                    ),
-                    ParamSpecBoolean::new(
-                        "is-empty",
-                        "is-empty",
-                        "is-empty",
-                        false,
-                        ParamFlags::READABLE,
-                    ),
+                    ParamSpecBoolean::builder("more-available").build(),
+                    ParamSpecBoolean::builder("is-empty").build(),
                 ]
             });
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, value: &Value, pspec: &ParamSpec) {
             match pspec.name() {
                 "more-available" => {
                     let value: bool = value
@@ -295,7 +286,7 @@ pub mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             match pspec.name() {
                 "more-available" => self.more_available.get().to_value(),
                 "is-empty" => (self.model.borrow().n_items() == 0).to_value(),

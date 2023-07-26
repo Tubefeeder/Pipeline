@@ -39,7 +39,9 @@ gtk::glib::wrapper! {
 
 impl Window {
     pub fn new(app: &gtk::Application) -> Self {
-        Object::new(&[("application", app)]).expect("Failed to create Window")
+        Object::builder::<Self>()
+            .property("application", app)
+            .build()
     }
 
     pub fn reload(&self) {
@@ -314,13 +316,14 @@ pub mod imp {
     }
 
     impl ObjectImpl for Window {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
             self.setup_feed();
             self.setup_watch_later();
             self.setup_subscriptions();
             self.setup_filter();
 
+            let obj = self.obj();
             if PROFILE == "Devel" {
                 obj.add_css_class("devel");
             }
@@ -330,7 +333,7 @@ pub mod imp {
 
     impl WidgetImpl for Window {}
     impl WindowImpl for Window {
-        fn close_request(&self, obj: &Self::Type) -> Inhibit {
+        fn close_request(&self) -> Inhibit {
             let mut user_cache_dir = glib::user_cache_dir();
             user_cache_dir.push("tubefeeder");
 
@@ -338,11 +341,12 @@ pub mod imp {
                 std::fs::remove_dir_all(user_cache_dir).unwrap_or(());
             }
 
+            let obj = self.obj();
             if let Err(err) = obj.save_window_size() {
                 log::warn!("Failed to save window state, {}", &err);
             }
 
-            self.parent_close_request(obj)
+            self.parent_close_request()
         }
     }
     impl ApplicationWindowImpl for Window {}

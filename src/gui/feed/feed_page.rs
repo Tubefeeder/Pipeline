@@ -47,14 +47,13 @@ pub mod imp {
 
     use gdk::glib::clone;
     use gdk::glib::MainContext;
-    use gdk::glib::ParamFlags;
     use gdk::glib::ParamSpec;
     use gdk::glib::ParamSpecBoolean;
     use gdk::glib::PRIORITY_DEFAULT;
-    use gdk_pixbuf::gio::Settings;
-    use gdk_pixbuf::glib::subclass::Signal;
     use glib::subclass::InitializingObject;
+    use gtk::gio::Settings;
     use gtk::glib;
+    use gtk::glib::subclass::Signal;
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
 
@@ -207,30 +206,17 @@ pub mod imp {
     }
 
     impl ObjectImpl for FeedPage {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
-            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecBoolean::new(
-                    "reloading",
-                    "reloading",
-                    "reloading",
-                    false,
-                    ParamFlags::READWRITE,
-                )]
-            });
+            static PROPERTIES: Lazy<Vec<ParamSpec>> =
+                Lazy::new(|| vec![ParamSpecBoolean::builder("reloading").build()]);
             PROPERTIES.as_ref()
         }
 
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
+        fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             match pspec.name() {
                 "reloading" => {
                     let _ = self.reloading.replace(
@@ -243,7 +229,7 @@ pub mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+        fn property(&self, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "reloading" => self.reloading.get().to_value(),
                 _ => unimplemented!(),
@@ -251,16 +237,8 @@ pub mod imp {
         }
 
         fn signals() -> &'static [Signal] {
-            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
-                vec![Signal::builder(
-                    "add-subscription",
-                    // Types of the values which will be sent to the signal handler
-                    &[],
-                    // Type of the value the signal handler sends back
-                    <()>::static_type().into(),
-                )
-                .build()]
-            });
+            static SIGNALS: Lazy<Vec<Signal>> =
+                Lazy::new(|| vec![Signal::builder("add-subscription").build()]);
             SIGNALS.as_ref()
         }
     }
