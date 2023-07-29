@@ -105,7 +105,6 @@ pub mod imp {
     use gdk::glib::ParamSpecObject;
     use gdk::glib::Value;
     use glib::subclass::InitializingObject;
-    use glib::ParamFlags;
     use glib::ParamSpec;
     use gtk::glib;
     use gtk::prelude::*;
@@ -140,8 +139,9 @@ pub mod imp {
     }
 
     impl ObjectImpl for Thumbnail {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            let obj = self.obj();
+            self.parent_constructed();
             obj.connect_notify_local(
                 Some("video"),
                 clone!(@strong obj => move |_, _| {
@@ -151,19 +151,12 @@ pub mod imp {
         }
 
         fn properties() -> &'static [ParamSpec] {
-            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecObject::new(
-                    "video",
-                    "video",
-                    "video",
-                    Option::<VideoObject>::static_type(),
-                    ParamFlags::READWRITE,
-                )]
-            });
+            static PROPERTIES: Lazy<Vec<ParamSpec>> =
+                Lazy::new(|| vec![ParamSpecObject::builder::<VideoObject>("video").build()]);
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, value: &Value, pspec: &ParamSpec) {
             match pspec.name() {
                 "video" => {
                     let value: Option<VideoObject> =
@@ -174,7 +167,7 @@ pub mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             match pspec.name() {
                 "video" => self.video.borrow().to_value(),
                 _ => unimplemented!(),

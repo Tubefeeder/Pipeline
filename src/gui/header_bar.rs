@@ -31,7 +31,7 @@ gtk::glib::wrapper! {
 
 impl HeaderBar {
     pub fn new() -> Self {
-        Object::new(&[]).expect("Failed to create HeaderBar")
+        Object::builder::<Self>().build()
     }
 
     fn window(&self) -> crate::gui::window::Window {
@@ -49,7 +49,6 @@ pub mod imp {
     use gdk::gio::SimpleActionGroup;
     use gdk::glib::clone;
     use gdk::glib::Object;
-    use gdk::glib::ParamFlags;
     use gdk::glib::ParamSpec;
     use gdk::glib::ParamSpecObject;
     use gdk::glib::ParamSpecString;
@@ -133,9 +132,10 @@ pub mod imp {
     }
 
     impl ObjectImpl for HeaderBar {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
-            self.setup_actions(obj);
+        fn constructed(&self) {
+            let obj = self.obj();
+            self.parent_constructed();
+            self.setup_actions(&obj);
 
             obj.connect_root_notify(clone!(@strong self.titlebar as titlebar => move |o| {
                 if let Some(root) = o.root() {
@@ -165,20 +165,14 @@ pub mod imp {
         fn properties() -> &'static [ParamSpec] {
             static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
                 vec![
-                    ParamSpecString::new("title", "title", "title", None, ParamFlags::READWRITE),
-                    ParamSpecObject::new(
-                        "child",
-                        "child",
-                        "child",
-                        Widget::static_type(),
-                        ParamFlags::READWRITE,
-                    ),
+                    ParamSpecString::builder("title").build(),
+                    ParamSpecObject::builder::<Widget>("child").build(),
                 ]
             });
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, value: &Value, pspec: &ParamSpec) {
             match pspec.name() {
                 "title" => {
                     let value: Option<String> =
@@ -194,7 +188,7 @@ pub mod imp {
             }
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             match pspec.name() {
                 "title" => self.title.borrow().to_value(),
                 "child" => self.child.borrow().to_value(),

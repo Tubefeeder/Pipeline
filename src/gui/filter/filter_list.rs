@@ -86,12 +86,11 @@ pub mod imp {
     use gdk::glib::MainContext;
     use gdk::glib::Sender;
     use gdk::glib::PRIORITY_DEFAULT;
-    use gdk_pixbuf::glib::ParamFlags;
-    use gdk_pixbuf::glib::ParamSpec;
-    use gdk_pixbuf::glib::ParamSpecBoolean;
-    use gdk_pixbuf::glib::Value;
     use glib::subclass::InitializingObject;
     use gtk::glib;
+    use gtk::glib::ParamSpec;
+    use gtk::glib::ParamSpecBoolean;
+    use gtk::glib::Value;
     use gtk::prelude::*;
     use gtk::subclass::prelude::*;
     use gtk::SignalListItemFactory;
@@ -167,7 +166,7 @@ pub mod imp {
 
         pub fn setup_list(&self) {
             let model = gtk::gio::ListStore::new(FilterObject::static_type());
-            let selection_model = gtk::NoSelection::new(Some(&model));
+            let selection_model = gtk::NoSelection::new(Some(model.clone()));
             self.filter_list.get().set_model(Some(&selection_model));
 
             self.model.replace(model);
@@ -206,28 +205,21 @@ pub mod imp {
     }
 
     impl ObjectImpl for FilterList {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
         }
 
         fn properties() -> &'static [ParamSpec] {
-            static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
-                vec![ParamSpecBoolean::new(
-                    "is-empty",
-                    "is-empty",
-                    "is-empty",
-                    false,
-                    ParamFlags::READABLE,
-                )]
-            });
+            static PROPERTIES: Lazy<Vec<ParamSpec>> =
+                Lazy::new(|| vec![ParamSpecBoolean::builder("is-empty").build()]);
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, _obj: &Self::Type, _id: usize, _value: &Value, _pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, _value: &Value, _pspec: &ParamSpec) {
             unimplemented!()
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             match pspec.name() {
                 "is-empty" => (self.model.borrow().n_items() == 0).to_value(),
                 _ => unimplemented!(),

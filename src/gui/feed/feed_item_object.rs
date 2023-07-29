@@ -34,7 +34,7 @@ use crate::player::play;
 
 macro_rules! str_prop {
     ( $x:expr ) => {
-        ParamSpecString::new($x, $x, $x, None, ParamFlags::READWRITE)
+        ParamSpecString::builder($x).build()
     };
 }
 
@@ -75,22 +75,21 @@ gtk::glib::wrapper! {
 
 impl VideoObject {
     pub fn new(video: AnyVideo) -> Self {
-        let s: Self = Object::new(&[
-            ("title", &video.title()),
-            ("url", &video.url()),
-            ("thumbnail-url", &video.thumbnail_url()),
-            ("author", &video.subscription().to_string()),
-            ("platform", &video.platform().to_string()),
-            (
+        let s: Self = Object::builder::<Self>()
+            .property("title", &video.title())
+            .property("url", &video.url())
+            .property("thumbnail-url", &video.thumbnail_url())
+            .property("author", &video.subscription().to_string())
+            .property("platform", &video.platform().to_string())
+            .property(
                 "date",
                 &video
                     .uploaded()
                     .format(&gettextrs::gettext("%F %T"))
                     .to_string(),
-            ),
-            ("playing", &false),
-        ])
-        .expect("Failed to create `VideoObject`.");
+            )
+            .property("playing", &false)
+            .build();
         s.imp().video.swap(&RefCell::new(Some(video)));
         s
     }
@@ -144,18 +143,18 @@ impl VideoObject {
 }
 
 mod imp {
-    use gtk::glib;
+    use gtk::glib::{self, Object};
     use std::cell::{Cell, RefCell};
     use tf_join::AnyVideo;
 
     use gdk::{
-        glib::{ParamFlags, ParamSpec, ParamSpecBoolean, ParamSpecString, Value},
+        glib::{ParamSpec, ParamSpecBoolean, ParamSpecString, Value},
         prelude::ToValue,
         subclass::prelude::{ObjectImpl, ObjectSubclass},
     };
     use once_cell::sync::Lazy;
 
-    #[derive(Default, Clone)]
+    #[derive(Default)]
     pub struct VideoObject {
         title: RefCell<Option<String>>,
         author: RefCell<Option<String>>,
@@ -175,6 +174,7 @@ mod imp {
     impl ObjectSubclass for VideoObject {
         const NAME: &'static str = "TFVideoObject";
         type Type = super::VideoObject;
+        type ParentType = Object;
     }
 
     impl ObjectImpl for VideoObject {
@@ -188,33 +188,15 @@ mod imp {
                     str_prop!("platform"),
                     str_prop!("date"),
                     str_prop!("local-path"),
-                    ParamSpecBoolean::new(
-                        "playing",
-                        "playing",
-                        "playing",
-                        false,
-                        ParamFlags::READWRITE,
-                    ),
-                    ParamSpecBoolean::new(
-                        "downloading",
-                        "downloading",
-                        "downloading",
-                        false,
-                        ParamFlags::READWRITE,
-                    ),
-                    ParamSpecBoolean::new(
-                        "is-local",
-                        "is-local",
-                        "is-local",
-                        false,
-                        ParamFlags::READABLE,
-                    ),
+                    ParamSpecBoolean::builder("playing").build(),
+                    ParamSpecBoolean::builder("downloading").build(),
+                    ParamSpecBoolean::builder("is-local").build(),
                 ]
             });
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, value: &Value, pspec: &ParamSpec) {
             if pspec.name() == "playing" {
                 self.playing
                     .set(value.get().expect("Expect 'playing' to be a boolean."));
@@ -245,7 +227,7 @@ mod imp {
             );
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             if pspec.name() == "playing" {
                 return self.playing.get().to_value();
             }

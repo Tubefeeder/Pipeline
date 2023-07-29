@@ -1,9 +1,9 @@
 use gdk_pixbuf::glib::clone;
-use gtk::builders::FileChooserNativeBuilder;
 use gtk::glib;
 use gtk::prelude::*;
 use gtk::Builder;
 use gtk::FileChooserAction;
+use gtk::FileChooserNative;
 use gtk::FileFilter;
 use gtk::ResponseType;
 use libadwaita::traits::MessageDialogExt;
@@ -32,7 +32,7 @@ fn handle_response(joiner: &Joiner, response: &str, parent: &crate::gui::window:
             log::debug!("Import from NewPipe");
             let filter = FileFilter::new();
             filter.add_mime_type("application/json");
-            let chooser = FileChooserNativeBuilder::new()
+            let chooser = FileChooserNative::builder()
                 .title(&gettextrs::gettext("Select NewPipe subscriptions file"))
                 .transient_for(parent)
                 .modal(true)
@@ -62,7 +62,7 @@ fn handle_response(joiner: &Joiner, response: &str, parent: &crate::gui::window:
             log::debug!("Import from YouTube");
             let filter = FileFilter::new();
             filter.add_mime_type("text/csv");
-            let chooser = FileChooserNativeBuilder::new()
+            let chooser = FileChooserNative::builder()
                 .title(&gettextrs::gettext("Select YouTube subscription file"))
                 .transient_for(parent)
                 .filter(&filter)

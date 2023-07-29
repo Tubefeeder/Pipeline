@@ -26,7 +26,7 @@ use tf_join::AnyVideoFilter;
 
 macro_rules! str_prop {
     ( $x:expr ) => {
-        ParamSpecString::new($x, $x, $x, None, ParamFlags::READWRITE)
+        ParamSpecString::builder($x).build()
     };
 }
 
@@ -67,14 +67,13 @@ gtk::glib::wrapper! {
 
 impl FilterObject {
     pub fn new(filter: AnyVideoFilter) -> Self {
-        let s: Self = Object::new(&[
-            ("title", &filter.title_str().unwrap_or_default().to_string()),
-            (
+        let s: Self = Object::builder::<Self>()
+            .property("title", &filter.title_str().unwrap_or_default().to_string())
+            .property(
                 "channel",
                 &filter.subscription_str().unwrap_or_default().to_string(),
-            ),
-        ])
-        .expect("Failed to create `FilterObject`.");
+            )
+            .build();
         s.imp().filter.swap(&RefCell::new(Some(filter)));
         s
     }
@@ -90,13 +89,13 @@ mod imp {
     use tf_join::AnyVideoFilter;
 
     use gdk::{
-        glib::{ParamFlags, ParamSpec, ParamSpecString, Value},
+        glib::{ParamSpec, ParamSpecString, Value},
         prelude::ToValue,
         subclass::prelude::{ObjectImpl, ObjectSubclass},
     };
     use once_cell::sync::Lazy;
 
-    #[derive(Default, Clone)]
+    #[derive(Default)]
     pub struct FilterObject {
         title: RefCell<Option<String>>,
         channel: RefCell<Option<String>>,
@@ -117,11 +116,11 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, value: &Value, pspec: &ParamSpec) {
             prop_set_all!(value, pspec, "title", self.title, "channel", self.channel);
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             prop_get_all!(pspec, "title", self.title, "channel", self.channel)
         }
     }

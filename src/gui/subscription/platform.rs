@@ -26,7 +26,7 @@ use tf_join::Platform;
 
 macro_rules! str_prop {
     ( $x:expr ) => {
-        ParamSpecString::new($x, $x, $x, None, ParamFlags::READWRITE)
+        ParamSpecString::builder($x).build()
     };
 }
 
@@ -67,8 +67,9 @@ gtk::glib::wrapper! {
 
 impl PlatformObject {
     pub fn new(platform: Platform) -> Self {
-        let s: Self = Object::new(&[("name", &platform.to_string())])
-            .expect("Failed to create `PlatformObject`.");
+        let s: Self = Object::builder::<Self>()
+            .property("name", &platform.to_string())
+            .build();
         s.imp().platform.swap(&RefCell::new(Some(platform)));
         s
     }
@@ -84,13 +85,13 @@ mod imp {
     use tf_join::Platform;
 
     use gdk::{
-        glib::{ParamFlags, ParamSpec, ParamSpecString, Value},
+        glib::{ParamSpec, ParamSpecString, Value},
         prelude::ToValue,
         subclass::prelude::{ObjectImpl, ObjectSubclass},
     };
     use once_cell::sync::Lazy;
 
-    #[derive(Default, Clone)]
+    #[derive(Default)]
     pub struct PlatformObject {
         name: RefCell<Option<String>>,
 
@@ -109,11 +110,11 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
-        fn set_property(&self, _obj: &Self::Type, _id: usize, value: &Value, pspec: &ParamSpec) {
+        fn set_property(&self, _id: usize, value: &Value, pspec: &ParamSpec) {
             prop_set_all!(value, pspec, "name", self.name);
         }
 
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &ParamSpec) -> Value {
+        fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
             prop_get_all!(pspec, "name", self.name)
         }
     }

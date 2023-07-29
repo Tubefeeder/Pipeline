@@ -9,7 +9,7 @@ gtk::glib::wrapper! {
 
 impl PreferencesWindow {
     pub fn new() -> Self {
-        Object::new(&[]).expect("Failed to create PreferencesWindow")
+        Object::builder().build()
     }
 }
 
@@ -111,8 +111,8 @@ pub mod imp {
     }
 
     impl ObjectImpl for PreferencesWindow {
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
+        fn constructed(&self) {
+            self.parent_constructed();
             self.init_settings();
             if crate::config::FLATPAK {
                 self.init_flatpak();
