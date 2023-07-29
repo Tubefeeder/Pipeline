@@ -10,6 +10,9 @@
   <developer_name>Julian Schmidhuber</developer_name>
 
   <releases>
+	  <release version="v1.12.0" date="2023-07-29">
+            <description><p>Update dependencies. Fix issue with some Peertube subscriptions.</p></description>
+	  </release>
 	  <release version="v1.11.0" date="2023-07-16">
             <description><p>Rebranding to Pipeline.</p></description>
 	  </release>

@@ -2496,7 +2496,7 @@ checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 
 [[package]]
 name = "tubefeeder"
-version = "1.11.0"
+version = "1.12.0"
 dependencies = [
  "chrono",
  "csv",
