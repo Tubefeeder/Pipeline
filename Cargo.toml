@@ -1,6 +1,6 @@
 [package]
 name = "tubefeeder"
-description = "A YouTube, LBRY and PeerTube client"
+description = "Watch YouTube, LBRY, and PeerTube videos in one place"
 homepage = "https://tubefeeder.de"
 version = "1.12.0"
 authors = ["Julian Schmidhuber <schmidhuberj2@protonmail.com>"]

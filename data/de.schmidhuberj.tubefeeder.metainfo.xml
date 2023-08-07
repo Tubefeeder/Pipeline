@@ -4,7 +4,7 @@
   <project_license>GPL-3.0+</project_license>
   <metadata_license>FSFAP</metadata_license>
   <name>Pipeline</name>
-  <summary>A YouTube, LBRY and PeerTube client</summary>
+  <summary>Watch YouTube, LBRY, and PeerTube videos in one place</summary>
   <launchable type="desktop-id">de.schmidhuberj.tubefeeder.desktop</launchable>
   <content_rating type="oars-1.1"/>
   <developer_name>Julian Schmidhuber</developer_name>
