@@ -104,6 +104,10 @@ pub mod imp {
                     &gettextrs::gettext("Donate"),
                     "https://www.tubefeeder.de/donate.html",
                 );
+                about.add_link(
+                    "GitHub",
+                    "https://github.com/Tubefeeder/Pipeline",
+                );
                 about.set_transient_for(Some(&obj.window()));
                 about.show();
             }));

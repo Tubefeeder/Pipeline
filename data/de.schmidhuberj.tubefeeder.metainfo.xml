@@ -173,10 +173,12 @@
     </screenshot>
   </screenshots>
 
-  <url type="homepage">https://www.tubefeeder.de/</url>
+  <url type="homepage">https://mobile.schmidhuberj.de/pipeline</url>
   <url type="bugtracker">https://github.com/Tubefeeder/Pipeline/issues</url>
   <url type="help">http://www.tubefeeder.de/wiki/</url>
-  <url type="donation">https://www.tubefeeder.de/donate</url>
+  <url type="contact">https://matrix.to/#/#tubefeeder:matrix.org</url>
+  <url type="vcs-browser">https://github.com/Tubefeeder/Pipeline</url>
+  <url type="contribute">https://github.com/Tubefeeder/Pipeline/blob/master/CONTRIBUTING.md</url>
 
   <provides>
     <binary>tubefeeder</binary>
