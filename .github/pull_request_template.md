@@ -1,3 +1,7 @@
+# MOVED
+
+Please do not send any more PRs to this repository. Use the [GitLab](https://gitlab.com/schmiddi-on-mobile/pipeline) repository instead.
+
 # Licensing 
 
 - [ ] I confirm that this is either my code or was released under the terms of a GPLv3-or-later compatible license. Also I agree to release it here under the terms of the GPLv3-or-later.
