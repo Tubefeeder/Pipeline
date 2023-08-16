@@ -2,6 +2,8 @@
 
 # Pipeline
 
+__MOVED__: Note that this repository has been moved to [GitLab](https://gitlab.com/schmiddi-on-mobile/pipeline). Please do not open any issues or pull-requests on this repository anymore, use GitLab instead. Furthermore, this repository will not get any updates, those will only be pushed to GitLab.
+
 Pipeline is a YouTube, LBRY and PeerTube client for Linux.
 
 ###
